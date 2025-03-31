@@ -43,7 +43,8 @@ public class EquipoService {
         equipoRepository.deleteById(id);
     }
 
-    // Método privado para validar un equipo antes de guardarlo o actualizarlo
+    //Métodoprivado para validar un equipo antes de guardarlo o actualizarlo
+
     private void validarEquipo(Equipo equipo) {
         if (equipo.getNombre() == null || equipo.getNombre().isEmpty()) {
             throw new IllegalArgumentException("El nombre del equipo no puede estar vacío");
