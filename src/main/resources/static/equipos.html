@@ -5,10 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Equipos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212; /* Fondo negro */
+            color: white; /* Texto blanco */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2 {
+            color: #ff69b4; /* Títulos en rosado */
+            text-shadow: 0 4px 8px rgba(255, 105, 180, 0.6);
+        }
+
+        .table {
+            background-color: #1e1e1e; /* Fondo oscuro para tabla */
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table th {
+            background-color: #ff69b4; /* Encabezado rosado */
+        }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .form-control {
+            background-color: #222222; /* Fondo oscuro para entradas */
+            color: white;
+            border: 1px solid #444;
+        }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: 0 0 8px #ff69b4;
+        }
+
+        .btn-success {
+            background-color: #ff69b4; /* Botón rosado */
+            border: none;
+            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.5);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .btn-success:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(255, 105, 180, 0.7);
+        }
+
+        .btn-warning, .btn-danger {
+            margin: 0 5px;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Gestión de Equipos</h1>
+<div class="container mt-4">
+    <h1 class="text-center">Gestión de Equipos</h1>
 
     <!-- Tabla de equipos -->
     <table class="table table-striped">
@@ -22,13 +83,27 @@
         </tr>
         </thead>
         <tbody>
-        <!-- Aquí se inyectan los datos desde el controlador -->
+        <!-- Los datos dinámicos se inyectan desde el backend -->
+        <tr th:each="equipo : ${equipos}">
+            <td th:text="${equipo.idEquipo}"></td>
+            <td th:text="${equipo.nombre}"></td>
+            <td th:text="${equipo.descripcion}"></td>
+            <td th:text="${equipo.estado}"></td>
+            <td>
+                <form th:action="@{/equipos/modificar/{id}(id=${equipo.idEquipo})}" method="post">
+                    <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                </form>
+                <form th:action="@{/equipos/eliminar/{id}(id=${equipo.idEquipo})}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
         </tbody>
     </table>
 
     <!-- Formulario para agregar un nuevo equipo -->
-    <h2 class="mt-5">Agregar Equipo</h2>
-    <form action="/equipos.html/agregar" method="post">
+    <h2>Agregar Equipo</h2>
+    <form th:action="@{/equipos/agregar}" method="post">
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
             <input type="text" id="nombre" name="nombre" class="form-control" required>
@@ -48,5 +123,6 @@
         <button type="submit" class="btn btn-success">Agregar Equipo</button>
     </form>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

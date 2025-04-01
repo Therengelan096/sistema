@@ -20,7 +20,7 @@ public class EquiposController {
     @GetMapping
     public String mostrarEquipos(Model model) {
         List<Equipo> equipos = equipoService.obtenerEquipos(); // Obtiene los equipos de la base de datos
-        model.addAttribute("equipos.html", equipos); // Pasa los equipos al modelo
+        model.addAttribute("equipos", equipos); // Pasa los equipos al modelo
         return "redirect:/equipos"; // Renderiza equipos.html
     }
 
@@ -42,6 +42,6 @@ public class EquiposController {
     @PostMapping("/eliminar/{id}")
     public String eliminarEquipo(@PathVariable int id) {
         equipoService.eliminarEquipo(id); // Elimina el equipo por ID
-        return "redirect:/equipos.html"; // Recarga la página de equipos
+        return "redirect:/equipos"; // Recarga la página de equipos
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistema de Control</title>
+    <title>Laboratorios - Sistema de Control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -12,6 +12,8 @@
             min-height: 100vh;
             margin: 0;
             padding: 0;
+            background-color: #121212; /* Fondo negro */
+            color: white; /* Texto blanco */
         }
 
         .content {
@@ -22,32 +24,81 @@
             align-items: center;
         }
 
+        .menu-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 50px;
+            color: #ff69b4; /* Rosado intenso */
+            text-shadow: 0 4px 8px rgba(255, 105, 180, 0.6); /* Sombra rosada */
+        }
+
         .btn-custom {
             margin: 10px;
             padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease-in-out;
+            font-size: 1.4rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.5); /* Sombra rosada */
+            background-color: #ff69b4; /* Botones rosados */
+            color: white; /* Texto blanco */
+            border: none;
+            transition: transform 0.4s ease-in-out, box-shadow 0.3s ease-in-out;
         }
 
         .btn-custom:hover {
-            transform: translateY(-3px);
+            transform: scale(1.1); /* Animación de aumento */
+            box-shadow: 0 8px 16px rgba(255, 105, 180, 0.7); /* Sombra más intensa */
+        }
+
+        .btn-logout {
+            background-color: #ff3333; /* Color rojo para cerrar sesión */
+            border: none;
+            box-shadow: 0 4px 8px rgba(255, 51, 51, 0.5); /* Sombra roja */
+            transition: transform 0.4s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .btn-logout:hover {
+            background-color: #cc0000; /* Más oscuro al pasar el mouse */
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(255, 51, 51, 0.7); /* Sombra más intensa */
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #222222; /* Fondo oscuro para el footer */
+            color: #ff69b4; /* Texto rosado en el footer */
+            font-size: 1rem;
+        }
+
+        footer a {
+            color: #ff69b4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-
 <div class="content">
-    <h1 class="mb-5">Sistema de Control</h1>
+    <h1 class="menu-title">Sistema de Control</h1>
     <div class="d-flex flex-wrap justify-content-center">
-        <a href="/equipos" class="btn btn-primary btn-custom">Equipos</a>
-        <a href="/prestamos" class="btn btn-success btn-custom">Prestamos</a>
-        <a href="/asignaciones" class="btn btn-warning btn-custom">Asignaciones</a>
-        <a href="/sanciones" class="btn btn-danger btn-custom">Sanciones</a>
+        <a href="/laboratorios.html" class="btn btn-custom">Laboratorios</a>
+        <a href="/usuarios.html" class="btn btn-custom">Usuarios</a>
+        <a href="/mantenimiento.html" class="btn btn-custom">Mantenimiento</a>
+        <a href="/reportes.html" class="btn btn-custom">Reportes</a>
+        <a href="/equipos.html" class="btn btn-custom">Equipos</a>
+        <a href="/prestamos.html" class="btn btn-custom">Préstamos</a>
+        <a href="/sanciones.html" class="btn btn-custom">Sanciones</a>
+        <a href="/administradores.html" class="btn btn-custom">Administradores</a>
+        <a href="/logout" class="btn btn-logout btn-custom">Cerrar Sesión</a>
     </div>
 </div>
-
+<footer>
+    <p>&copy; 2025 Sistema de Control. <a href="/contact.html">Contáctanos</a></p>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
