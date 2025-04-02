@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Equipos</title>
+  <title>Sanciones</title>
   <style>
     body {
         font-family: Arial, sans-serif;
@@ -44,39 +44,37 @@
   </style>
 </head>
 <body>
-<h1>Equipos</h1>
+<h1>Sanciones</h1>
 <table>
   <thead>
   <tr>
     <th>ID</th>
-    <th>Nombre</th>
-    <th>Categoría</th>
-    <th>Laboratorio</th>
+    <th>Usuario</th>
+    <th>Motivo</th>
+    <th>Fecha</th>
     <th>Estado</th>
   </tr>
   </thead>
-  <tbody id="equipos-body">
-  <!-- Los datos se llenarán dinámicamente -->
-  </tbody>
+  <tbody id="sanciones-body"></tbody>
 </table>
 
 <script>
-  fetch('http://localhost:8083/equipos')
+  fetch('http://localhost:8083/sanciones') // Endpoint de sanciones
       .then(response => response.json())
       .then(data => {
-          const tableBody = document.getElementById('equipos-body');
-          data.forEach(equipo => {
+          const tableBody = document.getElementById('sanciones-body');
+          data.forEach(sancion => {
               const row = `<tr>
-                  <td>${equipo.idEquipo}</td>
-                  <td>${equipo.nombre}</td>
-                  <td>${equipo.categoria.nombreCategoria}</td>
-                  <td>${equipo.laboratorio.nombre}</td>
-                  <td>${equipo.estado}</td>
+                  <td>${sancion.idSancion}</td>
+                  <td>${sancion.usuario.nombre}</td>
+                  <td>${sancion.motivoSancion}</td>
+                  <td>${sancion.fechaSancion}</td>
+                  <td>${sancion.estado}</td>
               </tr>`;
               tableBody.innerHTML += row;
           });
       })
-      .catch(error => console.error('Error al cargar equipos:', error));
+      .catch(error => console.error('Error al cargar sanciones:', error));
 </script>
 </body>
 </html>

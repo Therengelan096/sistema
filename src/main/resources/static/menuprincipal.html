@@ -16,58 +16,76 @@
             color: white; /* Texto blanco */
         }
 
+        .logout-container {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        .btn-logout {
+            background-color: #121212; /* Botón negro */
+            border: 2px solid #ff69b4; /* Borde rosado */
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 0 6px rgba(255, 105, 180, 0.5); /* Brillo inicial */
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-logout:hover {
+            background-color: #ff3333; /* Fondo rojo al pasar el mouse */
+            box-shadow: 0 0 12px rgba(255, 105, 180, 0.9); /* Brillo intenso */
+            transform: scale(1.1); /* Aumento */
+        }
+
         .content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding-top: 60px; /* Separación para el botón de logout */
         }
 
         .menu-title {
-            font-size: 3rem;
+            font-size: 2.8rem; /* Ligeramente reducido */
             font-weight: bold;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             color: #ff69b4; /* Rosado intenso */
             text-shadow: 0 4px 8px rgba(255, 105, 180, 0.6); /* Sombra rosada */
         }
 
         .btn-custom {
-            margin: 10px;
-            padding: 15px 30px;
-            font-size: 1.4rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.5); /* Sombra rosada */
-            background-color: #ff69b4; /* Botones rosados */
+            margin: 8px; /* Margen reducido */
+            padding: 12px 24px; /* Reducción en tamaño del botón */
+            font-size: 1.2rem; /* Tamaño de fuente más pequeño */
+            border-radius: 8px; /* Esquinas más suaves */
+            background-color: #121212; /* Botón negro */
+            border: 2px solid #ff69b4; /* Borde rosado */
             color: white; /* Texto blanco */
-            border: none;
-            transition: transform 0.4s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.3); /* Sombra inicial */
+            transition: all 0.3s ease-in-out;
         }
 
         .btn-custom:hover {
-            transform: scale(1.1); /* Animación de aumento */
-            box-shadow: 0 8px 16px rgba(255, 105, 180, 0.7); /* Sombra más intensa */
-        }
-
-        .btn-logout {
-            background-color: #ff3333; /* Color rojo para cerrar sesión */
-            border: none;
-            box-shadow: 0 4px 8px rgba(255, 51, 51, 0.5); /* Sombra roja */
-            transition: transform 0.4s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-
-        .btn-logout:hover {
-            background-color: #cc0000; /* Más oscuro al pasar el mouse */
-            transform: scale(1.1);
-            box-shadow: 0 8px 16px rgba(255, 51, 51, 0.7); /* Sombra más intensa */
+            transform: scale(1.1); /* Aumento */
+            box-shadow: 0 0 14px rgba(255, 105, 180, 0.9); /* Brillo intenso */
+            background-color: #1e1e1e; /* Cambio a un negro más claro al pasar el mouse */
         }
 
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background-color: #222222; /* Fondo oscuro para el footer */
             color: #ff69b4; /* Texto rosado en el footer */
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
 
         footer a {
@@ -82,6 +100,17 @@
     </style>
 </head>
 <body>
+<!-- Botón de Cerrar Sesión arriba -->
+<div class="logout-container">
+    <a href="/logout" class="btn-logout">
+        <!-- Ícono de apagado -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-power" viewBox="0 0 16 16">
+            <path d="M7.5 1v7h1V1h-1z"/>
+            <path d="M4.36 4.46a5 5 0 1 1 7.28 0l-.78.63a4 4 0 1 0-5.72 0l-.78-.63z"/>
+        </svg>
+    </a>
+</div>
+
 <div class="content">
     <h1 class="menu-title">Sistema de Control</h1>
     <div class="d-flex flex-wrap justify-content-center">
@@ -93,7 +122,7 @@
         <a href="/prestamos.html" class="btn btn-custom">Préstamos</a>
         <a href="/sanciones.html" class="btn btn-custom">Sanciones</a>
         <a href="/administradores.html" class="btn btn-custom">Administradores</a>
-        <a href="/logout" class="btn btn-logout btn-custom">Cerrar Sesión</a>
+        <a href="/categorias_equipos.html" class="btn btn-custom">Categoría de Equipos</a>
     </div>
 </div>
 <footer>

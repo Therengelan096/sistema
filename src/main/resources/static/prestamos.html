@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prestamos</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
+    h1 { text-align: center; color: #007bff; }
+    table { width: 100%; border-collapse: collapse; margin: 20px auto; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #007bff; color: white; }
+  </style>
+</head>
+<body>
+<h1>Prestamos</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Usuario</th>
+    <th>Equipo</th>
+    <th>Administrador</th>
+    <th>Fecha Prestamo</th>
+    <th>Hora Prestamo</th>
+    <th>Estado</th>
+    <th>Fecha Devolución Estimada</th>
+  </tr>
+  </thead>
+  <tbody id="prestamos-body"></tbody>
+</table>
+<script>
+  fetch('http://localhost:8083/prestamos')
+      .then(response => response.json())
+      .then(data => {
+          const tableBody = document.getElementById('prestamos-body');
+          data.forEach(item => {
+              tableBody.innerHTML += `
+                  <tr>
+                      <td>${item.idPrestamo}</td>
+                      <td>${item.usuario.nombre}</td>
+                      <td>${item.equipo.nombre}</td>
+                      <td>${item.administrador.usuario}</td>
+                      <td>${item.fechaPrestamo}</td>
+                      <td>${item.horaPrestamo}</td>
+                      <td>${item.estado}</td>
+                      <td>${item.fechaDevolucionEstimada}</td>
+                  </tr>
+              `;
+          });
+      })
+      .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>

@@ -9,11 +9,17 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUsuario;
 
+    @Column(nullable = false, unique = true)
+    private int ru;
+
     @Column(nullable = false)
     private String nombre;
 
     @Column(nullable = false)
     private String apellido;
+
+    @Column(nullable = false)
+    private int ci;
 
     @ManyToOne
     @JoinColumn(name = "id_tipo_usuario", nullable = false)
@@ -23,18 +29,26 @@ public class Usuario {
     private String carrera;
 
     @Column
-    private String contacto;
+    private String telefono;
 
     @Column(nullable = false, unique = true)
     private String correo;
 
-    // Getters y setters
+    // Getters y Setters
     public int getIdUsuario() {
         return idUsuario;
     }
 
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public int getRu() {
+        return ru;
+    }
+
+    public void setRu(int ru) {
+        this.ru = ru;
     }
 
     public String getNombre() {
@@ -53,6 +67,14 @@ public class Usuario {
         this.apellido = apellido;
     }
 
+    public int getCi() {
+        return ci;
+    }
+
+    public void setCi(int ci) {
+        this.ci = ci;
+    }
+
     public TipoUsuario getTipoUsuario() {
         return tipoUsuario;
     }
@@ -69,12 +91,12 @@ public class Usuario {
         this.carrera = carrera;
     }
 
-    public String getContacto() {
-        return contacto;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setContacto(String contacto) {
-        this.contacto = contacto;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
     public String getCorreo() {

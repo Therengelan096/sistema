@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administradores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #007bff;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Administradores</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>ID Usuario</th>
+    </tr>
+    </thead>
+    <tbody id="administradores-body">
+    <!-- Los datos se llenarán dinámicamente -->
+    </tbody>
+</table>
+
+<script>
+    fetch('http://localhost:8083/administradores')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('administradores-body');
+            data.forEach(admin => {
+                const row = `<tr>
+                    <td>${admin.idAdministrador}</td>
+                    <td>${admin.usuario}</td>
+                    <td>${admin.usuarioRef.idUsuario}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        })
+        .catch(error => console.error('Error al cargar administradores:', error));
+</script>
+</body>
+</html>

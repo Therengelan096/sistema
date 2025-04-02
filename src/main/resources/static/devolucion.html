@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devoluciones</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
+        h1 { text-align: center; color: #007bff; }
+        table { width: 100%; border-collapse: collapse; margin: 20px auto; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+<h1>Devoluciones</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ID Prestamo</th>
+        <th>Fecha Devolución</th>
+        <th>Hora Devolución</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+    </tr>
+    </thead>
+    <tbody id="devolucion-body"></tbody>
+</table>
+<script>
+    fetch('http://localhost:8083/devolucion')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('devolucion-body');
+            data.forEach(item => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${item.idDevolucion}</td>
+                        <td>${item.prestamo.idPrestamo}</td>
+                        <td>${item.fechaDevolucion}</td>
+                        <td>${item.horaDevolucion}</td>
+                        <td>${item.estadoEquipoAlDevolver}</td>
+                        <td>${item.observaciones}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>

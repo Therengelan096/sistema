@@ -12,6 +12,14 @@ public class Equipo {
     @Column(nullable = false)
     private String nombre;
 
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private CategoriaEquipo categoria;
+
+    @ManyToOne
+    @JoinColumn(name = "id_laboratorio", nullable = false)
+    private Laboratorio laboratorio;
+
     @Column
     private String descripcion;
 
@@ -33,6 +41,22 @@ public class Equipo {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public CategoriaEquipo getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(CategoriaEquipo categoria) {
+        this.categoria = categoria;
+    }
+
+    public Laboratorio getLaboratorio() {
+        return laboratorio;
+    }
+
+    public void setLaboratorio(Laboratorio laboratorio) {
+        this.laboratorio = laboratorio;
     }
 
     public String getDescripcion() {

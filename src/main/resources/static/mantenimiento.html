@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mantenimiento</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; }
+    h1 { text-align: center; color: #007bff; }
+    table { width: 100%; border-collapse: collapse; margin: 20px auto; }
+    th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #007bff; color: white; }
+  </style>
+</head>
+<body>
+<h1>Mantenimiento</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>ID Equipo</th>
+    <th>Fecha</th>
+    <th>Estado Inicial</th>
+    <th>Estado Final</th>
+    <th>Problema</th>
+    <th>Solución</th>
+  </tr>
+  </thead>
+  <tbody id="mantenimiento-body"></tbody>
+</table>
+<script>
+  fetch('http://localhost:8083/mantenimiento')
+      .then(response => response.json())
+      .then(data => {
+          const tableBody = document.getElementById('mantenimiento-body');
+          data.forEach(item => {
+              tableBody.innerHTML += `
+                  <tr>
+                      <td>${item.idMantenimiento}</td>
+                      <td>${item.equipo.idEquipo}</td>
+                      <td>${item.fechaMantenimiento}</td>
+                      <td>${item.estadoInicial}</td>
+                      <td>${item.estadoFinal}</td>
+                      <td>${item.descripcionProblema}</td>
+                      <td>${item.solucionAplicada}</td>
+                  </tr>
+              `;
+          });
+      })
+      .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Equipos</title>
+  <title>Usuarios</title>
   <style>
     body {
         font-family: Arial, sans-serif;
@@ -44,39 +44,39 @@
   </style>
 </head>
 <body>
-<h1>Equipos</h1>
+<h1>Usuarios</h1>
 <table>
   <thead>
   <tr>
     <th>ID</th>
+    <th>RU</th>
     <th>Nombre</th>
-    <th>Categoría</th>
-    <th>Laboratorio</th>
-    <th>Estado</th>
+    <th>Apellido</th>
+    <th>Correo</th>
   </tr>
   </thead>
-  <tbody id="equipos-body">
+  <tbody id="usuarios-body">
   <!-- Los datos se llenarán dinámicamente -->
   </tbody>
 </table>
 
 <script>
-  fetch('http://localhost:8083/equipos')
+  fetch('http://localhost:8083/usuarios')
       .then(response => response.json())
       .then(data => {
-          const tableBody = document.getElementById('equipos-body');
-          data.forEach(equipo => {
+          const tableBody = document.getElementById('usuarios-body');
+          data.forEach(usuario => {
               const row = `<tr>
-                  <td>${equipo.idEquipo}</td>
-                  <td>${equipo.nombre}</td>
-                  <td>${equipo.categoria.nombreCategoria}</td>
-                  <td>${equipo.laboratorio.nombre}</td>
-                  <td>${equipo.estado}</td>
+                  <td>${usuario.idUsuario}</td>
+                  <td>${usuario.ru}</td>
+                  <td>${usuario.nombre}</td>
+                  <td>${usuario.apellido}</td>
+                  <td>${usuario.correo}</td>
               </tr>`;
               tableBody.innerHTML += row;
           });
       })
-      .catch(error => console.error('Error al cargar equipos:', error));
+      .catch(error => console.error('Error al cargar usuarios:', error));
 </script>
 </body>
 </html>
