@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laboratorios</title>
+  <title>Categorías de Equipos</title>
   <style>
     body {
         font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
+        background-color: #f4f4f4;
         color: #333;
+        margin: 0;
+        padding: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin: 0;
     }
 
     h1 {
         margin-top: 20px;
-        color: #007bff;
+        color: #0056b3;
     }
 
     table {
@@ -29,51 +30,127 @@
 
     th, td {
         border: 1px solid #ddd;
-        padding: 8px;
         text-align: left;
+        padding: 8px;
     }
 
     th {
-        background-color: #007bff;
+        background-color: #0056b3;
         color: white;
     }
 
     tr:nth-child(even) {
         background-color: #f2f2f2;
     }
+
+    form {
+        width: 80%;
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 5px;
+    }
+
+    input {
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+    }
+
+    button {
+        padding: 10px 15px;
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
-<h1>Laboratorios</h1>
+<h1>Categorías de Equipos</h1>
+
+<form id="categoria-form">
+  <input type="hidden" id="categoria-id">
+  <label for="nombreCategoria">Nombre de Categoría:</label>
+  <input type="text" id="nombreCategoria" name="nombreCategoria" required>
+  <button type="submit" id="submit-button">Agregar Categoría</button>
+</form>
+
 <table>
   <thead>
   <tr>
     <th>ID</th>
-    <th>Nombre</th>
-    <th>Ubicación</th>
+    <th>Nombre de Categoría</th>
+    <th>Acciones</th>
   </tr>
   </thead>
-  <tbody id="laboratorios-body">
-  <!-- Los datos se llenarán dinámicamente -->
+  <tbody id="categorias-body">
   </tbody>
 </table>
 
 <script>
-  // Llamada al endpoint para obtener los laboratorios
-  fetch('http://localhost:8083/laboratorios')
+  function cargarCategorias() {
+    fetch('http://localhost:8083/categorias')
       .then(response => response.json())
       .then(data => {
-          const tableBody = document.getElementById('laboratorios-body');
-          data.forEach(laboratorio => {
-              const row = `<tr>
-                  <td>${laboratorio.idLaboratorio}</td>
-                  <td>${laboratorio.nombre}</td>
-                  <td>${laboratorio.ubicacion}</td>
-              </tr>`;
-              tableBody.innerHTML += row;
-          });
+        const tableBody = document.getElementById('categorias-body');
+        tableBody.innerHTML = '';
+        data.forEach(categoria => {
+          const row = `<tr>
+            <td>${categoria.idCategoria}</td>
+            <td>${categoria.nombreCategoria}</td>
+            <td>
+              <button onclick="editarCategoria(${categoria.idCategoria}, '${categoria.nombreCategoria}')">Editar</button>
+            </td>
+          </tr>`;
+          tableBody.innerHTML += row;
+        });
       })
-      .catch(error => console.error('Error al cargar laboratorios:', error));
+      .catch(error => console.error('Error al cargar categorías:', error));
+  }
+
+  cargarCategorias();
+
+  document.getElementById('categoria-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const id = document.getElementById('categoria-id').value;
+    const nombreCategoria = document.getElementById('nombreCategoria').value;
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `http://localhost:8083/categorias/${id}` : 'http://localhost:8083/categorias';
+
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ nombreCategoria: nombreCategoria })
+    })
+    .then(response => {
+      if (response.ok) {
+        cargarCategorias();
+        document.getElementById('categoria-id').value = '';
+        document.getElementById('nombreCategoria').value = '';
+        document.getElementById('submit-button').textContent = 'Agregar Categoría';
+      } else {
+        console.error('Error:', response);
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+  function editarCategoria(id, nombreCategoria) {
+    document.getElementById('categoria-id').value = id;
+    document.getElementById('nombreCategoria').value = nombreCategoria;
+    document.getElementById('submit-button').textContent = 'Actualizar Categoría';
+  }
 </script>
 </body>
 </html>

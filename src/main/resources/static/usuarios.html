@@ -7,24 +7,60 @@
   <style>
     body {
         font-family: Arial, sans-serif;
-        background-color: #f9f9f9;
-        color: #333;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        background-color: #f4f4f4;
         margin: 0;
+        padding: 20px;
     }
 
     h1 {
-        margin-top: 20px;
-        color: #007bff;
+        text-align: center;
+        color: #333;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    select {
+        width: calc(100% - 12px);
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
     }
 
     table {
+        width: 100%;
         border-collapse: collapse;
-        width: 80%;
-        margin: 20px 0;
         background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     th, td {
@@ -34,17 +70,51 @@
     }
 
     th {
-        background-color: #007bff;
-        color: white;
+        background-color: #f2f2f2;
     }
 
     tr:nth-child(even) {
-        background-color: #f2f2f2;
+        background-color: #f9f9f9;
     }
   </style>
 </head>
 <body>
 <h1>Usuarios</h1>
+
+<form id="usuario-form">
+  <input type="hidden" id="usuario-id">
+
+  <label for="ru">RU:</label>
+  <input type="number" id="ru" name="ru" required>
+
+  <label for="nombre">Nombre:</label>
+  <input type="text" id="nombre" name="nombre" required>
+
+  <label for="apellido">Apellido:</label>
+  <input type="text" id="apellido" name="apellido" required>
+
+  <label for="ci">CI:</label>
+  <input type="number" id="ci" name="ci" required>
+
+  <label for="tipoUsuario">Tipo de Usuario:</label>
+  <select id="tipoUsuario" name="tipoUsuario" required>
+    <option value="1">Administrador</option>
+    <option value="2">Docente</option>
+    <option value="3">Estudiante</option>
+  </select>
+
+  <label for="carrera">Carrera:</label>
+  <input type="text" id="carrera" name="carrera">
+
+  <label for="telefono">Teléfono:</label>
+  <input type="text" id="telefono" name="telefono">
+
+  <label for="correo">Correo:</label>
+  <input type="email" id="correo" name="correo" required>
+
+  <button type="submit" id="submit-button">Agregar Usuario</button>
+</form>
+
 <table>
   <thead>
   <tr>
@@ -52,31 +122,111 @@
     <th>RU</th>
     <th>Nombre</th>
     <th>Apellido</th>
+    <th>CI</th>
+    <th>Tipo Usuario</th>
+    <th>Carrera</th>
+    <th>Teléfono</th>
     <th>Correo</th>
+    <th>Acciones</th>
   </tr>
   </thead>
   <tbody id="usuarios-body">
-  <!-- Los datos se llenarán dinámicamente -->
   </tbody>
 </table>
 
 <script>
-  fetch('http://localhost:8083/usuarios')
-      .then(response => response.json())
-      .then(data => {
-          const tableBody = document.getElementById('usuarios-body');
-          data.forEach(usuario => {
-              const row = `<tr>
-                  <td>${usuario.idUsuario}</td>
-                  <td>${usuario.ru}</td>
-                  <td>${usuario.nombre}</td>
-                  <td>${usuario.apellido}</td>
-                  <td>${usuario.correo}</td>
-              </tr>`;
-              tableBody.innerHTML += row;
-          });
+  function cargarUsuarios() {
+      fetch('http://localhost:8083/usuarios')
+          .then(response => response.json())
+          .then(data => {
+              const tableBody = document.getElementById('usuarios-body');
+              tableBody.innerHTML = '';
+              data.forEach(usuario => {
+                  const row = `<tr>
+                      <td>${usuario.idUsuario}</td>
+                      <td>${usuario.ru}</td>
+                      <td>${usuario.nombre}</td>
+                      <td>${usuario.apellido}</td>
+                      <td>${usuario.ci}</td>
+                      <td>${usuario.tipoUsuario.idTipoUsuario}</td>
+                      <td>${usuario.carrera || ''}</td>
+                      <td>${usuario.telefono || ''}</td>
+                      <td>${usuario.correo}</td>
+                      <td>
+                          <button onclick="editarUsuario(${usuario.idUsuario}, ${usuario.ru}, '${usuario.nombre}', '${usuario.apellido}', ${usuario.ci}, ${usuario.tipoUsuario.idTipoUsuario}, '${usuario.carrera || ''}', '${usuario.telefono || ''}', '${usuario.correo}')">Editar</button>
+                      </td>
+                  </tr>`;
+                  tableBody.innerHTML += row;
+              });
+          })
+          .catch(error => console.error('Error al cargar usuarios:', error));
+  }
+
+  cargarUsuarios();
+
+  document.getElementById('usuario-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const id = document.getElementById('usuario-id').value;
+      const ru = document.getElementById('ru').value;
+      const nombre = document.getElementById('nombre').value;
+      const apellido = document.getElementById('apellido').value;
+      const ci = document.getElementById('ci').value;
+      const tipoUsuario = document.getElementById('tipoUsuario').value;
+      const carrera = document.getElementById('carrera').value;
+      const telefono = document.getElementById('telefono').value;
+      const correo = document.getElementById('correo').value;
+
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `http://localhost:8083/usuarios/${id}` : 'http://localhost:8083/usuarios';
+
+      fetch(url, {
+          method: method,
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              ru: ru,
+              nombre: nombre,
+              apellido: apellido,
+              ci: ci,
+              tipoUsuario: { idTipoUsuario: tipoUsuario },
+              carrera: carrera,
+              telefono: telefono,
+              correo: correo,
+          }),
       })
-      .catch(error => console.error('Error al cargar usuarios:', error));
+          .then(response => {
+              if (response.ok) {
+                  cargarUsuarios();
+                  document.getElementById('usuario-id').value = '';
+                  document.getElementById('ru').value = '';
+                  document.getElementById('nombre').value = '';
+                  document.getElementById('apellido').value = '';
+                  document.getElementById('ci').value = '';
+                  document.getElementById('tipoUsuario').value = '1';
+                  document.getElementById('carrera').value = '';
+                  document.getElementById('telefono').value = '';
+                  document.getElementById('correo').value = '';
+                  document.getElementById('submit-button').textContent = 'Agregar Usuario';
+              } else {
+                  console.error('Error:', response);
+              }
+          })
+          .catch(error => console.error('Error:', error));
+  });
+
+  function editarUsuario(id, ru, nombre, apellido, ci, tipoUsuario, carrera, telefono, correo) {
+      document.getElementById('usuario-id').value = id;
+      document.getElementById('ru').value = ru;
+      document.getElementById('nombre').value = nombre;
+      document.getElementById('apellido').value = apellido;
+      document.getElementById('ci').value = ci;
+      document.getElementById('tipoUsuario').value = tipoUsuario;
+      document.getElementById('carrera').value = carrera;
+      document.getElementById('telefono').value = telefono;
+      document.getElementById('correo').value = correo;
+      document.getElementById('submit-button').textContent = 'Actualizar Usuario';
+  }
 </script>
 </body>
 </html>
