@@ -1,0 +1,85 @@
+-- Aca esta el script de la base de datos laboratorios
+CREATE DATABASE Laboratorios;
+USE Laboratorios;
+CREATE TABLE Tipos_Usuarios (
+    id_tipo_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    tipo VARCHAR(100) NOT NULL
+);
+CREATE TABLE Usuarios (
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+    ru INT NOT NULL UNIQUE,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    ci INT NOT NULL,
+    id_tipo_usuario INT NOT NULL,
+    carrera VARCHAR(100),
+    telefono VARCHAR(20),
+    correo VARCHAR(100) UNIQUE,
+    FOREIGN KEY (id_tipo_usuario) REFERENCES Tipos_Usuarios(id_tipo_usuario)
+);
+CREATE TABLE LaboratoriosE (
+    id_laboratorio INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    ubicacion VARCHAR(100) NOT NULL
+);
+CREATE TABLE Categorias_Equipos (
+    id_categoria INT PRIMARY KEY AUTO_INCREMENT,
+    nombre_categoria VARCHAR(150) NOT NULL
+);
+CREATE TABLE Equipos (
+    id_equipo INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(150) NOT NULL,
+    id_categoria INT NOT NULL,
+    id_laboratorio INT NOT NULL,
+    descripcion TEXT,
+    estado ENUM('disponible', 'prestado', 'en mantenimiento') DEFAULT 'disponible',
+    FOREIGN KEY (id_categoria) REFERENCES Categorias_Equipos(id_categoria),
+    FOREIGN KEY (id_laboratorio) REFERENCES LaboratoriosE(id_laboratorio)
+);
+CREATE TABLE Administradores (
+    id_administrador INT PRIMARY KEY AUTO_INCREMENT,
+    usuario VARCHAR(100) NOT NULL UNIQUE,
+    contraseña VARCHAR(50) NOT NULL,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+);
+CREATE TABLE Prestamos (
+    id_prestamo INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_equipo INT NOT NULL,
+    fecha_prestamo DATE NOT NULL,
+    hora_prestamo TIME NOT NULL,
+    id_administrador INT NOT NULL,
+    estado ENUM('pendiente', 'devuelto', 'retrasado') DEFAULT 'pendiente',
+    fecha_devolucion_estimada DATE NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
+    FOREIGN KEY (id_equipo) REFERENCES Equipos(id_equipo),
+    FOREIGN KEY (id_administrador) REFERENCES Administradores(id_administrador)
+);
+CREATE TABLE Devolucion (
+    id_devolucion INT PRIMARY KEY AUTO_INCREMENT,
+    id_prestamo INT NOT NULL,
+    fecha_devolucion DATE NOT NULL,
+    hora_devolucion TIME NOT NULL,
+    estado_equipo_al_devolver ENUM('bueno','dañado') NOT NULL,
+    observaciones TEXT,
+    FOREIGN KEY (id_prestamo) REFERENCES Prestamos(id_prestamo)
+);
+CREATE TABLE Sanciones (
+    id_sancion INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    motivo_sancion TEXT NOT NULL,
+    fecha_sancion DATE NOT NULL,
+    estado ENUM('activa', 'inactiva') DEFAULT 'activa',
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+);
+CREATE TABLE Mantenimiento (
+    id_mantenimiento INT PRIMARY KEY AUTO_INCREMENT,
+    id_equipo INT NOT NULL,
+    fecha_mantenimiento DATE NOT NULL,
+    estado_inicial ENUM('bueno', 'regular', 'dañado') NOT NULL,
+    estado_final ENUM('bueno', 'regular', 'dañado') NOT NULL,
+    descripcion_problema TEXT,
+    solucion_aplicada TEXT,
+    FOREIGN KEY (id_equipo) REFERENCES Equipos(id_equipo)
+);
