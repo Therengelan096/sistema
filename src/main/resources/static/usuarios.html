@@ -1,209 +1,313 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100 text-bg-dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Usuarios</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
     body {
-        font-family: Arial, sans-serif;
-        background-color: #121212;
-        color: white;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: white;
     }
 
-    h1 {
-        color: #ff69b4;
-        text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
-        margin-bottom: 20px;
+    .sidebar {
+      width: 280px;
+      background-color: #191970;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      transition: width 0.3s ease;
+    }
+
+    .sidebar.collapsed {
+      width: 60px;
+    }
+
+    .sidebar a {
+      padding: 12px 15px;
+      color: white;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      border-left: 5px solid transparent;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar a:hover, .sidebar a.active {
+      background-color: #34495E;
+      border-left-color: #ff69b4;
+    }
+
+    .sidebar.collapsed a span {
+      display: none;
+    }
+
+    .sidebar span {
+      margin-left: 10px;
+    }
+
+    .sidebar hr {
+      border-color: #34495E;
+      width: 90%;
+      margin: 8px auto;
+    }
+
+    .sidebar .logout-btn {
+      margin-top: auto;
+      border-top: 1px solid #34495E;
+    }
+
+    .toggle-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: #283747;
+      position: relative;
     }
 
     .form-container {
-        width: 80%;
-        max-width: 800px;
-        margin-bottom: 20px;
+      width: 80%;
+      max-width: 800px;
     }
 
     .form-group {
-        margin-bottom: 15px;
-    }
-
-    label {
-        color: white;
-        display: block;
-        margin-bottom: 5px;
+      margin-bottom: 15px;
     }
 
     input[type="text"],
     input[type="number"],
     input[type="email"],
     select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #444;
-        background-color: #222;
-        color: white;
-        border-radius: 5px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #444;
+      background-color: #222;
+      color: white;
+      border-radius: 5px;
     }
 
-    .btn-primary {
-        background-color: #ff69b4;
-        border-color: #ff69b4;
-        box-shadow: 0 4px 8px rgba(255, 105, 180, 0.5);
-    }
-
-    .btn-primary:hover {
-        background-color: #e2499d;
-        border-color: #e2499d;
-        box-shadow: 0 6px 12px rgba(255, 105, 180, 0.7);
-    }
-
-    .btn-info {
-        background-color: #ff69b4;
-        border-color: #ff69b4;
-        box-shadow: 0 4px 8px rgba(255, 105, 180, 0.5);
-    }
-
-    .btn-info:hover {
-        background-color: #e2499d;
-        border-color: #e2499d;
-        box-shadow: 0 6px 12px rgba(255, 105, 180, 0.7);
+    .table-container {
+      width: 80%;
+      max-width: 800px;
+      margin-top: 30px;
     }
 
     table {
-        width: 80%;
-        max-width: 800px;
-        background-color: #222;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+      width: 100%;
+      background-color: #222;
+      border-radius: 10px;
     }
 
     th, td {
-        border: 1px solid #333;
-        padding: 12px;
-        text-align: left;
+      border: 1px solid #333;
+      padding: 12px;
+      text-align: left;
     }
 
     th {
-        background-color: #ff69b4;
+      background-color: #ff69b4;
     }
 
-    tr:nth-child(even) {
-        background-color: #333;
+    .user-info {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      text-align: right;
+    }
+
+    .user-info .username {
+      font-weight: bold;
+    }
+
+    .user-info .status {
+      font-size: 0.9rem;
+      color: #00FF00;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      right: 20px;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+
+    .footer a {
+      color: #00BFFF;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-<h1>Usuarios</h1>
+<button class="toggle-btn" id="toggleSidebar">
+  <i class="bi bi-list"></i>
+</button>
 
-<div class="form-container">
-  <form id="usuario-form">
-    <input type="hidden" id="usuario-id">
-
-    <div class="form-group">
-      <label for="ru">RU:</label>
-      <input type="number" id="ru" name="ru" required>
-    </div>
-
-    <div class="form-group">
-      <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" name="nombre" required>
-    </div>
-
-    <div class="form-group">
-      <label for="apellido">Apellido:</label>
-      <input type="text" id="apellido" name="apellido" required>
-    </div>
-
-    <div class="form-group">
-      <label for="ci">CI:</label>
-      <input type="number" id="ci" name="ci" required>
-    </div>
-
-    <div class="form-group">
-      <label for="tipoUsuario">Tipo de Usuario:</label>
-      <select id="tipoUsuario" name="tipoUsuario" required>
-        <option value="1">Administrador</option>
-        <option value="2">Docente</option>
-        <option value="3">Estudiante</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="carrera">Carrera:</label>
-      <input type="text" id="carrera" name="carrera">
-    </div>
-
-    <div class="form-group">
-      <label for="telefono">Teléfono:</label>
-      <input type="text" id="telefono" name="telefono">
-    </div>
-
-    <div class="form-group">
-      <label for="correo">Correo:</label>
-      <input type="email" id="correo" name="correo" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary" id="submit-button">Agregar Usuario</button>
-  </form>
+<div class="user-info">
+  <div class="username">Usuario123</div>
+  <div class="status">🟢 En línea</div>
 </div>
 
-<div class="table-container">
-  <table>
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>RU</th>
-      <th>Nombre</th>
-      <th>Apellido</th>
-      <th>CI</th>
-      <th>Tipo Usuario</th>
-      <th>Carrera</th>
-      <th>Teléfono</th>
-      <th>Correo</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody id="usuarios-body"></tbody>
-  </table>
+<div class="sidebar" id="sidebar">
+  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a><hr>
+  <a href="/usuarios.html" class="active"><i class="bi bi-people"></i><span>Usuarios</span></a><hr>
+  <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a><hr>
+  <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a><hr>
+  <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a><hr>
+  <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a><hr>
+  <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a><hr>
+  <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a><hr>
+  <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+  <a href="/logout" class="logout-btn">
+    <i class="bi bi-power"></i><span>Cerrar Sesión</span>
+  </a>
+</div>
+
+<div class="content">
+  <h1>Usuarios</h1>
+
+  <div class="form-container">
+    <form id="usuario-form">
+      <input type="hidden" id="usuario-id">
+
+      <div class="form-group">
+        <label for="ru">RU:</label>
+        <input type="number" id="ru" name="ru" required>
+      </div>
+
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido" required>
+      </div>
+
+      <div class="form-group">
+        <label for="ci">CI:</label>
+        <input type="number" id="ci" name="ci" required>
+      </div>
+
+      <div class="form-group">
+        <label for="tipoUsuario">Tipo de Usuario:</label>
+        <select id="tipoUsuario" name="tipoUsuario" required>
+          <option value="1">Administrador</option>
+          <option value="2">Docente</option>
+          <option value="3">Estudiante</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="carrera">Carrera:</label>
+        <input type="text" id="carrera" name="carrera">
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono">
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo:</label>
+        <input type="email" id="correo" name="correo" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submit-button">Agregar Usuario</button>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>RU</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>CI</th>
+        <th>Tipo Usuario</th>
+        <th>Carrera</th>
+        <th>Teléfono</th>
+        <th>Correo</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="usuarios-body">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
 
 <script>
-  function cargarUsuarios() {
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    toggleBtn.addEventListener('click', function () {
+      sidebar.classList.toggle('collapsed');
+    });
+
+    function cargarUsuarios() {
       fetch('http://localhost:8083/usuarios')
-          .then(response => response.json())
-          .then(data => {
-              const tableBody = document.getElementById('usuarios-body');
-              tableBody.innerHTML = '';
-              data.forEach(usuario => {
-                  const row = `<tr>
-                      <td>${usuario.idUsuario}</td>
-                      <td>${usuario.ru}</td>
-                      <td>${usuario.nombre}</td>
-                      <td>${usuario.apellido}</td>
-                      <td>${usuario.ci}</td>
-                      <td>${usuario.tipoUsuario.idTipoUsuario}</td>
-                      <td>${usuario.carrera || ''}</td>
-                      <td>${usuario.telefono || ''}</td>
-                      <td>${usuario.correo}</td>
-                      <td>
-                          <button class="btn btn-info btn-sm" onclick="editarUsuario(${usuario.idUsuario}, ${usuario.ru}, '${usuario.nombre}', '${usuario.apellido}', ${usuario.ci}, ${usuario.tipoUsuario.idTipoUsuario}, '${usuario.carrera || ''}', '${usuario.telefono || ''}', '${usuario.correo}')">Editar</button>
-                      </td>
-                  </tr>`;
-                  tableBody.innerHTML += row;
-              });
-          })
-          .catch(error => console.error('Error al cargar usuarios:', error));
-  }
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('usuarios-body');
+          tableBody.innerHTML = '';
+          data.forEach(usuario => {
+            const row = `<tr>
+              <td>${usuario.idUsuario}</td>
+              <td>${usuario.ru}</td>
+              <td>${usuario.nombre}</td>
+              <td>${usuario.apellido}</td>
+              <td>${usuario.ci}</td>
+              <td>${usuario.tipoUsuario.idTipoUsuario}</td>
+              <td>${usuario.carrera || ''}</td>
+              <td>${usuario.telefono || ''}</td>
+              <td>${usuario.correo}</td>
+              <td>
+                <button class="btn btn-edit btn-sm btn-warning" onclick="editarUsuario(${usuario.idUsuario}, ${usuario.ru}, '${usuario.nombre}', '${usuario.apellido}', ${usuario.ci}, ${usuario.tipoUsuario.idTipoUsuario}, '${usuario.carrera || ''}', '${usuario.telefono || ''}', '${usuario.correo}')">Editar</button>
+              </td>
+            </tr>`;
+            tableBody.innerHTML += row;
+          });
+        })
+        .catch(error => console.error('Error al cargar usuarios:', error));
+    }
 
-  cargarUsuarios();
+    cargarUsuarios();
 
-  document.getElementById('usuario-form').addEventListener('submit', function (event) {
+    document.getElementById('usuario-form').addEventListener('submit', function (event) {
       event.preventDefault();
       const id = document.getElementById('usuario-id').value;
       const ru = document.getElementById('ru').value;
@@ -219,42 +323,42 @@
       const url = id ? `http://localhost:8083/usuarios/${id}` : 'http://localhost:8083/usuarios';
 
       fetch(url, {
-          method: method,
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-              ru: ru,
-              nombre: nombre,
-              apellido: apellido,
-              ci: ci,
-              tipoUsuario: { idTipoUsuario: tipoUsuario },
-              carrera: carrera,
-              telefono: telefono,
-              correo: correo,
-          }),
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ru: ru,
+          nombre: nombre,
+          apellido: apellido,
+          ci: ci,
+          tipoUsuario: { idTipoUsuario: tipoUsuario },
+          carrera: carrera,
+          telefono: telefono,
+          correo: correo,
+        }),
       })
-          .then(response => {
-              if (response.ok) {
-                  cargarUsuarios();
-                  document.getElementById('usuario-id').value = '';
-                  document.getElementById('ru').value = '';
-                  document.getElementById('nombre').value = '';
-                  document.getElementById('apellido').value = '';
-                  document.getElementById('ci').value = '';
-                  document.getElementById('tipoUsuario').value = '1';
-                  document.getElementById('carrera').value = '';
-                  document.getElementById('telefono').value = '';
-                  document.getElementById('correo').value = '';
-                  document.getElementById('submit-button').textContent = 'Agregar Usuario';
-              } else {
-                  console.error('Error:', response);
-              }
-          })
-          .catch(error => console.error('Error:', error));
-  });
+        .then(response => {
+          if (response.ok) {
+            cargarUsuarios();
+            document.getElementById('usuario-id').value = '';
+            document.getElementById('ru').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('apellido').value = '';
+            document.getElementById('ci').value = '';
+            document.getElementById('tipoUsuario').value = '1';
+            document.getElementById('carrera').value = '';
+            document.getElementById('telefono').value = '';
+            document.getElementById('correo').value = '';
+            document.getElementById('submit-button').textContent = 'Agregar Usuario';
+          } else {
+            console.error('Error:', response);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-  function editarUsuario(id, ru, nombre, apellido, ci, tipoUsuario, carrera, telefono, correo) {
+    window.editarUsuario = function (id, ru, nombre, apellido, ci, tipoUsuario, carrera, telefono, correo) {
       document.getElementById('usuario-id').value = id;
       document.getElementById('ru').value = ru;
       document.getElementById('nombre').value = nombre;
@@ -265,7 +369,8 @@
       document.getElementById('telefono').value = telefono;
       document.getElementById('correo').value = correo;
       document.getElementById('submit-button').textContent = 'Actualizar Usuario';
-  }
+    };
+  });
 </script>
 </body>
 </html>

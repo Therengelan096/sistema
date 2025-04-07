@@ -23,8 +23,9 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
-      position: sticky;
+      position: fixed; /* Cambiado a fixed para evitar el espacio */
       top: 0;
+      left: 0; /* Asegura que el sidebar comience desde la izquierda */
       transition: width 0.3s ease;
     }
 
@@ -84,6 +85,12 @@
       padding: 20px;
       background-color: #283747;
       position: relative;
+      margin-left: 280px; /* Ajusta el margen izquierdo para el sidebar expandido */
+      transition: margin-left 0.3s ease; /* Añade transición para el margen */
+    }
+
+    .content.sidebar-collapsed {
+      margin-left: 60px; /* Ajusta el margen izquierdo para el sidebar colapsado */
     }
 
     .form-container {
@@ -161,19 +168,17 @@
   </style>
 </head>
 <body>
-<!-- Botón de menú -->
 <button class="toggle-btn" id="toggleSidebar">
   <i class="bi bi-list"></i>
 </button>
 
-<!-- Usuario logueado -->
 <div class="user-info">
   <div class="username">Usuario123</div>
   <div class="status">🟢 En línea</div>
 </div>
 
-<!-- Menú lateral -->
 <div class="sidebar" id="sidebar">
+  <hr class="mt-0">
   <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a><hr>
   <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a><hr>
   <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a><hr>
@@ -188,8 +193,7 @@
   </a>
 </div>
 
-<!-- Contenido -->
-<div class="content">
+<div class="content" id="content">
   <h1>Categoría de Equipos</h1>
 
   <div class="form-container">
@@ -197,14 +201,14 @@
       <input type="hidden" id="categoria-id">
       <div class="form-group">
         <label for="nombreCategoria">Nombre de Categoría:</label>
-        <input type="text" id="nombreCategoria" name="nombreCategoria" required>
+        <input type="text" id="nombreCategoria" name="nombreCategoria" class="form-control" required>
       </div>
       <button type="submit" class="btn btn-primary" id="submit-button">Agregar Categoría</button>
     </form>
   </div>
 
-  <div class="table-container">
-    <table>
+  <div class="table-container mt-4">
+    <table class="table table-bordered table-hover">
       <thead>
       <tr>
         <th>ID</th>
@@ -218,35 +222,44 @@
   </div>
 </div>
 
-<!-- Footer -->
 <div class="footer">
   © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content'); // Obtener el elemento content
 
     toggleBtn.addEventListener('click', function () {
       sidebar.classList.toggle('collapsed');
+      content.classList.toggle('sidebar-collapsed'); // Añadir/quitar clase al content
     });
+
+    // Inicializar el estado del content al cargar la página
+    if (sidebar.classList.contains('collapsed')) {
+      content.classList.add('sidebar-collapsed');
+    }
 
     function cargarCategorias() {
       fetch('http://localhost:8083/categorias')
         .then(response => response.json())
         .then(data => {
-          const tableBody = document.getElementById('categorias-body');
-          tableBody.innerHTML = '';
+          const categoriasBody = document.getElementById('categorias-body');
+          categoriasBody.innerHTML = '';
           data.forEach(categoria => {
-            const row = `<tr>
-              <td>${categoria.idCategoria}</td>
-              <td>${categoria.nombreCategoria}</td>
-              <td>
-                <button class="btn btn-edit btn-sm btn-warning" onclick="editarCategoria(${categoria.idCategoria}, '${categoria.nombreCategoria}')">Editar</button>
-              </td>
-            </tr>`;
-            tableBody.innerHTML += row;
+            const row = `
+              <tr>
+                <td>${categoria.idCategoria}</td>
+                <td>${categoria.nombreCategoria}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning" onclick="editarCategoria(${categoria.idCategoria}, '${categoria.nombreCategoria}')">Editar</button>
+                </td>
+              </tr>
+            `;
+            categoriasBody.innerHTML += row;
           });
         })
         .catch(error => console.error('Error al cargar categorías:', error));
@@ -254,38 +267,44 @@
 
     cargarCategorias();
 
-    document.getElementById('categoria-form').addEventListener('submit', function(event) {
+    const categoriaForm = document.getElementById('categoria-form');
+    const categoriaIdInput = document.getElementById('categoria-id');
+    const nombreCategoriaInput = document.getElementById('nombreCategoria');
+    const submitButton = document.getElementById('submit-button');
+
+    categoriaForm.addEventListener('submit', function(event) {
       event.preventDefault();
-      const id = document.getElementById('categoria-id').value;
-      const nombreCategoria = document.getElementById('nombreCategoria').value;
+      const id = categoriaIdInput.value;
+      const nombreCategoria = nombreCategoriaInput.value;
 
       const method = id ? 'PUT' : 'POST';
-      const url = id ? `http://localhost:8083/categorias/${id}` : 'http://localhost:8083/categorias`;
+      const url = id ? `http://localhost:8083/categorias/${id}` : 'http://localhost:8083/categorias';
+      const body = JSON.stringify({ nombreCategoria: nombreCategoria });
 
       fetch(url, {
         method: method,
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ nombreCategoria })
+        body: body
       })
       .then(response => {
         if (response.ok) {
           cargarCategorias();
-          document.getElementById('categoria-id').value = '';
-          document.getElementById('nombreCategoria').value = '';
-          document.getElementById('submit-button').textContent = 'Agregar Categoría';
+          categoriaIdInput.value = '';
+          nombreCategoriaInput.value = '';
+          submitButton.textContent = 'Agregar Categoría';
         } else {
-          console.error('Error:', response);
+          console.error('Error al guardar/actualizar categoría:', response);
         }
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error('Error en la petición:', error));
     });
 
-    window.editarCategoria = function(id, nombreCategoria) {
-      document.getElementById('categoria-id').value = id;
-      document.getElementById('nombreCategoria').value = nombreCategoria;
-      document.getElementById('submit-button').textContent = 'Actualizar Categoría';
+    window.editarCategoria = function(id, nombre) {
+      categoriaIdInput.value = id;
+      nombreCategoriaInput.value = nombre;
+      submitButton.textContent = 'Actualizar Categoría';
     };
   });
 </script>
