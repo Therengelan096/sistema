@@ -2,85 +2,172 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Equipos</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
     body {
-        font-family: Arial, sans-serif;
-        background-color: #121212;
-        color: white;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: white;
+      padding: 20px;
     }
-
     h1 {
-        color: #ff69b4;
-        text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
-        margin-bottom: 20px;
+      color: #ff69b4;
+      text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
     }
-
     table {
-        width: 80%;
-        max-width: 800px;
-        background-color: #222;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+      width: 100%;
+      background-color: #222;
+      border-radius: 10px;
+      margin-top: 20px;
     }
-
     th, td {
-        border: 1px solid #333;
-        padding: 12px;
-        text-align: left;
+      border: 1px solid #333;
+      padding: 12px;
+      text-align: left;
     }
-
     th {
-        background-color: #ff69b4;
+      background-color: #ff69b4;
     }
-
     tr:nth-child(even) {
-        background-color: #333;
+      background-color: #333;
+    }
+    .form-container {
+      margin-top: 30px;
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
+    }
+    .btn-pink {
+      background-color: #ff69b4;
+      border: none;
     }
   </style>
 </head>
 <body>
-<h1>Equipos</h1>
-<div class="table-container">
-  <table>
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Categoría</th>
-      <th>Laboratorio</th>
-      <th>Estado</th>
-    </tr>
-    </thead>
-    <tbody id="equipos-body">
-    </tbody>
-  </table>
+
+<h1>Gestión de Equipos</h1>
+
+<div class="form-container">
+  <h4>Formulario de Equipo</h4>
+  <form id="equipo-form">
+    <input type="hidden" id="idEquipo">
+    <div class="mb-2">
+      <label>Nombre:</label>
+      <input type="text" class="form-control" id="nombre" required>
+    </div>
+    <div class="mb-2">
+      <label>ID Categoría:</label>
+      <input type="number" class="form-control" id="categoriaId" required>
+    </div>
+    <div class="mb-2">
+      <label>ID Laboratorio:</label>
+      <input type="number" class="form-control" id="laboratorioId" required>
+    </div>
+    <div class ="mb-2">
+      <label>Descripcion:</label>>
+      <input type="text" class="form-control" id="descripcion" required>
+    </div>
+    <div class="mb-2">
+      <label>Estado:</label>
+      <input type="text" class="form-control" id="estado" required>
+    </div>
+    <button type="submit" class="btn btn-pink mt-2">Guardar</button>
+  </form>
 </div>
 
+<table class="table mt-4">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Categoría</th>
+    <th>Laboratorio</th>
+    <th>Descripcion</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+  </tr>
+  </thead>
+  <tbody id="equipos-body"></tbody>
+</table>
+
 <script>
-  fetch('http://localhost:8083/equipos')
-      .then(response => response.json())
+  const form = document.getElementById('equipo-form');
+  const idEquipoInput = document.getElementById('idEquipo');
+  const nombreInput = document.getElementById('nombre');
+  const descripcionInput = document.getElementById('descripcion');
+  const estadoInput = document.getElementById('estado');
+  const categoriaIdInput = document.getElementById('categoriaId');
+  const laboratorioIdInput = document.getElementById('laboratorioId');
+  const tbody = document.getElementById('equipos-body');
+
+  // Cargar equipos al iniciar
+  function cargarEquipos() {
+    fetch('http://localhost:8083/equipos')
+      .then(res => res.json())
       .then(data => {
-          const tableBody = document.getElementById('equipos-body');
-          data.forEach(equipo => {
-              const row = `<tr>
-                  <td>${equipo.idEquipo}</td>
-                  <td>${equipo.nombre}</td>
-                  <td>${equipo.categoria.nombreCategoria}</td>
-                  <td>${equipo.laboratorio.nombre}</td>
-                  <td>${equipo.estado}</td>
-              </tr>`;
-              tableBody.innerHTML += row;
-          });
-      })
-      .catch(error => console.error('Error al cargar equipos:', error));
+        tbody.innerHTML = '';
+        data.forEach(equipo => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${equipo.idEquipo}</td>
+            <td>${equipo.nombre}</td>
+            <td>${equipo.categoria?.nombreCategoria || equipo.categoria?.idCategoria}</td>
+            <td>${equipo.laboratorio?.nombre || equipo.laboratorio?.idLaboratorio}</td>
+            <td>${equipo.descripcion}</td>
+            <td>${equipo.estado}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="editarEquipo(${equipo.idEquipo}, '${equipo.nombre}', '${equipo.estado}', ${equipo.categoria?.idCategoria}, ${equipo.laboratorio?.idLaboratorio})">Editar</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      });
+  }
+
+  cargarEquipos();
+
+  // Enviar formulario (guardar o actualizar)
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const idEquipo = idEquipoInput.value;
+    const equipo = {
+      nombre: nombreInput.value,
+      descripcion: descripcionInput.value,
+      categoria: { idCategoria: parseInt(categoriaIdInput.value) },
+      laboratorio: { idLaboratorio: parseInt(laboratorioIdInput.value) },
+      estado: estadoInput.value
+    };
+
+    const url = idEquipo
+      ? `http://localhost:8083/equipos/${idEquipo}`
+      : 'http://localhost:8083/equipos';
+
+    fetch(url, {
+      method: idEquipo ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(equipo)
+    })
+    .then(() => {
+      form.reset();
+      idEquipoInput.value = '';
+      cargarEquipos();
+    })
+    .catch(err => console.error('Error al guardar/actualizar:', err));
+  });
+
+  // Cargar equipo para editar
+  function editarEquipo(id, nombre, descripcion, categoriaId, laboratorioId,estado) {
+    idEquipoInput.value = id;
+    nombreInput.value = nombre;
+    descripcionInput.value = descripcion;
+    categoriaIdInput.value = categoriaId;
+    laboratorioIdInput.value = laboratorioId;
+    estadoInput.value = estado;
+  }
 </script>
 </body>
 </html>
