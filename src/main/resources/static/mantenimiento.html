@@ -44,10 +44,81 @@
     tr:nth-child(even) {
         background-color: #333;
     }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .button-container button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin: 0 10px;
+    }
+
+    .boton-celeste {
+        background-color: #00bcd4;
+        color: white;
+    }
+
+    .boton-celeste:hover {
+        background-color: #0097a7;
+    }
+
+    .boton-rojo {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .boton-rojo:hover {
+        background-color: #d32f2f;
+    }
+
+    .form-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #222;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+        z-index: 1000;
+        width: 80%;
+        max-width: 600px;
+    }
+
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-container label {
+        margin-top: 10px;
+    }
+
+    .form-container input,
+    .form-container select {
+        padding: 8px;
+        margin-top: 5px;
+        background-color: #333;
+        border: none;
+        border-radius: 5px;
+        color: white;
+    }
   </style>
 </head>
 <body>
 <h1>Mantenimiento</h1>
+<div class="button-container">
+  <button class="boton-celeste" onclick="mostrarFormulario('agregar')">Agregar Mantenimiento</button>
+</div>
 <div class="table-container">
   <table>
     <thead>
@@ -59,31 +130,132 @@
       <th>Estado Final</th>
       <th>Problema</th>
       <th>Solución</th>
+      <th>Acciones</th>
     </tr>
     </thead>
     <tbody id="mantenimiento-body"></tbody>
   </table>
 </div>
+
+<div id="mantenimiento-form" class="form-container">
+  <form id="mantenimiento-form-data">
+    <input type="hidden" id="idMantenimiento">
+    <label for="equipo">ID Equipo:</label>
+    <input type="number" id="equipo" required>
+    <label for="fechaMantenimiento">Fecha:</label>
+    <input type="date" id="fechaMantenimiento" required>
+    <label for="estadoInicial">Estado Inicial:</label>
+    <input type="text" id="estadoInicial" required>
+    <label for="estadoFinal">Estado Final:</label>
+    <input type="text" id="estadoFinal" required>
+    <label for="descripcionProblema">Problema:</label>
+    <input type="text" id="descripcionProblema">
+    <label for="solucionAplicada">Solución:</label>
+    <input type="text" id="solucionAplicada">
+    <div class="button-container">
+      <button type="button" class="boton-celeste" onclick="guardarMantenimiento()">Guardar</button>
+      <button type="button" class="boton-rojo" onclick="ocultarFormulario()">Cancelar</button>
+    </div>
+  </form>
+</div>
+
 <script>
-  fetch('http://localhost:8083/mantenimiento')
-      .then(response => response.json())
-      .then(data => {
-          const tableBody = document.getElementById('mantenimiento-body');
-          data.forEach(item => {
-              tableBody.innerHTML += `
-                  <tr>
-                      <td>${item.idMantenimiento}</td>
-                      <td>${item.equipo.idEquipo}</td>
-                      <td>${item.fechaMantenimiento}</td>
-                      <td>${item.estadoInicial}</td>
-                      <td>${item.estadoFinal}</td>
-                      <td>${item.descripcionProblema}</td>
-                      <td>${item.solucionAplicada}</td>
-                  </tr>
-              `;
-          });
+  let mantenimientoData = [];
+
+  function cargarMantenimientos() {
+      fetch('http://localhost:8083/mantenimiento')
+          .then(response => response.json())
+          .then(data => {
+              mantenimientoData = data;
+              const tableBody = document.getElementById('mantenimiento-body');
+              tableBody.innerHTML = '';
+              data.forEach(item => {
+                  tableBody.innerHTML += `
+                      <tr>
+                          <td>${item.idMantenimiento}</td>
+                          <td>${item.equipo.idEquipo}</td>
+                          <td>${item.fechaMantenimiento}</td>
+                          <td>${item.estadoInicial}</td>
+                          <td>${item.estadoFinal}</td>
+                          <td>${item.descripcionProblema}</td>
+                          <td>${item.solucionAplicada}</td>
+                          <td>
+                              <button class="boton-celeste" onclick="editarMantenimiento(${item.idMantenimiento})">Editar</button>
+                          </td>
+                      </tr>
+                  `;
+              });
+          })
+          .catch(error => console.error('Error:', error));
+  }
+
+  cargarMantenimientos();
+
+  function mostrarFormulario(tipo, id) {
+      document.getElementById('mantenimiento-form').style.display = 'block';
+      if (tipo === 'editar' && id) {
+          const mantenimiento = mantenimientoData.find(item => item.idMantenimiento === id);
+          if (mantenimiento) {
+              document.getElementById('idMantenimiento').value = mantenimiento.idMantenimiento;
+              document.getElementById('equipo').value = mantenimiento.equipo.idEquipo;
+              document.getElementById('fechaMantenimiento').value = mantenimiento.fechaMantenimiento;
+              document.getElementById('estadoInicial').value = mantenimiento.estadoInicial;
+              document.getElementById('estadoFinal').value = mantenimiento.estadoFinal;
+              document.getElementById('descripcionProblema').value = mantenimiento.descripcionProblema;
+              document.getElementById('solucionAplicada').value = mantenimiento.solucionAplicada;
+          }
+      } else {
+          document.getElementById('mantenimiento-form-data').reset();
+          document.getElementById('idMantenimiento').value = '';
+      }
+  }
+
+  function ocultarFormulario() {
+      document.getElementById('mantenimiento-form').style.display = 'none';
+  }
+
+  function guardarMantenimiento() {
+      const idMantenimiento = document.getElementById('idMantenimiento').value;
+      const equipo = { idEquipo: parseInt(document.getElementById('equipo').value) };
+      const fechaMantenimiento = document.getElementById('fechaMantenimiento').value;
+      const estadoInicial = document.getElementById('estadoInicial').value;
+      const estadoFinal = document.getElementById('estadoFinal').value;
+      const descripcionProblema = document.getElementById('descripcionProblema').value;
+      const solucionAplicada = document.getElementById('solucionAplicada').value;
+
+      const mantenimiento = {
+          equipo: equipo,
+          fechaMantenimiento: fechaMantenimiento,
+          estadoInicial: estadoInicial,
+          estadoFinal: estadoFinal,
+          descripcionProblema: descripcionProblema,
+          solucionAplicada: solucionAplicada
+      };
+
+      const url = idMantenimiento ? `http://localhost:8083/mantenimiento/${idMantenimiento}` : 'http://localhost:8083/mantenimiento';
+      const method = idMantenimiento ? 'PUT' : 'POST';
+
+      fetch(url, {
+          method: method,
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(mantenimiento)
       })
-      .catch(error => console.error('Error:', error));
+          .then(response => {
+              if (response.ok) {
+                  cargarMantenimientos();
+                  ocultarFormulario();
+              } else {
+                  console.error('Error al guardar mantenimiento');
+              }
+          })
+          .catch(error => console.error('Error:', error));
+  }
+
+  function editarMantenimiento(id) {
+      mostrarFormulario('editar', id);
+  }
 </script>
 </body>
 </html>
