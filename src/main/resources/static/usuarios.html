@@ -190,58 +190,7 @@
 
 <div class="content">
   <h1>Usuarios</h1>
-
-  <div class="form-container">
-    <form id="usuario-form">
-      <input type="hidden" id="usuario-id">
-
-      <div class="form-group">
-        <label for="ru">RU:</label>
-        <input type="number" id="ru" name="ru" required>
-      </div>
-
-      <div class="form-group">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required>
-      </div>
-
-      <div class="form-group">
-        <label for="apellido">Apellido:</label>
-        <input type="text" id="apellido" name="apellido" required>
-      </div>
-
-      <div class="form-group">
-        <label for="ci">CI:</label>
-        <input type="number" id="ci" name="ci" required>
-      </div>
-
-      <div class="form-group">
-        <label for="tipoUsuario">Tipo de Usuario:</label>
-        <select id="tipoUsuario" name="tipoUsuario" required>
-          <option value="1">Administrador</option>
-          <option value="2">Docente</option>
-          <option value="3">Estudiante</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="carrera">Carrera:</label>
-        <input type="text" id="carrera" name="carrera">
-      </div>
-
-      <div class="form-group">
-        <label for="telefono">Teléfono:</label>
-        <input type="text" id="telefono" name="telefono">
-      </div>
-
-      <div class="form-group">
-        <label for="correo">Correo:</label>
-        <input type="email" id="correo" name="correo" required>
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="submit-button">Agregar Usuario</button>
-    </form>
-  </div>
+  <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Agregar Usuario</button>
 
   <div class="table-container">
     <table>
@@ -265,14 +214,71 @@
   </div>
 </div>
 
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addModalLabel">Agregar Usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="usuario-form">
+          <input type="hidden" id="usuario-id" name="idUsuario">
+          <div class="form-group">
+            <label for="ru">RU:</label>
+            <input type="number" id="ru" name="ru" required>
+          </div>
+          <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required>
+          </div>
+          <div class="form-group">
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="apellido" required>
+          </div>
+          <div class="form-group">
+            <label for="ci">CI:</label>
+            <input type="number" id="ci" name="ci" required>
+          </div>
+          <div class="form-group">
+            <label for="tipoUsuario">Tipo de Usuario:</label>
+            <select id="tipoUsuario" name="tipoUsuario" required>
+              <option value="1">Administrador</option>
+              <option value="2">Docente</option>
+              <option value="3">Estudiante</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="carrera">Carrera:</label>
+            <input type="text" id="carrera" name="carrera">
+          </div>
+          <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono">
+          </div>
+          <div class="form-group">
+            <label for="correo">Correo:</label>
+            <input type="email" id="correo" name="correo" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="submit-button">Agregar Usuario</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
   © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
+    const usuarioForm = document.getElementById('usuario-form');
+    const addModalElement = document.getElementById('addModal');
+    const addModal = new bootstrap.Modal(addModalElement);
 
     toggleBtn.addEventListener('click', function () {
       sidebar.classList.toggle('collapsed');
@@ -307,7 +313,7 @@
 
     cargarUsuarios();
 
-    document.getElementById('usuario-form').addEventListener('submit', function (event) {
+    usuarioForm.addEventListener('submit', function (event) {
       event.preventDefault();
       const id = document.getElementById('usuario-id').value;
       const ru = document.getElementById('ru').value;
@@ -328,11 +334,11 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ru: ru,
+          ru: parseInt(ru), // Asegúrate de enviar como número
           nombre: nombre,
           apellido: apellido,
-          ci: ci,
-          tipoUsuario: { idTipoUsuario: tipoUsuario },
+          ci: parseInt(ci), // Asegúrate de enviar como número
+          tipoUsuario: { idTipoUsuario: parseInt(tipoUsuario) }, // Asegúrate de enviar como número
           carrera: carrera,
           telefono: telefono,
           correo: correo,
@@ -341,18 +347,13 @@
         .then(response => {
           if (response.ok) {
             cargarUsuarios();
-            document.getElementById('usuario-id').value = '';
-            document.getElementById('ru').value = '';
-            document.getElementById('nombre').value = '';
-            document.getElementById('apellido').value = '';
-            document.getElementById('ci').value = '';
-            document.getElementById('tipoUsuario').value = '1';
-            document.getElementById('carrera').value = '';
-            document.getElementById('telefono').value = '';
-            document.getElementById('correo').value = '';
+            addModal.hide();
+            usuarioForm.reset();
+            document.getElementById('usuario-id').value = ''; // Limpiar el ID oculto
             document.getElementById('submit-button').textContent = 'Agregar Usuario';
           } else {
             console.error('Error:', response);
+            // Aquí podrías mostrar un mensaje de error al usuario
           }
         })
         .catch(error => console.error('Error:', error));
@@ -369,7 +370,14 @@
       document.getElementById('telefono').value = telefono;
       document.getElementById('correo').value = correo;
       document.getElementById('submit-button').textContent = 'Actualizar Usuario';
+      addModal.show();
     };
+
+    addModalElement.addEventListener('hidden.bs.modal', function () {
+      usuarioForm.reset();
+      document.getElementById('usuario-id').value = '';
+      document.getElementById('submit-button').textContent = 'Agregar Usuario';
+    });
   });
 </script>
 </body>

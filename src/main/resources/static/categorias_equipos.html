@@ -196,16 +196,7 @@
 <div class="content" id="content">
   <h1>Categoría de Equipos</h1>
 
-  <div class="form-container">
-    <form id="categoria-form">
-      <input type="hidden" id="categoria-id">
-      <div class="form-group">
-        <label for="nombreCategoria">Nombre de Categoría:</label>
-        <input type="text" id="nombreCategoria" name="nombreCategoria" class="form-control" required>
-      </div>
-      <button type="submit" class="btn btn-primary" id="submit-button">Agregar Categoría</button>
-    </form>
-  </div>
+  <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoriaModal">Agregar Categoría</button>
 
   <div class="table-container mt-4">
     <table class="table table-bordered table-hover">
@@ -222,6 +213,27 @@
   </div>
 </div>
 
+<div class="modal fade" id="addCategoriaModal" tabindex="-1" aria-labelledby="addCategoriaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addCategoriaModalLabel">Agregar Categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="categoria-form">
+          <input type="hidden" id="categoria-id">
+          <div class="form-group">
+            <label for="nombreCategoria">Nombre de Categoría:</label>
+            <input type="text" id="nombreCategoria" name="nombreCategoria" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="submit-button">Agregar Categoría</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
   © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
@@ -231,14 +243,19 @@
   document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content'); // Obtener el elemento content
+    const content = document.getElementById('content');
+    const addCategoriaModalElement = document.getElementById('addCategoriaModal');
+    const addCategoriaModal = new bootstrap.Modal(addCategoriaModalElement);
+    const categoriaForm = document.getElementById('categoria-form');
+    const categoriaIdInput = document.getElementById('categoria-id');
+    const nombreCategoriaInput = document.getElementById('nombreCategoria');
+    const submitButton = document.getElementById('submit-button');
 
     toggleBtn.addEventListener('click', function () {
       sidebar.classList.toggle('collapsed');
-      content.classList.toggle('sidebar-collapsed'); // Añadir/quitar clase al content
+      content.classList.toggle('sidebar-collapsed');
     });
 
-    // Inicializar el estado del content al cargar la página
     if (sidebar.classList.contains('collapsed')) {
       content.classList.add('sidebar-collapsed');
     }
@@ -267,11 +284,6 @@
 
     cargarCategorias();
 
-    const categoriaForm = document.getElementById('categoria-form');
-    const categoriaIdInput = document.getElementById('categoria-id');
-    const nombreCategoriaInput = document.getElementById('nombreCategoria');
-    const submitButton = document.getElementById('submit-button');
-
     categoriaForm.addEventListener('submit', function(event) {
       event.preventDefault();
       const id = categoriaIdInput.value;
@@ -291,9 +303,11 @@
       .then(response => {
         if (response.ok) {
           cargarCategorias();
+          addCategoriaModal.hide(); // Cierra el modal después de la operación
+          categoriaForm.reset();
           categoriaIdInput.value = '';
-          nombreCategoriaInput.value = '';
           submitButton.textContent = 'Agregar Categoría';
+          document.getElementById('addCategoriaModalLabel').textContent = 'Agregar Categoría'; // Restablecer el título del modal
         } else {
           console.error('Error al guardar/actualizar categoría:', response);
         }
@@ -305,7 +319,16 @@
       categoriaIdInput.value = id;
       nombreCategoriaInput.value = nombre;
       submitButton.textContent = 'Actualizar Categoría';
+      document.getElementById('addCategoriaModalLabel').textContent = 'Editar Categoría'; // Cambiar el título del modal
+      addCategoriaModal.show(); // Muestra el modal para la edición
     };
+
+    addCategoriaModalElement.addEventListener('hidden.bs.modal', function () {
+      categoriaForm.reset();
+      categoriaIdInput.value = '';
+      submitButton.textContent = 'Agregar Categoría';
+      document.getElementById('addCategoriaModalLabel').textContent = 'Agregar Categoría'; // Restablecer el título al cerrar
+    });
   });
 </script>
 </body>
