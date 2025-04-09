@@ -177,10 +177,6 @@
       border-top: 1px solid #333;
     }
 
-    .modal-content .btn-close {
-      filter: invert(1); /* Icono de cerrar blanco */
-    }
-
     .modal-content .form-control,
     .modal-content .form-select {
       background-color: #222;
@@ -203,6 +199,10 @@
     .modal-content .btn-primary:hover {
       background-color: #0056b3;
       border-color: #0056b3;
+    }
+    .modal-header .btn-close {
+      color: #ffffff; /* Cambia el color del ícono de cierre a blanco */
+      opacity: 1; /* Asegura que el ícono sea completamente visible */
     }
 
   </style>
@@ -312,6 +312,8 @@
 </div>
 
 <div class="footer">
+  ©
+
   © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
 
