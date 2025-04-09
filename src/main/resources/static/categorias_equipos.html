@@ -23,10 +23,11 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
-      position: fixed; /* Cambiado a fixed para evitar el espacio */
+      position: fixed;
       top: 0;
-      left: 0; /* Asegura que el sidebar comience desde la izquierda */
+      left: 0;
       transition: width 0.3s ease;
+      overflow: hidden;
     }
 
     .sidebar.collapsed {
@@ -42,25 +43,41 @@
       font-size: 0.9rem;
       display: flex;
       align-items: center;
+      white-space: nowrap;
     }
 
-    .sidebar a:hover, .sidebar a.active {
+    .sidebar a:hover,
+    .sidebar a.active {
       background-color: #34495E;
       border-left-color: #ff69b4;
     }
 
-    .sidebar.collapsed a span {
-      display: none;
+    .sidebar a i {
+      font-size: 1.2rem;
     }
 
-    .sidebar span {
+    /* Aquí ocultamos el texto cuando está colapsado */
+    .sidebar a span {
       margin-left: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+    }
+
+    .sidebar.collapsed a span {
+      opacity: 0;
+      width: 0;
+      margin: 0;
+      pointer-events: none;
+    }
+
+    .sidebar.collapsed a {
+      justify-content: center;
     }
 
     .sidebar hr {
       border-color: #34495E;
-      width: 90%;
-      margin: 8px auto;
+      margin: 5px 0;
     }
 
     .sidebar .logout-btn {
@@ -85,12 +102,12 @@
       padding: 20px;
       background-color: #283747;
       position: relative;
-      margin-left: 280px; /* Ajusta el margen izquierdo para el sidebar expandido */
-      transition: margin-left 0.3s ease; /* Añade transición para el margen */
+      margin-left: 280px;
+      transition: margin-left 0.3s ease;
     }
 
     .content.sidebar-collapsed {
-      margin-left: 60px; /* Ajusta el margen izquierdo para el sidebar colapsado */
+      margin-left: 60px;
     }
 
     .form-container {
@@ -114,7 +131,7 @@
     .table-container {
       width: 80%;
       max-width: 800px;
-      margin-top: 30px;
+      margin-top: 20px;
     }
 
     table {
@@ -123,7 +140,8 @@
       border-radius: 10px;
     }
 
-    th, td {
+    th,
+    td {
       border: 1px solid #333;
       padding: 12px;
       text-align: left;
@@ -168,26 +186,31 @@
   </style>
 </head>
 <body>
-<button class="toggle-btn" id="toggleSidebar">
-  <i class="bi bi-list"></i>
-</button>
-
 <div class="user-info">
   <div class="username">Usuario123</div>
   <div class="status">🟢 En línea</div>
 </div>
 
 <div class="sidebar" id="sidebar">
-  <hr class="mt-0">
-  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a><hr>
-  <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a><hr>
-  <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a><hr>
-  <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a><hr>
-  <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a><hr>
-  <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a><hr>
-  <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a><hr>
-  <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a><hr>
-  <a href="/categorias_equipos.html" class="active"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+  <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
+  <hr>
+  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+  <hr>
+  <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
+  <hr>
+  <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a>
+  <hr>
+  <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a>
+  <hr>
+  <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
+  <hr>
+  <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
+  <hr>
+  <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
+  <hr>
+  <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
+  <hr>
+  <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
   <a href="/logout" class="logout-btn">
     <i class="bi bi-power"></i><span>Cerrar Sesión</span>
   </a>
@@ -251,9 +274,10 @@
     const nombreCategoriaInput = document.getElementById('nombreCategoria');
     const submitButton = document.getElementById('submit-button');
 
-    toggleBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('collapsed');
-      content.classList.toggle('sidebar-collapsed');
+    toggleBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('sidebar-collapsed');
     });
 
     if (sidebar.classList.contains('collapsed')) {
@@ -330,6 +354,12 @@
       document.getElementById('addCategoriaModalLabel').textContent = 'Agregar Categoría'; // Restablecer el título al cerrar
     });
   });
+
+    // Redirige a login.html después de cerrar sesión
+    document.querySelector('.logout-btn').addEventListener('click', function (e) {
+        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
+        window.location.href = '/login.html'; // Redirige a login.html
+    });
 </script>
 </body>
 </html>
