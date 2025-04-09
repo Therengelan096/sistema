@@ -1,29 +1,38 @@
 package com.proyecto.sistema.controller;
 
+import com.proyecto.sistema.model.Administrador;
 import com.proyecto.sistema.service.AdministradorService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.stereotype.Controller;
+
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/login")
 public class LoginController {
+
     @Autowired
     private AdministradorService administradorService;
 
     @PostMapping
-    public ResponseEntity<?> procesarLogin(@RequestParam String usuario, @RequestParam String contraseña, HttpServletResponse response) {
+    public void procesarLogin(@RequestParam String usuario, @RequestParam String contraseña, HttpServletResponse response, HttpSession session) throws IOException {
         if (administradorService.autenticar(usuario, contraseña)) {
-            // Redirige directamente al archivo estático
-            response.setHeader("Location", "/menuprincipal.html");
-            return ResponseEntity.status(HttpServletResponse.SC_FOUND).build();
+            // Obtenemos el administrador autenticado
+            Administrador admin = administradorService.obtenerPorUsuario(usuario);
+
+            // Guardamos el ID del usuario relacionado en la sesión
+            session.setAttribute("idUsuario", admin.getUsuarioRef().getIdUsuario());
+
+            // Redirigimos al menú principal
+            response.sendRedirect("/menuprincipal.html");
         } else {
-            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
-                    .body("Credenciales incorrectas. Inténtalo de nuevo.");
+            // Redirige al login con un parámetro de error
+            response.sendRedirect("/login.html?error=true");
         }
     }
 }
