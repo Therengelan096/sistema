@@ -185,6 +185,30 @@
     .footer a:hover {
       text-decoration: underline;
     }
+
+    /* Estilo para la ventana emergente (modal) */
+    .modal-content {
+      background-color: #000; /* Fondo negro para la modal */
+      color: white; /* Texto blanco */
+    }
+
+    .modal-header {
+      background-color: #000; /* Fondo negro para el header */
+      color: white; /* Texto blanco */
+    }
+
+    .modal-footer {
+      background-color: #000; /* Fondo negro para el footer */
+    }
+
+    .modal-footer .btn {
+      background-color: #ff69b4; /* Botón con color rosa */
+      color: white;
+    }
+
+    .modal-header .btn-close {
+      color: #ffffff; /* Botón de cerrar blanco */
+    }
   </style>
 </head>
 <body>
@@ -353,7 +377,6 @@
       prestamoForm.reset();
       document.getElementById('prestamo-id').value = '';
       document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-      document.getElementById('prestamoModalLabel').textContent = 'Agregar Préstamo';
     });
 
     function cargarPrestamos() {
@@ -361,85 +384,84 @@
         .then(response => response.json())
         .then(data => {
           prestamosData = data;
-          populateTable(data);
-        })
-        .catch(error => console.error('Error al cargar préstamos:', error));
+          mostrarPrestamos();
+        });
     }
 
-    function populateTable(data) {
-      const tableBody = document.getElementById('prestamos-body');
-      tableBody.innerHTML = '';
-      data.forEach(item => {
-        // Asegúrate de que las propiedades del objeto 'item' coincidan con los datos que devuelve tu API
-        tableBody.innerHTML += `
-          <tr>
-            <td>${item.idPrestamo}</td>
-            <td>${item.usuario ? item.usuario.nombre : 'N/A'}</td>
-            <td>${item.equipo ? item.equipo.nombre : 'N/A'}</td>
-            <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
-            <td>${item.fechaPrestamo}</td>
-            <td>${item.horaPrestamo}</td>
-            <td>${item.estado}</td>
-            <td>${item.fechaDevolucionEstimada}</td>
-            <td>
-              <button class="btn btn-sm btn-warning" onclick="editarPrestamo(${item.idPrestamo}, ${item.usuario ? item.usuario.idUsuario : null}, ${item.equipo ? item.equipo.idEquipo : null}, ${item.administrador ? item.administrador.idAdministrador : null}, '${item.fechaPrestamo ? item.fechaPrestamo.replace(' ', 'T') : ''}', '${item.estado}', '${item.fechaDevolucionEstimada ? item.fechaDevolucionEstimada.replace(' ', 'T') : ''}')">Modificar</button>
-            </td>
-          </tr>
+    function mostrarPrestamos() {
+      const prestamosBody = document.getElementById('prestamos-body');
+      prestamosBody.innerHTML = '';
+      prestamosData.forEach(prestamo => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${prestamo.idPrestamo}</td>
+          <td>${prestamo.usuario.nombre}</td>
+          <td>${prestamo.equipo.nombre}</td>
+          <td>${prestamo.administrador.nombre}</td>
+          <td>${prestamo.fechaPrestamo}</td>
+          <td>${prestamo.horaPrestamo}</td>
+          <td>${prestamo.estado}</td>
+          <td>${prestamo.fechaDevolucionEstimada}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editarPrestamo(${prestamo.idPrestamo})">Modificar</button>
+          </td>
         `;
+        prestamosBody.appendChild(tr);
       });
     }
 
+    function editarPrestamo(id) {
+      const prestamo = prestamosData.find(p => p.idPrestamo === id);
+      if (prestamo) {
+        document.getElementById('prestamo-id').value = prestamo.idPrestamo;
+        document.getElementById('usuario').value = prestamo.usuario.idUsuario;
+        document.getElementById('equipo').value = prestamo.equipo.idEquipo;
+        document.getElementById('administrador').value = prestamo.administrador.idAdministrador;
+        document.getElementById('fechaPrestamo').value = prestamo.fechaPrestamo;
+        document.getElementById('estado').value = prestamo.estado;
+        document.getElementById('fechaDevolucionEstimada').value = prestamo.fechaDevolucionEstimada;
+        document.getElementById('submit-button').textContent = 'Modificar Préstamo';
+        prestamoModal.show();
+      }
+    }
+
     function populateSelects() {
-      // Función para llenar los selectores de usuario, equipo y administrador
       fetch('http://localhost:8083/usuarios')
         .then(response => response.json())
-        .then(usuarios => {
-          const usuarioSelects = document.querySelectorAll('#usuario');
-          usuarioSelects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccionar Usuario</option>'; // Opción por defecto
-            usuarios.forEach(usuario => {
-              select.innerHTML += `<option value="${usuario.idUsuario}">${usuario.nombre}</option>`;
-            });
+        .then(data => {
+          const usuarioSelect = document.getElementById('usuario');
+          data.forEach(usuario => {
+            const option = document.createElement('option');
+            option.value = usuario.idUsuario;
+            option.textContent = usuario.nombre;
+            usuarioSelect.appendChild(option);
           });
         });
 
       fetch('http://localhost:8083/equipos')
         .then(response => response.json())
-        .then(equipos => {
-          const equipoSelects = document.querySelectorAll('#equipo');
-          equipoSelects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccionar Equipo</option>'; // Opción por defecto
-            equipos.forEach(equipo => {
-              select.innerHTML += `<option value="${equipo.idEquipo}">${equipo.nombre}</option>`;
-            });
+        .then(data => {
+          const equipoSelect = document.getElementById('equipo');
+          data.forEach(equipo => {
+            const option = document.createElement('option');
+            option.value = equipo.idEquipo;
+            option.textContent = equipo.nombre;
+            equipoSelect.appendChild(option);
           });
         });
 
       fetch('http://localhost:8083/administradores')
         .then(response => response.json())
-        .then(administradores => {
-          const administradorSelects = document.querySelectorAll('#administrador');
-          administradorSelects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccionar Administrador</option>'; // Opción por defecto
-            administradores.forEach(admin => {
-              select.innerHTML += `<option value="${admin.idAdministrador}">${admin.usuario}</option>`;
-            });
+        .then(data => {
+          const administradorSelect = document.getElementById('administrador');
+          data.forEach(administrador => {
+            const option = document.createElement('option');
+            option.value = administrador.idAdministrador;
+            option.textContent = administrador.nombre;
+            administradorSelect.appendChild(option);
           });
         });
     }
-
-    window.editarPrestamo = function (id, usuarioId, equipoId, administradorId, fechaPrestamo, estado, fechaDevolucionEstimada) {
-      document.getElementById('prestamo-id').value = id;
-      document.getElementById('usuario').value = usuarioId;
-      document.getElementById('equipo').value = equipoId;
-      document.getElementById('administrador').value = administradorId;
-      document.getElementById('fechaPrestamo').value = fechaPrestamo;
-      document.getElementById('estado').value = estado;
-      document.getElementById('fechaDevolucionEstimada').value = fechaDevolucionEstimada;
-      document.getElementById('submit-button').textContent = 'Actualizar Préstamo';
-      document.getElementById('prestamoModalLabel').textContent = 'Modificar Préstamo';
-      prestamoModal.show();
-    };
   });
 </script>
 </body>
