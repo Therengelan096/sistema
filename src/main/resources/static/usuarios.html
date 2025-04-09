@@ -161,6 +161,50 @@
     .footer a:hover {
       text-decoration: underline;
     }
+
+    /* Estilos para la ventana modal */
+    .modal-content {
+      background-color: #121212; /* Fondo negro */
+      color: white; /* Letras blancas */
+      border: 1px solid #333; /* Borde opcional */
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #333;
+    }
+
+    .modal-footer {
+      border-top: 1px solid #333;
+    }
+
+    .modal-content .btn-close {
+      filter: invert(1); /* Icono de cerrar blanco */
+    }
+
+    .modal-content .form-control,
+    .modal-content .form-select {
+      background-color: #222;
+      color: white;
+      border: 1px solid #444;
+    }
+
+    .modal-content .form-control:focus,
+    .modal-content .form-select:focus {
+      background-color: #333;
+      border-color: #ff69b4;
+      box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+    }
+
+    .modal-content .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .modal-content .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+
   </style>
 </head>
 <body>
@@ -218,7 +262,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addModalLabel">Agregar Usuario</h5>
+        <h5 class="modal-title" id="addModalLabel">Agregar/Editar Usuario</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -328,21 +372,28 @@
       const method = id ? 'PUT' : 'POST';
       const url = id ? `http://localhost:8083/usuarios/${id}` : 'http://localhost:8083/usuarios';
 
+      const dataToSend = {
+        ru: parseInt(ru),
+        nombre: nombre,
+        apellido: apellido,
+        ci: parseInt(ci),
+        tipoUsuario: { idTipoUsuario: parseInt(tipoUsuario) },
+        carrera: carrera,
+        telefono: telefono,
+        correo: correo,
+      };
+
+      // Si es una actualización (PUT), incluir el ID
+      if (method === 'PUT') {
+        dataToSend.idUsuario = parseInt(id);
+      }
+
       fetch(url, {
         method: method,
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ru: parseInt(ru), // Asegúrate de enviar como número
-          nombre: nombre,
-          apellido: apellido,
-          ci: parseInt(ci), // Asegúrate de enviar como número
-          tipoUsuario: { idTipoUsuario: parseInt(tipoUsuario) }, // Asegúrate de enviar como número
-          carrera: carrera,
-          telefono: telefono,
-          correo: correo,
-        }),
+        body: JSON.stringify(dataToSend),
       })
         .then(response => {
           if (response.ok) {
