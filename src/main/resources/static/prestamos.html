@@ -207,7 +207,8 @@
     }
 
     .modal-header .btn-close {
-      color: #ffffff; /* Botón de cerrar blanco */
+      color: #ffffff; /* Cambia el color del ícono de cierre a blanco */
+      opacity: 1; /* Asegura que el ícono sea completamente visible */
     }
   </style>
 </head>
@@ -308,161 +309,211 @@
 <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/js/datepicker-full.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
 
-    toggleBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('collapsed');
-    });
+  const toggleBtn = document.getElementById('toggleSidebar');
 
-    let prestamosData = []; // Almacena los datos de los préstamos
-    const prestamoModalElement = document.getElementById('prestamoModal');
-    const prestamoModal = new bootstrap.Modal(prestamoModalElement);
-    const prestamoForm = document.getElementById('prestamo-form');
+  const sidebar = document.getElementById('sidebar');
 
-    cargarPrestamos();
-    populateSelects();
 
-    prestamoForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-      const id = document.getElementById('prestamo-id').value;
-      const usuarioId = document.getElementById('usuario').value;
-      const equipoId = document.getElementById('equipo').value;
-      const administradorId = document.getElementById('administrador').value;
-      const fechaPrestamoValue = document.getElementById('fechaPrestamo').value;
-      const estadoValue = document.getElementById('estado').value;
-      const fechaDevolucionEstimadaValue = document.getElementById('fechaDevolucionEstimada').value;
 
-      const method = id ? 'PUT' : 'POST';
-      const url = id ? `http://localhost:8083/prestamos/${id}` : 'http://localhost:8083/prestamos';
+  toggleBtn.addEventListener('click', function () {
 
-      const dataToSend = {
-        usuario: { idUsuario: parseInt(usuarioId) },
-        equipo: { idEquipo: parseInt(equipoId) },
-        administrador: { idAdministrador: parseInt(administradorId) },
-        fechaPrestamo: fechaPrestamoValue,
-        horaPrestamo: fechaPrestamoValue.split('T')[1] || '',
-        estado: estadoValue,
-        fechaDevolucionEstimada: fechaDevolucionEstimadaValue,
-        horaDevolucionEstimada: fechaDevolucionEstimadaValue.split('T')[1] || ''
-      };
+    sidebar.classList.toggle('collapsed');
 
-      if (id) {
-        dataToSend.idPrestamo = parseInt(id);
-      }
-
-      fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataToSend)
-      })
-        .then(response => {
-          if (response.ok) {
-            cargarPrestamos();
-            prestamoModal.hide();
-            prestamoForm.reset();
-            document.getElementById('prestamo-id').value = '';
-            document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-          } else {
-            console.error('Error:', response);
-            // Aquí podrías mostrar un mensaje de error al usuario
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    prestamoModalElement.addEventListener('hidden.bs.modal', function () {
-      prestamoForm.reset();
-      document.getElementById('prestamo-id').value = '';
-      document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-    });
-
-    function cargarPrestamos() {
-      fetch('http://localhost:8083/prestamos')
-        .then(response => response.json())
-        .then(data => {
-          prestamosData = data;
-          mostrarPrestamos();
-        });
-    }
-
-    function mostrarPrestamos() {
-      const prestamosBody = document.getElementById('prestamos-body');
-      prestamosBody.innerHTML = '';
-      prestamosData.forEach(prestamo => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${prestamo.idPrestamo}</td>
-          <td>${prestamo.usuario.nombre}</td>
-          <td>${prestamo.equipo.nombre}</td>
-          <td>${prestamo.administrador.nombre}</td>
-          <td>${prestamo.fechaPrestamo}</td>
-          <td>${prestamo.horaPrestamo}</td>
-          <td>${prestamo.estado}</td>
-          <td>${prestamo.fechaDevolucionEstimada}</td>
-          <td>
-            <button class="btn btn-warning btn-sm" onclick="editarPrestamo(${prestamo.idPrestamo})">Modificar</button>
-          </td>
-        `;
-        prestamosBody.appendChild(tr);
-      });
-    }
-
-    function editarPrestamo(id) {
-      const prestamo = prestamosData.find(p => p.idPrestamo === id);
-      if (prestamo) {
-        document.getElementById('prestamo-id').value = prestamo.idPrestamo;
-        document.getElementById('usuario').value = prestamo.usuario.idUsuario;
-        document.getElementById('equipo').value = prestamo.equipo.idEquipo;
-        document.getElementById('administrador').value = prestamo.administrador.idAdministrador;
-        document.getElementById('fechaPrestamo').value = prestamo.fechaPrestamo;
-        document.getElementById('estado').value = prestamo.estado;
-        document.getElementById('fechaDevolucionEstimada').value = prestamo.fechaDevolucionEstimada;
-        document.getElementById('submit-button').textContent = 'Modificar Préstamo';
-        prestamoModal.show();
-      }
-    }
-
-    function populateSelects() {
-      fetch('http://localhost:8083/usuarios')
-        .then(response => response.json())
-        .then(data => {
-          const usuarioSelect = document.getElementById('usuario');
-          data.forEach(usuario => {
-            const option = document.createElement('option');
-            option.value = usuario.idUsuario;
-            option.textContent = usuario.nombre;
-            usuarioSelect.appendChild(option);
-          });
-        });
-
-      fetch('http://localhost:8083/equipos')
-        .then(response => response.json())
-        .then(data => {
-          const equipoSelect = document.getElementById('equipo');
-          data.forEach(equipo => {
-            const option = document.createElement('option');
-            option.value = equipo.idEquipo;
-            option.textContent = equipo.nombre;
-            equipoSelect.appendChild(option);
-          });
-        });
-
-      fetch('http://localhost:8083/administradores')
-        .then(response => response.json())
-        .then(data => {
-          const administradorSelect = document.getElementById('administrador');
-          data.forEach(administrador => {
-            const option = document.createElement('option');
-            option.value = administrador.idAdministrador;
-            option.textContent = administrador.nombre;
-            administradorSelect.appendChild(option);
-          });
-        });
-    }
   });
+
+
+
+  let prestamosData = []; // Almacena los datos de los préstamos
+
+  const prestamoModalElement = document.getElementById('prestamoModal');
+
+  const prestamoModal = new bootstrap.Modal(prestamoModalElement);
+
+  const prestamoForm = document.getElementById('prestamo-form');
+
+
+
+  cargarPrestamos();
+
+  populateSelects();
+
+
+
+  prestamoForm.addEventListener('submit', function (event) {
+
+    event.preventDefault();
+
+    const id = document.getElementById('prestamo-id').value;
+
+    const usuarioId = document.getElementById('usuario').value;
+
+    const equipoId = document.getElementById('equipo').value;
+
+    const administradorId = document.getElementById('administrador').value;
+
+    const fechaPrestamoValue = document.getElementById('fechaPrestamo').value;
+
+    const estadoValue = document.getElementById('estado').value;
+
+    const fechaDevolucionEstimadaValue = document.getElementById('fechaDevolucionEstimada').value;
+
+
+
+    const method = id ? 'PUT' : 'POST';
+
+    const url = id ? `http://localhost:8083/prestamos/${id}` : 'http://localhost:8083/prestamos';
+
+
+
+    const dataToSend = {
+
+      usuario: { idUsuario: parseInt(usuarioId) },
+
+      equipo: { idEquipo: parseInt(equipoId) },
+
+      administrador: { idAdministrador: parseInt(administradorId) },
+
+      fechaPrestamo: fechaPrestamoValue,
+
+      horaPrestamo: fechaPrestamoValue.split('T')[1] || '',
+
+      estado: estadoValue,
+
+      fechaDevolucionEstimada: fechaDevolucionEstimadaValue,
+
+      horaDevolucionEstimada: fechaDevolucionEstimadaValue.split('T')[1] || ''
+
+    };
+
+
+
+    if (id) {
+
+      dataToSend.idPrestamo = parseInt(id);
+
+    }
+
+
+
+    fetch(url, {
+
+      method: method,
+
+      headers: {
+
+        'Content-Type': 'application/json'
+
+      },
+
+      body: JSON.stringify(dataToSend)
+
+    })
+
+      .then(response => {
+        if (response.ok) {
+          cargarPrestamos();
+          prestamoModal.hide();
+          prestamoForm.reset();
+          document.getElementById('prestamo-id').value = '';
+          document.getElementById('submit-button').textContent = 'Agregar Préstamo';
+        } else {
+          console.error('Error:', response);
+          // Aquí podrías mostrar un mensaje de error al usuario
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  });
+
+  prestamoModalElement.addEventListener('hidden.bs.modal', function () {
+    prestamoForm.reset();
+    document.getElementById('prestamo-id').value = '';
+    document.getElementById('submit-button').textContent = 'Agregar Préstamo';
+  });
+
+  function cargarPrestamos() {
+    fetch('http://localhost:8083/prestamos')
+      .then(response => response.json())
+      .then(data => {
+        prestamosData = data;
+        mostrarPrestamos();
+      });
+  }
+  function mostrarPrestamos() {
+    const prestamosBody = document.getElementById('prestamos-body');
+    prestamosBody.innerHTML = '';
+    prestamosData.forEach(prestamo => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${prestamo.idPrestamo}</td>
+        <td>${prestamo.usuario.nombre}</td>
+        <td>${prestamo.equipo.nombre}</td>
+        <td>${prestamo.administrador.nombre}</td>
+        <td>${prestamo.fechaPrestamo}</td>
+        <td>${prestamo.horaPrestamo}</td>
+        <td>${prestamo.estado}</td>
+        <td>${prestamo.fechaDevolucionEstimada}</td>
+        <td>
+
+          <button class="btn btn-warning btn-sm" onclick="editarPrestamo(${prestamo.idPrestamo})">Modificar</button>
+        </td>
+      `;
+      prestamosBody.appendChild(tr);
+    });
+  }
+  function editarPrestamo(id) {
+    const prestamo = prestamosData.find(p => p.idPrestamo === id);
+    if (prestamo) {
+      document.getElementById('prestamo-id').value = prestamo.idPrestamo;
+      document.getElementById('usuario').value = prestamo.usuario.idUsuario;
+      document.getElementById('equipo').value = prestamo.equipo.idEquipo;
+      document.getElementById('administrador').value = prestamo.administrador.idAdministrador;
+      document.getElementById('fechaPrestamo').value = prestamo.fechaPrestamo;
+      document.getElementById('estado').value = prestamo.estado;
+      document.getElementById('fechaDevolucionEstimada').value = prestamo.fechaDevolucionEstimada;
+      document.getElementById('submit-button').textContent = 'Modificar Préstamo';
+      prestamoModal.show();
+    }
+  }
+
+  function populateSelects() {
+    fetch('http://localhost:8083/usuarios')
+      .then(response => response.json())
+      .then(data => {
+        const usuarioSelect = document.getElementById('usuario');
+        data.forEach(usuario => {
+          const option = document.createElement('option');
+          option.value = usuario.idUsuario;
+          option.textContent = usuario.nombre;
+          usuarioSelect.appendChild(option);
+        });
+      });
+
+    fetch('http://localhost:8083/equipos')
+      .then(response => response.json())
+      .then(data => {
+        const equipoSelect = document.getElementById('equipo');
+        data.forEach(equipo => {
+          const option = document.createElement('option');
+          option.value = equipo.idEquipo;
+          option.textContent = equipo.nombre;
+          equipoSelect.appendChild(option);
+        });
+      });
+    fetch('http://localhost:8083/administradores')
+      .then(response => response.json())
+      .then(data => {
+        const administradorSelect = document.getElementById('administrador');
+        data.forEach(administrador => {
+          const option = document.createElement('option');
+          option.value = administrador.idAdministrador;
+          option.textContent = administrador.nombre;
+          administradorSelect.appendChild(option);
+        });
+      });
+  }
+
+});
 </script>
 </body>
 </html>
