@@ -9,207 +9,227 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/css/datepicker.min.css">
   <style>
     body {
-      display: flex;
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      background-color: #121212;
-      color: white;
-    }
+   display: flex;
+   min-height: 100vh;
+   margin: 0;
+   padding: 0;
+   background-color: #121212;
+   color: white;
+ }
 
-    .sidebar {
-      width: 280px;
-      background-color: #191970;
-      padding-top: 20px;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      position: sticky;
-      top: 0;
-      transition: width 0.3s ease;
-    }
+ .sidebar {
+   width: 280px;
+   background-color: #191970;
+   padding-top: 20px;
+   display: flex;
+   flex-direction: column;
+   height: 100vh;
+   position: sticky;
+   top: 0;
+   transition: width 0.3s ease;
+ }
 
-    .sidebar.collapsed {
-      width: 60px;
-    }
+ .sidebar.collapsed {
+   width: 60px;
+ }
 
-    .sidebar a {
-      padding: 12px 15px;
-      color: white;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
-      border-left: 5px solid transparent;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-    }
+ .sidebar a {
+   padding: 12px 15px;
+   color: white;
+   text-decoration: none;
+   transition: background-color 0.3s ease;
+   border-left: 5px solid transparent;
+   font-size: 0.9rem;
+   display: flex;
+   align-items: center;
+ }
 
-    .sidebar a:hover, .sidebar a.active {
-      background-color: #34495E;
-      border-left-color: #ff69b4;
-    }
+ .sidebar a:hover, .sidebar a.active {
+   background-color: #34495E;
+   border-left-color: #ff69b4;
+ }
 
-    .sidebar.collapsed a span {
-      display: none;
-    }
+ .sidebar.collapsed a span {
+   display: none;
+ }
 
-    .sidebar span {
-      margin-left: 10px;
-    }
+ .sidebar span {
+   margin-left: 10px;
+ }
 
-    .sidebar hr {
-      border-color: #34495E;
-      width: 90%;
-      margin: 8px auto;
-    }
+ .sidebar hr {
+   border-color: #34495E;
+   width: 90%;
+   margin: 8px auto;
+ }
 
-    .sidebar .logout-btn {
-      margin-top: auto;
-      border-top: 1px solid #34495E;
-    }
+ .sidebar .logout-btn {
+   margin-top: auto;
+   border-top: 1px solid #34495E;
+ }
 
-    .toggle-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 1000;
-    }
+ .toggle-btn {
+   position: fixed;
+   top: 10px;
+   left: 10px;
+   background: none;
+   border: none;
+   color: white;
+   font-size: 1.5rem;
+   cursor: pointer;
+   z-index: 1000;
+ }
 
-    .content {
-      flex-grow: 1;
-      padding: 20px;
-      background-color: #283747;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+ .content {
+   flex-grow: 1;
+   padding: 20px;
+   background-color: #283747;
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+ }
 
-    h1 {
-      color: #ff69b4;
-      text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
-      margin-bottom: 20px;
-    }
+ h1 {
+   color: #ff69b4;
+   text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
+   margin-bottom: 20px;
+ }
 
-    table {
-      width: 80%;
-      max-width: 800px;
-      background-color: #222;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
-    }
+ table {
+   width: 80%;
+   max-width: 800px;
+   background-color: #222;
+   border-radius: 10px;
+   box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+ }
 
-    th, td {
-      border: 1px solid #333;
-      padding: 12px;
-      text-align: left;
-    }
+ th, td {
+   border: 1px solid #333;
+   padding: 12px;
+   text-align: left;
+ }
 
-    th {
-      background-color: #ff69b4;
-    }
+ th {
+   background-color: #ff69b4;
+ }
 
-    tr:nth-child(even) {
-      background-color: #333;
-    }
+ tr:nth-child(even) {
+   background-color: #333;
+ }
 
-    .form-container {
-      width: 80%;
-      max-width: 600px;
-    }
+ .form-container {
+   width: 80%;
+   max-width: 600px;
+ }
 
-    .form-group {
-      margin-bottom: 15px;
-    }
+ .form-group {
+   margin-bottom: 15px;
+ }
 
-    .form-container label {
-      display: block;
-      margin-bottom: 5px;
-    }
+ .form-container label {
+   display: block;
+   margin-bottom: 5px;
+ }
 
-    .form-container input, .form-container select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      background-color: #333;
-      border: 1px solid #555;
-      color: white;
-      border-radius: 5px;
-      box-sizing: border-box; /* Important for width consistency with padding */
-    }
+ .form-container input, .form-container select {
+   width: 100%;
+   padding: 8px;
+   margin-bottom: 10px;
+   background-color: #333;
+   border: 1px solid #555;
+   color: white;
+   border-radius: 5px;
+   box-sizing: border-box;
+ }
 
-    .form-container button {
-      background-color: #ff69b4;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+ .form-container button {
+   background-color: #ff69b4;
+   color: white;
+   padding: 10px 15px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   margin-top: 10px;
+ }
 
-    .user-info {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      text-align: right;
-    }
+ .user-info {
+   position: fixed;
+   top: 10px;
+   right: 20px;
+   text-align: right;
+ }
 
-    .user-info .username {
-      font-weight: bold;
-    }
+ .user-info .username {
+   font-weight: bold;
+ }
 
-    .user-info .status {
-      font-size: 0.9rem;
-      color: #00FF00;
-    }
+ .user-info .status {
+   font-size: 0.9rem;
+   color: #00FF00;
+ }
 
-    .footer {
-      position: fixed;
-      bottom: 10px;
-      right: 20px;
-      font-size: 0.9rem;
-      text-align: right;
-    }
+ .footer {
+   position: fixed;
+   bottom: 10px;
+   right: 20px;
+   font-size: 0.9rem;
+   text-align: right;
+ }
 
-    .footer a {
-      color: #00BFFF;
-      text-decoration: none;
-    }
+ .footer a {
+   color: #00BFFF;
+   text-decoration: none;
+ }
 
-    .footer a:hover {
-      text-decoration: underline;
-    }
+ .footer a:hover {
+   text-decoration: underline;
+ }
 
-    /* Estilo para la ventana emergente (modal) */
-    .modal-content {
-      background-color: #000; /* Fondo negro para la modal */
-      color: white; /* Texto blanco */
-    }
+ /* Estilos para la ventana modal */
+ .modal-content {
+   background-color: #121212; /* Fondo negro */
+   color: white; /* Letras blancas */
+   border: 1px solid #333; /* Borde opcional */
+ }
 
-    .modal-header {
-      background-color: #000; /* Fondo negro para el header */
-      color: white; /* Texto blanco */
-    }
+ .modal-header {
+   border-bottom: 1px solid #333;
+ }
 
-    .modal-footer {
-      background-color: #000; /* Fondo negro para el footer */
-    }
+ .modal-footer {
+   border-top: 1px solid #333;
+ }
 
-    .modal-footer .btn {
-      background-color: #ff69b4; /* Botón con color rosa */
-      color: white;
-    }
+ .modal-content .form-control,
+ .modal-content .form-select {
+   background-color: #222;
+   color: white;
+   border: 1px solid #444;
+ }
 
-    .modal-header .btn-close {
-      color: #ffffff; /* Cambia el color del ícono de cierre a blanco */
-      opacity: 1; /* Asegura que el ícono sea completamente visible */
-    }
+ .modal-content .form-control:focus,
+ .modal-content .form-select:focus {
+   background-color: #333;
+   border-color: #ff69b4;
+   box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+ }
+
+ .modal-content .btn-primary {
+   background-color: #007bff;
+   border-color: #007bff;
+ }
+
+ .modal-content .btn-primary:hover {
+   background-color: #0056b3;
+   border-color: #0056b3;
+ }
+
+ .modal-header .btn-close {
+   color: #ffffff; /* Cambia el color del ícono de cierre a blanco */
+   opacity: 1; /* Asegura que el ícono sea completamente visible */
+ }
+
   </style>
 </head>
 <body>
@@ -309,211 +329,163 @@
 <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/js/datepicker-full.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
 
-  const toggleBtn = document.getElementById('toggleSidebar');
-
-  const sidebar = document.getElementById('sidebar');
-
-
-
-  toggleBtn.addEventListener('click', function () {
-
-    sidebar.classList.toggle('collapsed');
-
-  });
-
-
-
-  let prestamosData = []; // Almacena los datos de los préstamos
-
-  const prestamoModalElement = document.getElementById('prestamoModal');
-
-  const prestamoModal = new bootstrap.Modal(prestamoModalElement);
-
-  const prestamoForm = document.getElementById('prestamo-form');
-
-
-
-  cargarPrestamos();
-
-  populateSelects();
-
-
-
-  prestamoForm.addEventListener('submit', function (event) {
-
-    event.preventDefault();
-
-    const id = document.getElementById('prestamo-id').value;
-
-    const usuarioId = document.getElementById('usuario').value;
-
-    const equipoId = document.getElementById('equipo').value;
-
-    const administradorId = document.getElementById('administrador').value;
-
-    const fechaPrestamoValue = document.getElementById('fechaPrestamo').value;
-
-    const estadoValue = document.getElementById('estado').value;
-
-    const fechaDevolucionEstimadaValue = document.getElementById('fechaDevolucionEstimada').value;
-
-
-
-    const method = id ? 'PUT' : 'POST';
-
-    const url = id ? `http://localhost:8083/prestamos/${id}` : 'http://localhost:8083/prestamos';
-
-
-
-    const dataToSend = {
-
-      usuario: { idUsuario: parseInt(usuarioId) },
-
-      equipo: { idEquipo: parseInt(equipoId) },
-
-      administrador: { idAdministrador: parseInt(administradorId) },
-
-      fechaPrestamo: fechaPrestamoValue,
-
-      horaPrestamo: fechaPrestamoValue.split('T')[1] || '',
-
-      estado: estadoValue,
-
-      fechaDevolucionEstimada: fechaDevolucionEstimadaValue,
-
-      horaDevolucionEstimada: fechaDevolucionEstimadaValue.split('T')[1] || ''
-
-    };
-
-
-
-    if (id) {
-
-      dataToSend.idPrestamo = parseInt(id);
-
-    }
-
-
-
-    fetch(url, {
-
-      method: method,
-
-      headers: {
-
-        'Content-Type': 'application/json'
-
-      },
-
-      body: JSON.stringify(dataToSend)
-
-    })
-
-      .then(response => {
-        if (response.ok) {
-          cargarPrestamos();
-          prestamoModal.hide();
-          prestamoForm.reset();
-          document.getElementById('prestamo-id').value = '';
-          document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-        } else {
-          console.error('Error:', response);
-          // Aquí podrías mostrar un mensaje de error al usuario
-        }
-      })
-      .catch(error => console.error('Error:', error));
-  });
-
-  prestamoModalElement.addEventListener('hidden.bs.modal', function () {
-    prestamoForm.reset();
-    document.getElementById('prestamo-id').value = '';
-    document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-  });
-
-  function cargarPrestamos() {
-    fetch('http://localhost:8083/prestamos')
-      .then(response => response.json())
-      .then(data => {
-        prestamosData = data;
-        mostrarPrestamos();
-      });
-  }
-  function mostrarPrestamos() {
-    const prestamosBody = document.getElementById('prestamos-body');
-    prestamosBody.innerHTML = '';
-    prestamosData.forEach(prestamo => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${prestamo.idPrestamo}</td>
-        <td>${prestamo.usuario.nombre}</td>
-        <td>${prestamo.equipo.nombre}</td>
-        <td>${prestamo.administrador.nombre}</td>
-        <td>${prestamo.fechaPrestamo}</td>
-        <td>${prestamo.horaPrestamo}</td>
-        <td>${prestamo.estado}</td>
-        <td>${prestamo.fechaDevolucionEstimada}</td>
-        <td>
-
-          <button class="btn btn-warning btn-sm" onclick="editarPrestamo(${prestamo.idPrestamo})">Modificar</button>
-        </td>
-      `;
-      prestamosBody.appendChild(tr);
+    toggleBtn.addEventListener('click', function () {
+      sidebar.classList.toggle('collapsed');
     });
-  }
-  function editarPrestamo(id) {
-    const prestamo = prestamosData.find(p => p.idPrestamo === id);
-    if (prestamo) {
-      document.getElementById('prestamo-id').value = prestamo.idPrestamo;
-      document.getElementById('usuario').value = prestamo.usuario.idUsuario;
-      document.getElementById('equipo').value = prestamo.equipo.idEquipo;
-      document.getElementById('administrador').value = prestamo.administrador.idAdministrador;
-      document.getElementById('fechaPrestamo').value = prestamo.fechaPrestamo;
-      document.getElementById('estado').value = prestamo.estado;
-      document.getElementById('fechaDevolucionEstimada').value = prestamo.fechaDevolucionEstimada;
-      document.getElementById('submit-button').textContent = 'Modificar Préstamo';
-      prestamoModal.show();
+
+    let prestamosData = []; // Almacena los datos de los préstamos
+    const prestamoModalElement = document.getElementById('prestamoModal');
+    const prestamoModal = new bootstrap.Modal(prestamoModalElement);
+    const prestamoForm = document.getElementById('prestamo-form');
+
+    cargarPrestamos();
+    populateSelects();
+
+    prestamoForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const id = document.getElementById('prestamo-id').value;
+      const usuarioId = document.getElementById('usuario').value;
+      const equipoId = document.getElementById('equipo').value;
+      const administradorId = document.getElementById('administrador').value;
+      const fechaPrestamoValue = document.getElementById('fechaPrestamo').value;
+      const estadoValue = document.getElementById('estado').value;
+      const fechaDevolucionEstimadaValue = document.getElementById('fechaDevolucionEstimada').value;
+
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `http://localhost:8083/prestamos/${id}` : 'http://localhost:8083/prestamos';
+
+      const dataToSend = {
+        usuario: { idUsuario: parseInt(usuarioId) },
+        equipo: { idEquipo: parseInt(equipoId) },
+        administrador: { idAdministrador: parseInt(administradorId) },
+        fechaPrestamo: fechaPrestamoValue,
+        horaPrestamo: fechaPrestamoValue.split('T')[1] || '',
+        estado: estadoValue,
+        fechaDevolucionEstimada: fechaDevolucionEstimadaValue,
+        horaDevolucionEstimada: fechaDevolucionEstimadaValue.split('T')[1] || ''
+      };
+
+      if (id) {
+        dataToSend.idPrestamo = parseInt(id);
+      }
+
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      })
+        .then(response => {
+          if (response.ok) {
+            cargarPrestamos();
+            prestamoModal.hide();
+            prestamoForm.reset();
+            document.getElementById('prestamo-id').value = '';
+            document.getElementById('submit-button').textContent = 'Agregar Préstamo';
+          } else {
+            console.error('Error:', response);
+            // Aquí podrías mostrar un mensaje de error al usuario
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    prestamoModalElement.addEventListener('hidden.bs.modal', function () {
+      prestamoForm.reset();
+      document.getElementById('prestamo-id').value = '';
+      document.getElementById('submit-button').textContent = 'Agregar Préstamo';
+      document.getElementById('prestamoModalLabel').textContent = 'Agregar Préstamo';
+    });
+
+    function cargarPrestamos() {
+      fetch('http://localhost:8083/prestamos')
+        .then(response => response.json())
+        .then(data => {
+          prestamosData = data;
+          populateTable(data);
+        })
+        .catch(error => console.error('Error al cargar préstamos:', error));
     }
-  }
 
-  function populateSelects() {
-    fetch('http://localhost:8083/usuarios')
-      .then(response => response.json())
-      .then(data => {
-        const usuarioSelect = document.getElementById('usuario');
-        data.forEach(usuario => {
-          const option = document.createElement('option');
-          option.value = usuario.idUsuario;
-          option.textContent = usuario.nombre;
-          usuarioSelect.appendChild(option);
-        });
+    function populateTable(data) {
+      const tableBody = document.getElementById('prestamos-body');
+      tableBody.innerHTML = '';
+      data.forEach(item => {
+        // Asegúrate de que las propiedades del objeto 'item' coincidan con los datos que devuelve tu API
+        tableBody.innerHTML += `
+          <tr>
+            <td>${item.idPrestamo}</td>
+            <td>${item.usuario ? item.usuario.nombre : 'N/A'}</td>
+            <td>${item.equipo ? item.equipo.nombre : 'N/A'}</td>
+            <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
+            <td>${item.fechaPrestamo}</td>
+            <td>${item.horaPrestamo}</td>
+            <td>${item.estado}</td>
+            <td>${item.fechaDevolucionEstimada}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="editarPrestamo(${item.idPrestamo}, ${item.usuario ? item.usuario.idUsuario : null}, ${item.equipo ? item.equipo.idEquipo : null}, ${item.administrador ? item.administrador.idAdministrador : null}, '${item.fechaPrestamo ? item.fechaPrestamo.replace(' ', 'T') : ''}', '${item.estado}', '${item.fechaDevolucionEstimada ? item.fechaDevolucionEstimada.replace(' ', 'T') : ''}')">Modificar</button>
+            </td>
+          </tr>
+        `;
       });
+    }
 
-    fetch('http://localhost:8083/equipos')
-      .then(response => response.json())
-      .then(data => {
-        const equipoSelect = document.getElementById('equipo');
-        data.forEach(equipo => {
-          const option = document.createElement('option');
-          option.value = equipo.idEquipo;
-          option.textContent = equipo.nombre;
-          equipoSelect.appendChild(option);
+    function populateSelects() {
+      // Función para llenar los selectores de usuario, equipo y administrador
+      fetch('http://localhost:8083/usuarios')
+        .then(response => response.json())
+        .then(usuarios => {
+          const usuarioSelects = document.querySelectorAll('#usuario');
+          usuarioSelects.forEach(select => {
+            select.innerHTML = '<option value="">Seleccionar Usuario</option>'; // Opción por defecto
+            usuarios.forEach(usuario => {
+              select.innerHTML += `<option value="${usuario.idUsuario}">${usuario.nombre}</option>`;
+            });
+          });
         });
-      });
-    fetch('http://localhost:8083/administradores')
-      .then(response => response.json())
-      .then(data => {
-        const administradorSelect = document.getElementById('administrador');
-        data.forEach(administrador => {
-          const option = document.createElement('option');
-          option.value = administrador.idAdministrador;
-          option.textContent = administrador.nombre;
-          administradorSelect.appendChild(option);
-        });
-      });
-  }
 
-});
+      fetch('http://localhost:8083/equipos')
+        .then(response => response.json())
+        .then(equipos => {
+          const equipoSelects = document.querySelectorAll('#equipo');
+          equipoSelects.forEach(select => {
+            select.innerHTML = '<option value="">Seleccionar Equipo</option>'; // Opción por defecto
+            equipos.forEach(equipo => {
+              select.innerHTML += `<option value="${equipo.idEquipo}">${equipo.nombre}</option>`;
+            });
+          });
+        });
+
+      fetch('http://localhost:8083/administradores')
+        .then(response => response.json())
+        .then(administradores => {
+          const administradorSelects = document.querySelectorAll('#administrador');
+          administradorSelects.forEach(select => {
+            select.innerHTML = '<option value="">Seleccionar Administrador</option>'; // Opción por defecto
+            administradores.forEach(admin => {
+              select.innerHTML += `<option value="${admin.idAdministrador}">${admin.usuario}</option>`;
+            });
+          });
+        });
+    }
+
+    window.editarPrestamo = function (id, usuarioId, equipoId, administradorId, fechaPrestamo, estado, fechaDevolucionEstimada) {
+      document.getElementById('prestamo-id').value = id;
+      document.getElementById('usuario').value = usuarioId;
+      document.getElementById('equipo').value = equipoId;
+      document.getElementById('administrador').value = administradorId;
+      document.getElementById('fechaPrestamo').value = fechaPrestamo;
+      document.getElementById('estado').value = estado;
+      document.getElementById('fechaDevolucionEstimada').value = fechaDevolucionEstimada;
+      document.getElementById('submit-button').textContent = 'Actualizar Préstamo';
+      document.getElementById('prestamoModalLabel').textContent = 'Modificar Préstamo';
+      prestamoModal.show();
+    };
+  });
 </script>
 </body>
 </html>
