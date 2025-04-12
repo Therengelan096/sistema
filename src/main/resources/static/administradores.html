@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100 text-bg-dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +8,118 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+         display: flex;
+         min-height: 100vh;
+         margin: 0;
+         padding: 0;
+         background-color: #121212;
+         color: white;
         }
+
+     .sidebar {
+       width: 280px;
+       background-color: #191970;
+       padding-top: 20px;
+       display: flex;
+       flex-direction: column;
+       height: 100vh;
+       position: fixed;
+       top: 0;
+       left: 0;
+       transition: width 0.3s ease;
+       overflow: hidden;
+     }
+
+     .sidebar.collapsed {
+       width: 60px;
+     }
+
+     .sidebar a {
+       padding: 12px 15px;
+       color: white;
+       text-decoration: none;
+       transition: background-color 0.3s ease;
+       border-left: 5px solid transparent;
+       font-size: 0.9rem;
+       display: flex;
+       align-items: center;
+       white-space: nowrap;
+     }
+
+     .sidebar a:hover,
+     .sidebar a.active {
+       background-color: #34495E;
+       border-left-color: #ff69b4;
+     }
+
+     .sidebar a i {
+       font-size: 1.2rem;
+     }
+
+     .sidebar a span {
+       margin-left: 10px;
+       white-space: nowrap;
+       overflow: hidden;
+       transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+     }
+
+     .sidebar.collapsed a span {
+       opacity: 0;
+       width: 0;
+       margin: 0;
+       pointer-events: none;
+     }
+
+     .sidebar.collapsed a {
+       justify-content: center;
+     }
+
+     .sidebar hr {
+       border-color: #34495E;
+       margin: 5px 0;
+     }
+
+     .sidebar .logout-btn {
+       margin-top: auto;
+       border-top: 1px solid #34495E;
+     }
+
+     .toggle-btn {
+       background: none;
+       border: none;
+       color: white;
+       font-size: 1.5rem;
+       cursor: pointer;
+       z-index: 1000;
+     }
+
+     /* === CONTENIDO PRINCIPAL === */
+     .content {
+       flex-grow: 1;
+       padding: 20px;
+       background-color: #283747;
+       position: relative;
+       margin-left: 280px;
+       transition: margin-left 0.3s ease;
+     }
+
+     .content.sidebar-collapsed {
+       margin-left: 60px;
+     }
+
+     .form-container {
+       width: 80%;
+       max-width: 800px;
+       margin-top: 30px;
+       background-color: #1c1c1c;
+       padding: 20px;
+       border-radius: 10px;
+       box-shadow: 0 4px 8px rgba(255, 105, 180, 0.2);
+     }
+
+     .form-group {
+       margin-bottom: 15px;
+     }
 
         h1 {
             color: #ff69b4;
@@ -107,9 +210,50 @@
             background-color: #666;
             border-color: #666;
         }
+        /* === BOTÓN PERSONALIZADO === */
+     .btn-pink {
+       background-color: #ff69b4;
+       border: none;
+       color: white;
+       padding: 10px 15px;
+       border-radius: 5px;
+       cursor: pointer;
+     }
+
+     .btn-pink:hover {
+       background-color: #e055a0;
+     }
     </style>
 </head>
 <body>
+
+<div class="sidebar" id="sidebar">
+    <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
+    <hr>
+    <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+    <hr>
+    <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
+    <hr>
+    <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a>
+    <hr>
+    <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a>
+    <hr>
+    <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
+    <hr>
+    <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
+    <hr>
+    <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
+    <hr>
+    <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
+    <hr>
+    <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+    <a href="/logout" class="logout-btn">
+        <i class="bi bi-power"></i><span>Cerrar Sesión</span>
+    </a>
+</div>
+
+<div class="content" id="content">
+
 <h1>Administradores</h1>
 
 <!-- Formulario para buscar usuario por RU -->
@@ -161,6 +305,14 @@
 </div>
 
 <script>
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+
+    toggleSidebarBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      content.classList.toggle('sidebar-collapsed');
+    });
     // Cargar administradores en la tabla
     function cargarAdministradores() {
         fetch('/administradores')
@@ -262,6 +414,11 @@
                 }
             })
             .catch(error => console.error('Error:', error));
+    });
+    // Redirige a login.html después de cerrar sesión
+    document.querySelector('.logout-btn').addEventListener('click', function (e) {
+        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
+        window.location.href = '/login.html'; // Redirige a login.html
     });
 </script>
 </body>
