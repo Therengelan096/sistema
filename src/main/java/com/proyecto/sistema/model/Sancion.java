@@ -18,7 +18,7 @@ public class Sancion {
     private String motivoSancion;
 
     @Column(nullable = false)
-    private Date fechaSancion;
+    private  Date fechaSancion;
 
     @Column(nullable = false)
     private String estado;

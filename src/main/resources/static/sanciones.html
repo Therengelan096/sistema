@@ -195,7 +195,23 @@
 <div class="content" id="content">
 
 <h1>Sanciones</h1>
-<div class="table-container">
+
+  <div class="form-container">
+    <form id="form-sancion">
+      <div class="form-group">
+        <label for="ruUsuario">Código RU del Usuario:</label>
+        <input type="text" id="ruUsuario" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="motivo">Motivo de la Sanción:</label>
+        <input type="text" id="motivo" class="form-control" required>
+      </div>
+      <button type="submit" class="btn-pink">Agregar Sanción</button>
+    </form>
+  </div>
+
+
+  <div class="table-container">
   <table>
     <thead>
     <tr>
@@ -219,23 +235,78 @@
       sidebar.classList.toggle('collapsed');
       content.classList.toggle('sidebar-collapsed');
     });
+
+  // === FUNCIÓN PARA MARCAR COMO CUMPLIDA ===
+  function marcarCumplida(id) {
+    fetch(`http://localhost:8083/sanciones/cumplida/${id}`, {
+        method: 'PUT'
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('No se pudo actualizar el estado.');
+        return response.text();
+    })
+    .then(() => {
+       // alert("Sanción marcada como cumplida.");
+        location.reload();
+    })
+    .catch(error => {
+        alert("Error: " + error.message);
+    });
+  }
+
+  // === FUNCIÓN PARA ENVIAR UNA NUEVA SANCIÓN ===
+  document.getElementById('form-sancion').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const ru = document.getElementById('ruUsuario').value;
+    const motivo = document.getElementById('motivo').value;
+
+    fetch(`http://localhost:8083/sanciones/crear/${ru}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ motivoSancion: motivo })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('No se pudo crear la sanción. Verifica el RU.');
+        }
+        return response.json();
+    })
+    .then(data => {
+      // alert("Sanción agregada correctamente.");
+        location.reload();
+    })
+    .catch(error => {
+        alert("Error: " + error.message);
+    });
+  });
+
+  // === FUNCIÓN PARA CARGAR Y MOSTRAR TODAS LAS SANCIONES ===
   fetch('http://localhost:8083/sanciones')
       .then(response => response.json())
       .then(data => {
           const tableBody = document.getElementById('sanciones-body');
+          tableBody.innerHTML = ''; // Limpia antes de agregar
+
           data.forEach(sancion => {
               const row = `<tr>
-                  <td>${sancion.idSancion}</td>
-                  <td>${sancion.usuario.nombre}</td>
-                  <td>${sancion.motivoSancion}</td>
-                  <td>${sancion.fechaSancion}</td>
-                  <td>${sancion.estado}</td>
+                <td>${sancion.idSancion}</td>
+                <td>${sancion.usuario?.nombre ?? 'Sin nombre'}</td>
+                <td>${sancion.motivoSancion}</td>
+                <td>${sancion.fechaSancion ? new Date(sancion.fechaSancion).toLocaleDateString() : 'Sin fecha'}</td>
+                <td>
+                  ${(sancion.estado === 'activa') ?
+    `<button class="btn btn-sm btn-success" onclick="marcarCumplida(${sancion.idSancion})">Cumplida</button>`
+    : 'Cumplida'}
+
+                </td>
               </tr>`;
               tableBody.innerHTML += row;
           });
       })
       .catch(error => console.error('Error al cargar sanciones:', error));
-  // Redirige a login.html después de cerrar sesión
+
+// Redirige a login.html después de cerrar sesión
     document.querySelector('.logout-btn').addEventListener('click', function (e) {
         e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
         window.location.href = '/login.html'; // Redirige a login.html
