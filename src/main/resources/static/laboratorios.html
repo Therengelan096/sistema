@@ -8,155 +8,155 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
     body {
-      display: flex;
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      background-color: #121212;
-      color: white;
+        display: flex;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        background-color: #121212;
+        color: white;
     }
 
     .sidebar {
-      width: 280px;
-      background-color: #191970;
-      padding-top: 20px;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      position: sticky;
-      top: 0;
-      transition: width 0.3s ease;
+        width: 280px;
+        background-color: #191970;
+        padding-top: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        transition: width 0.3s ease;
     }
 
     .sidebar.collapsed {
-      width: 60px;
+        width: 60px;
     }
 
     .sidebar a {
-      padding: 12px 15px;
-      color: white;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
-      border-left: 5px solid transparent;
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
+        padding: 12px 15px;
+        color: white;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        border-left: 5px solid transparent;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
     }
 
     .sidebar a:hover, .sidebar a.active {
-      background-color: #34495E;
-      border-left-color: #ff69b4;
+        background-color: #34495E;
+        border-left-color: #ff69b4;
     }
 
     .sidebar.collapsed a span {
-      display: none;
+        display: none;
     }
 
     .sidebar span {
-      margin-left: 10px;
+        margin-left: 10px;
     }
 
     .sidebar hr {
-      border-color: #34495E;
-      width: 90%;
-      margin: 8px auto;
+        border-color: #34495E;
+        width: 90%;
+        margin: 8px auto;
     }
 
     .sidebar .logout-btn {
-      margin-top: auto;
-      border-top: 1px solid #34495E;
+        margin-top: auto;
+        border-top: 1px solid #34495E;
     }
 
     .toggle-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 1000;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 1000;
     }
 
     .content {
-      flex-grow: 1;
-      padding: 20px;
-      background-color: #283747;
-      position: relative;
+        flex-grow: 1;
+        padding: 20px;
+        background-color: #283747;
+        position: relative;
     }
 
     .form-container {
-      width: 80%;
-      max-width: 800px;
+        width: 80%;
+        max-width: 800px;
     }
 
     .form-group {
-      margin-bottom: 15px;
+        margin-bottom: 15px;
     }
 
     input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #444;
-      background-color: #222;
-      color: white;
-      border-radius: 5px;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #444;
+        background-color: #222;
+        color: white;
+        border-radius: 5px;
     }
 
     .table-container {
-      width: 80%;
-      max-width: 800px;
-      margin-top: 30px;
+        width: 80%;
+        max-width: 800px;
+        margin-top: 30px;
     }
 
     table {
-      width: 100%;
-      background-color: #222;
-      border-radius: 10px;
+        width: 100%;
+        background-color: #222;
+        border-radius: 10px;
     }
 
     th, td {
-      border: 1px solid #333;
-      padding: 12px;
-      text-align: left;
+        border: 1px solid #333;
+        padding: 12px;
+        text-align: left;
     }
 
     th {
-      background-color: #ff69b4;
+        background-color: #ff69b4;
     }
 
     .user-info {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      text-align: right;
+        position: fixed;
+        top: 10px;
+        right: 20px;
+        text-align: right;
     }
 
     .user-info .username {
-      font-weight: bold;
+        font-weight: bold;
     }
 
     .user-info .status {
-      font-size: 0.9rem;
-      color: #00FF00;
+        font-size: 0.9rem;
+        color: #00FF00;
     }
 
     .footer {
-      position: fixed;
-      bottom: 10px;
-      right: 20px;
-      font-size: 0.9rem;
-      text-align: right;
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        font-size: 0.9rem;
+        text-align: right;
     }
 
     .footer a {
-      color: #00BFFF;
-      text-decoration: none;
+        color: #00BFFF;
+        text-decoration: none;
     }
 
     .footer a:hover {
-      text-decoration: underline;
+        text-decoration: underline;
     }
   </style>
 </head>
@@ -225,77 +225,93 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.getElementById('toggleSidebar');
+      const sidebar = document.getElementById('sidebar');
+      const laboratorioForm = document.getElementById('laboratorio-form');
+      const laboratorioIdInput = document.getElementById('laboratorio-id');
+      const nombreInput = document.getElementById('nombre');
+      const ubicacionInput = document.getElementById('ubicacion');
+      const submitButton = document.getElementById('submit-button');
+      const laboratoriosBody = document.getElementById('laboratorios-body');
 
-    toggleBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('collapsed');
-    });
+      toggleBtn.addEventListener('click', function () {
+          sidebar.classList.toggle('collapsed');
+      });
 
-    function cargarLaboratorios() {
-      fetch('http://localhost:8083/laboratorios')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Error en la respuesta: ' + response.status);
-          }
-          return response.json();
-        })
-        .then(data => {
-          const tableBody = document.getElementById('laboratorios-body');
-          tableBody.innerHTML = '';
-          data.forEach(laboratorio => {
-            const row = `<tr>
-              <td>${laboratorio.idLaboratorio}</td>
-              <td>${laboratorio.nombre}</td>
-              <td>${laboratorio.ubicacion}</td>
-              <td>
-                <button class="btn btn-info btn-sm" onclick="editarLaboratorio(${laboratorio.idLaboratorio}, '${laboratorio.nombre}', '${laboratorio.ubicacion}')">Editar</button>
-              </td>
-            </tr>`;
-            tableBody.innerHTML += row;
+      function cargarLaboratorios() {
+          fetch('http://localhost:8083/laboratorios')
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Error en la respuesta: ' + response.status);
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  laboratoriosBody.innerHTML = '';
+                  data.forEach(laboratorio => {
+                      const row = `<tr>
+                          <td>${laboratorio.idLaboratorio}</td>
+                          <td>${laboratorio.nombre}</td>
+                          <td>${laboratorio.ubicacion}</td>
+                          <td>
+                              <button class="btn btn-info btn-sm btn-editar" data-id="${laboratorio.idLaboratorio}" data-nombre="${laboratorio.nombre}" data-ubicacion="${laboratorio.ubicacion}">Editar</button>
+                          </td>
+                      </tr>`;
+                      laboratoriosBody.innerHTML += row;
+                  });
+                  agregarEventListenersEditar(); // Agregar listeners después de cargar los datos
+              })
+              .catch(error => console.error('Error al cargar laboratorios:', error));
+      }
+
+      function agregarEventListenersEditar() {
+          const botonesEditar = document.querySelectorAll('.btn-editar');
+          botonesEditar.forEach(boton => {
+              boton.addEventListener('click', function() {
+                  const id = this.dataset.id;
+                  const nombre = this.dataset.nombre;
+                  const ubicacion = this.dataset.ubicacion;
+
+                  // Llenar el formulario con los datos del laboratorio a editar
+                  laboratorioIdInput.value = id;
+                  nombreInput.value = nombre;
+                  ubicacionInput.value = ubicacion;
+                  submitButton.textContent = 'Actualizar Laboratorio';
+              });
           });
-        })
-        .catch(error => console.error('Error al cargar laboratorios:', error));
-    }
+      }
 
-    cargarLaboratorios();
+      cargarLaboratorios();
 
-    document.getElementById('laboratorio-form').addEventListener('submit', function (event) {
-      event.preventDefault();
-      const id = document.getElementById('laboratorio-id').value;
-      const nombre = document.getElementById('nombre').value;
-      const ubicacion = document.getElementById('ubicacion').value;
+      laboratorioForm.addEventListener('submit', function (event) {
+          event.preventDefault();
+          const id = laboratorioIdInput.value;
+          const nombre = nombreInput.value;
+          const ubicacion = ubicacionInput.value;
 
-      const method = id ? 'PUT' : 'POST';
-      const url = id ? `http://localhost:8083/laboratorios/${id}` : 'http://localhost:8083/laboratorios';
+          const method = id ? 'PUT' : 'POST';
+          const url = id ? `http://localhost:8083/laboratorios/${id}` : 'http://localhost:8083/laboratorios';
 
-      fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nombre: nombre, ubicacion: ubicacion })
-      })
-        .then(response => {
-          if (response.ok) {
-            cargarLaboratorios();
-            document.getElementById('laboratorio-id').value = '';
-            document.getElementById('nombre').value = '';
-            document.getElementById('ubicacion').value = '';
-            document.getElementById('submit-button').textContent = 'Agregar Laboratorio';
-          } else {
-            console.error('Error:', response);
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    function editarLaboratorio(id, nombre, ubicacion) {
-      document.getElementById('laboratorio-id').value = id;
-      document.getElementById('nombre').value = nombre;
-      document.getElementById('ubicacion').value = ubicacion;
-      document.getElementById('submit-button').textContent = 'Actualizar Laboratorio';
-    }
+          fetch(url, {
+              method: method,
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ nombre: nombre, ubicacion: ubicacion })
+          })
+              .then(response => {
+                  if (response.ok) {
+                      cargarLaboratorios();
+                      laboratorioIdInput.value = '';
+                      nombreInput.value = '';
+                      ubicacionInput.value = '';
+                      submitButton.textContent = 'Agregar Laboratorio';
+                  } else {
+                      console.error('Error:', response);
+                  }
+              })
+              .catch(error => console.error('Error:', error));
+      });
   });
 </script>
 </body>

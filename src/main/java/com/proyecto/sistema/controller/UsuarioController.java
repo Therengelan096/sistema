@@ -36,6 +36,10 @@ public class UsuarioController {
 
         if (usuarioExistente.isPresent()) {
             usuarioActualizado.setIdUsuario(id);
+            // Actualiza las nuevas columnas si es necesario
+            usuarioActualizado.setMateria(usuarioActualizado.getMateria());
+            usuarioActualizado.setParalelo(usuarioActualizado.getParalelo());
+            usuarioActualizado.setSemestre(usuarioActualizado.getSemestre());
             Usuario usuarioActualizadoGuardado = usuarioRepository.save(usuarioActualizado);
             return new ResponseEntity<>(usuarioActualizadoGuardado, HttpStatus.OK);
         } else {
@@ -52,12 +56,16 @@ public class UsuarioController {
             if (usuario != null) {
                 return ResponseEntity.ok(Map.of(
                         "nombre", usuario.getNombre(),
-                        "apellido", usuario.getApellido()
+                        "apellido", usuario.getApellido(),
+                        "materia", usuario.getMateria(),
+                        "paralelo", usuario.getParalelo(),
+                        "semestre", usuario.getSemestre()
                 ));
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
     }
+
     @GetMapping("/buscarPorRu/{ru}")
     public ResponseEntity<?> buscarPorRu(@PathVariable int ru) {
         Usuario usuario = usuarioRepository.findByRu(ru).orElse(null);

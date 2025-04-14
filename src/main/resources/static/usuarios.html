@@ -56,7 +56,6 @@
       font-size: 1.2rem;
     }
 
-    /* Aquí ocultamos el texto cuando está colapsado */
     .sidebar a span {
       margin-left: 10px;
       white-space: nowrap;
@@ -102,14 +101,13 @@
       padding: 20px;
       background-color: #283747;
       position: relative;
-      margin-left: 280px; /* Asegura que el contenido no se superponga con el sidebar */
-      transition: margin-left 0.3s ease, width 0.3s ease; /* Transiciones para margen y ancho */
-
+      margin-left: 280px;
+      transition: margin-left 0.3s ease, width 0.3s ease;
     }
 
     .content.sidebar-collapsed {
-      margin-left: 60px; /* Ajusta el margen cuando el sidebar está colapsado */
-      width: calc(100% - 60px); /* Asegura que el contenido cubra todo el ancho restante */
+      margin-left: 60px;
+      width: calc(100% - 60px);
     }
 
     .form-container {
@@ -134,15 +132,17 @@
     }
 
     .table-container {
-      width: 80%;
-      max-width: 800px;
+      width: 100%; /* Cambiado para que ocupe todo el ancho del contenedor */
       margin-top: 20px;
+      overflow-x: auto; /* Agregado para permitir el scroll horizontal */
     }
 
     table {
-      width: 100%;
+      width: auto; /* Cambiado para que la tabla se ajuste al contenido */
       background-color: #222;
+      border: 1px solid #333;
       border-radius: 10px;
+      margin-bottom: 1px; /* Evita un espacio entre la tabla y el footer en algunos navegadores */
     }
 
     th,
@@ -150,6 +150,7 @@
       border: 1px solid #333;
       padding: 12px;
       text-align: left;
+      white-space: nowrap; /* Evita que el texto se rompa y fuerza el scroll horizontal si es necesario */
     }
 
     th {
@@ -189,11 +190,10 @@
       text-decoration: underline;
     }
 
-    /* Estilos para la ventana modal */
     .modal-content {
-      background-color: #121212; /* Fondo negro */
-      color: white; /* Letras blancas */
-      border: 1px solid #333; /* Borde opcional */
+      background-color: #121212;
+      color: white;
+      border: 1px solid #333;
     }
 
     .modal-header {
@@ -228,8 +228,8 @@
       border-color: #0056b3;
     }
     .modal-header .btn-close {
-      color: #ffffff; /* Cambia el color del ícono de cierre a blanco */
-      opacity: 1; /* Asegura que el ícono sea completamente visible */
+      color: #ffffff;
+      opacity: 1;
     }
 
   </style>
@@ -282,6 +282,9 @@
         <th>Carrera</th>
         <th>Teléfono</th>
         <th>Correo</th>
+        <th>Materia</th>
+        <th>Paralelo</th>
+        <th>Semestre</th>
         <th>Acciones</th>
       </tr>
       </thead>
@@ -337,6 +340,18 @@
             <label for="correo">Correo:</label>
             <input type="email" id="correo" name="correo" required>
           </div>
+          <div class="form-group">
+            <label for="materia">Materia:</label>
+            <input type="text" id="materia" name="materia">
+          </div>
+          <div class="form-group">
+            <label for="paralelo">Paralelo:</label>
+            <input type="text" id="paralelo" name="paralelo">
+          </div>
+          <div class="form-group">
+            <label for="semestre">Semestre:</label>
+            <input type="text" id="semestre" name="semestre">
+          </div>
           <button type="submit" class="btn btn-primary" id="submit-button">Agregar Usuario</button>
         </form>
       </div>
@@ -387,8 +402,11 @@
               <td>${usuario.carrera || ''}</td>
               <td>${usuario.telefono || ''}</td>
               <td>${usuario.correo}</td>
+              <td>${usuario.materia || ''}</td>
+              <td>${usuario.paralelo || ''}</td>
+              <td>${usuario.semestre || ''}</td>
               <td>
-                <button class="btn btn-edit btn-sm btn-warning" onclick="editarUsuario(${usuario.idUsuario}, ${usuario.ru}, '${usuario.nombre}', '${usuario.apellido}', ${usuario.ci}, ${usuario.tipoUsuario.idTipoUsuario}, '${usuario.carrera || ''}', '${usuario.telefono || ''}', '${usuario.correo}')">Editar</button>
+                <button class="btn btn-edit btn-sm btn-warning" onclick="editarUsuario(${usuario.idUsuario}, ${usuario.ru}, '${usuario.nombre}', '${usuario.apellido}', ${usuario.ci}, ${usuario.tipoUsuario.idTipoUsuario}, '${usuario.carrera || ''}', '${usuario.telefono || ''}', '${usuario.correo}', '${usuario.materia || ''}', '${usuario.paralelo || ''}', '${usuario.semestre || ''}')">Editar</button>
               </td>
             </tr>`;
             tableBody.innerHTML += row;
@@ -410,6 +428,9 @@
       const carrera = document.getElementById('carrera').value;
       const telefono = document.getElementById('telefono').value;
       const correo = document.getElementById('correo').value;
+      const materia = document.getElementById('materia').value;
+      const paralelo = document.getElementById('paralelo').value;
+      const semestre = document.getElementById('semestre').value;
 
       const method = id ? 'PUT' : 'POST';
       const url = id ? `http://localhost:8083/usuarios/${id}` : 'http://localhost:8083/usuarios';
@@ -423,9 +444,11 @@
         carrera: carrera,
         telefono: telefono,
         correo: correo,
+        materia: materia,
+        paralelo: paralelo,
+        semestre: semestre,
       };
 
-      // Si es una actualización (PUT), incluir el ID
       if (method === 'PUT') {
         dataToSend.idUsuario = parseInt(id);
       }
@@ -442,17 +465,16 @@
             cargarUsuarios();
             addModal.hide();
             usuarioForm.reset();
-            document.getElementById('usuario-id').value = ''; // Limpiar el ID oculto
+            document.getElementById('usuario-id').value = '';
             document.getElementById('submit-button').textContent = 'Agregar Usuario';
           } else {
             console.error('Error:', response);
-            // Aquí podrías mostrar un mensaje de error al usuario
           }
         })
         .catch(error => console.error('Error:', error));
     });
 
-    window.editarUsuario = function (id, ru, nombre, apellido, ci, tipoUsuario, carrera, telefono, correo) {
+    window.editarUsuario = function (id, ru, nombre, apellido, ci, tipoUsuario, carrera, telefono, correo, materia, paralelo, semestre) {
       document.getElementById('usuario-id').value = id;
       document.getElementById('ru').value = ru;
       document.getElementById('nombre').value = nombre;
@@ -462,6 +484,9 @@
       document.getElementById('carrera').value = carrera;
       document.getElementById('telefono').value = telefono;
       document.getElementById('correo').value = correo;
+      document.getElementById('materia').value = materia;
+      document.getElementById('paralelo').value = paralelo;
+      document.getElementById('semestre').value = semestre;
       document.getElementById('submit-button').textContent = 'Actualizar Usuario';
       addModal.show();
     };
@@ -472,10 +497,9 @@
       document.getElementById('submit-button').textContent = 'Agregar Usuario';
     });
   });
-  // Redirige a login.html después de cerrar sesión
     document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
-        window.location.href = '/login.html'; // Redirige a login.html
+        e.preventDefault();
+        window.location.href = '/login.html';
     });
 </script>
 </body>
