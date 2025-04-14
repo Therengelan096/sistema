@@ -233,9 +233,6 @@
   </style>
 </head>
 <body>
-<button class="toggle-btn" id="toggleSidebar">
-  <i class="bi bi-list"></i>
-</button>
 
 <div class="user-info">
   <div class="username">Usuario123</div>
@@ -243,21 +240,32 @@
 </div>
 
 <div class="sidebar" id="sidebar">
-  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a><hr>
-  <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a><hr>
-  <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a><hr>
-  <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a><hr>
-  <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a><hr>
-  <a href="/prestamos.html" class="active"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a><hr>
-  <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a><hr>
-  <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a><hr>
+  <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
+  <hr>
+  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+  <hr>
+  <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
+  <hr>
+  <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a>
+  <hr>
+  <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a>
+  <hr>
+  <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
+  <hr>
+  <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
+  <hr>
+  <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
+  <hr>
+  <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
+  <hr>
   <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
   <a href="/logout" class="logout-btn">
     <i class="bi bi-power"></i><span>Cerrar Sesión</span>
   </a>
 </div>
 
-<div class="content">
+<div class="content" id="content">
+
   <h1>Prestamos</h1>
   <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#prestamoModal">Agregar Préstamo</button>
   <div class="table-container">

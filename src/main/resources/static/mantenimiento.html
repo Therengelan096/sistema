@@ -8,25 +8,26 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
     body {
-     font-family: Arial, sans-serif;
-     background-color: #121212;
-     color: white;
-     min-height: 100vh;
-     padding: 20px;
-     margin: 0;
-     display: flex;
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: white;
    }
 
    .sidebar {
-     width: 280px;
-     background-color: #191970;
-     padding-top: 20px;
-     height: 100vh;
-     position: fixed;
-     top: 0;
-     left: 0;
-     transition: width 0.3s ease;
-     overflow: hidden;
+    width: 280px;
+    background-color: #191970;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    overflow: hidden;
    }
 
    .sidebar.collapsed {
@@ -45,10 +46,21 @@
      white-space: nowrap;
    }
 
-   .sidebar a:hover, .sidebar a.active {
-     background-color: #34495E;
-     border-left-color: #ff69b4;
-   }
+  .sidebar a:hover,
+  .sidebar a.active {
+    background-color: #34495E;
+    border-left-color: #ff69b4;
+  }
+  .sidebar a i {
+    font-size: 1.2rem;
+  }
+
+  .sidebar a span {
+       margin-left: 10px;
+       white-space: nowrap;
+       overflow: hidden;
+       transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+     }
 
    .sidebar.collapsed a span {
      opacity: 0;
@@ -61,26 +73,32 @@
      justify-content: center;
    }
 
-   .sidebar span {
-     margin-left: 10px;
-   }
-
    .sidebar hr {
      border-color: #34495E;
-     width: 90%;
-     margin: 8px auto;
+     margin: 5px 0;
    }
 
    .sidebar .logout-btn {
      margin-top: auto;
      border-top: 1px solid #34495E;
    }
+  .toggle-btn {
+       background: none;
+       border: none;
+       color: white;
+       font-size: 1.5rem;
+       cursor: pointer;
+       z-index: 1000;
+     }
 
+/* CONTENIDO PRINCIPAL*/
    .content {
-     flex-grow: 1;
-     padding: 20px;
-     margin-left: 280px;
-     transition: margin-left 0.3s ease;
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #283747;
+    position: relative;
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
    }
 
    .content.sidebar-collapsed {
@@ -88,16 +106,15 @@
    }
 
    h1 {
-     color: #ff69b4;
-     text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
+     color: #d8dddfeb;
      margin-bottom: 20px;
    }
 
    table {
-     width: 100%;
+     width: 70%;
      background-color: #222;
      border-radius: 10px;
-     box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+
    }
 
    th, td {
@@ -157,7 +174,6 @@
      background-color: #222;
      padding: 20px;
      border-radius: 10px;
-     box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
      z-index: 1000;
      width: 80%;
      max-width: 800px;
@@ -181,8 +197,7 @@
      border-radius: 5px;
      color: white;
    }
-    .form-container input#solucionAplicada {
-    margin-bottom: 25px;
+
 }
   </style>
 
