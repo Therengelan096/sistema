@@ -38,6 +38,8 @@ public class EquipoController {
                     equipo.setLaboratorio(equipoDetalles.getLaboratorio());
                     equipo.setDescripcion(equipoDetalles.getDescripcion());
                     equipo.setEstado(equipoDetalles.getEstado());
+                    equipo.setCantidad(equipoDetalles.getCantidad());
+                    equipo.setMarca(equipoDetalles.getMarca());
                     Equipo actualizado = equipoRepository.save(equipo);
                     return ResponseEntity.ok(actualizado);
                 })

@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Equipo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int  idEquipo;
+    private int idEquipo;
 
     @Column(nullable = false)
     private String nombre;
@@ -25,6 +25,12 @@ public class Equipo {
 
     @Column(nullable = false)
     private String estado;
+
+    @Column(nullable = false)
+    private int cantidad;
+
+    @Column(nullable = false)
+    private String marca;
 
     // Getters y setters
     public int getIdEquipo() {
@@ -73,5 +79,21 @@ public class Equipo {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
     }
 }

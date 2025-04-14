@@ -232,6 +232,14 @@
           <option value="en mantenimiento">En Mantenimiento</option>
         </select>
       </div>
+      <div class="mb-2">
+        <label for="cantidad">cantidad:</label>
+        <input type="text" class="form-control" id="cantidad" required>
+      </div>
+      <div class="mb-2">
+        <label for="marca">marca:</label>
+        <input type="text" class="form-control" id="marca" required>
+      </div>
       <button type="submit" class="btn btn-pink mt-2">Guardar</button>
     </form>
   </div>
@@ -245,6 +253,8 @@
       <th>Laboratorio</th>
       <th>Descripción</th>
       <th>Estado</th>
+      <th>Cantidad</th>
+      <th>Marca</th>
       <th>Acciones</th>
     </tr>
     </thead>
@@ -254,13 +264,13 @@
 
 <script>
   const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+  const content = document.getElementById('content');
+  const toggleSidebarBtn = document.getElementById('toggleSidebar');
 
-    toggleSidebarBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      content.classList.toggle('sidebar-collapsed');
-    });
+  toggleSidebarBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('sidebar-collapsed');
+  });
 
   const form = document.getElementById('equipo-form');
   const idEquipoInput = document.getElementById('idEquipo');
@@ -269,6 +279,8 @@
   const estadoInput = document.getElementById('estado');
   const categoriaIdSelect = document.getElementById('categoriaId');
   const laboratorioIdSelect = document.getElementById('laboratorioId');
+  const cantidadInput = document.getElementById('cantidad');
+  const marcaInput = document.getElementById('marca');
   const tbody = document.getElementById('equipos-body');
 
   // Cargar categorías al iniciar
@@ -314,8 +326,10 @@
             <td>${equipo.laboratorio?.nombre || equipo.laboratorio?.idLaboratorio}</td>
             <td>${equipo.descripcion}</td>
             <td>${equipo.estado}</td>
+            <td>${equipo.cantidad}</td>
+            <td>${equipo.marca}</td>
             <td>
-              <button class="btn btn-sm btn-warning" onclick="editarEquipo(${equipo.idEquipo}, '${equipo.nombre}', '${equipo.descripcion}', '${equipo.estado}', ${equipo.categoria?.idCategoria}, ${equipo.laboratorio?.idLaboratorio})">Editar</button>
+              <button class="btn btn-sm btn-warning" onclick="editarEquipo(${equipo.idEquipo}, '${equipo.nombre}', '${equipo.descripcion}', '${equipo.estado}', ${equipo.categoria?.idCategoria}, ${equipo.laboratorio?.idLaboratorio}, ${equipo.cantidad}, '${equipo.marca}')">Editar</button>
             </td>
           `;
           tbody.appendChild(row);
@@ -336,7 +350,9 @@
       descripcion: descripcionInput.value,
       categoria: { idCategoria: parseInt(categoriaIdSelect.value) },
       laboratorio: { idLaboratorio: parseInt(laboratorioIdSelect.value) },
-      estado: estadoInput.value
+      estado: estadoInput.value,
+      cantidad: parseInt(cantidadInput.value),
+      marca: marcaInput.value
     };
 
     const url = idEquipo
@@ -348,28 +364,32 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(equipo)
     })
-    .then(() => {
-      form.reset();
-      idEquipoInput.value = '';
-      cargarEquipos();
-    })
-    .catch(err => console.error('Error al guardar/actualizar:', err));
+      .then(() => {
+        form.reset();
+        idEquipoInput.value = '';
+        cargarEquipos();
+      })
+      .catch(err => console.error('Error al guardar/actualizar:', err));
   });
 
   // Cargar equipo para editar
-  function editarEquipo(id, nombre, descripcion, estado, categoriaId, laboratorioId) {
+  function editarEquipo(id, nombre, descripcion, estado, categoriaId, laboratorioId, cantidad, marca) {
     idEquipoInput.value = id;
     nombreInput.value = nombre;
     descripcionInput.value = descripcion;
     estadoInput.value = estado;
     categoriaIdSelect.value = categoriaId;
     laboratorioIdSelect.value = laboratorioId;
+    cantidadInput.value = cantidad;
+    marcaInput.value = marca;
   }
+
   // Redirige a login.html después de cerrar sesión
-    document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
-        window.location.href = '/login.html'; // Redirige a login.html
-    });
+  document.querySelector('.logout-btn').addEventListener('click', function (e) {
+    e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
+    window.location.href = '/login.html'; // Redirige a login.html
+  });
 </script>
+
 </body>
 </html>
