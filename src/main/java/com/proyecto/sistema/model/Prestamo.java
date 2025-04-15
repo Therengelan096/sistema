@@ -27,7 +27,7 @@ public class Prestamo {
     private Date fechaPrestamo;
 
     @Column(nullable = false)
-    private LocalTime horaPrestamo;  // Cambia de `Time` a `LocalTime`.
+    private LocalTime horaPrestamo;
 
     @Column(nullable = false)
     private String estado;
@@ -76,11 +76,11 @@ public class Prestamo {
         this.fechaPrestamo = fechaPrestamo;
     }
 
-    public LocalTime getHoraPrestamo() {  // Ajuste aquí.
+    public LocalTime getHoraPrestamo() {
         return horaPrestamo;
     }
 
-    public void setHoraPrestamo(LocalTime horaPrestamo) {  // Ajuste aquí.
+    public void setHoraPrestamo(LocalTime horaPrestamo) {
         this.horaPrestamo = horaPrestamo;
     }
 
