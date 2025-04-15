@@ -51,14 +51,39 @@ public class AdministradorController {
         }
     }
 
-    // Endpoint PUT para actualizar (si lo tienes)
-    // ... tu código para PUT /{id} ...
-    // Recuerda manejar el estado aquí también si es necesario en la actualización completa.
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarAdministrador(@PathVariable int id, @RequestBody Administrador administradorActualizado) {
+        Optional<Administrador> adminOptional = administradorRepository.findById(id);
 
-    // Endpoint DELETE para eliminar (si lo tienes)
-    // ... tu código para DELETE /{id} ...
+        if (adminOptional.isPresent()) {
+            Administrador adminExistente = adminOptional.get();
 
-    // --- NUEVO ENDPOINT PARA CAMBIAR ESTADO ---
+            // Actualizar los campos que se permiten modificar (excepto el ID)
+            adminExistente.setUsuario(administradorActualizado.getUsuario());
+
+            // Actualizar la contraseña solo si se proporciona una nueva
+            if (administradorActualizado.getContraseña() != null && !administradorActualizado.getContraseña().isEmpty()) {
+                // Aquí deberías hashear la nueva contraseña antes de guardarla
+                adminExistente.setContraseña(administradorActualizado.getContraseña());
+            }
+
+            // Actualizar la referencia al usuario si se proporciona un nuevo ID de usuario
+            if (administradorActualizado.getUsuarioRef() != null && administradorActualizado.getUsuarioRef().getIdUsuario() != 0) {
+                Optional<Usuario> usuarioOptional = usuarioRepository.findById(administradorActualizado.getUsuarioRef().getIdUsuario());
+                if (usuarioOptional.isPresent()) {
+                    adminExistente.setUsuarioRef(usuarioOptional.get());
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado con ID: " + administradorActualizado.getUsuarioRef().getIdUsuario());
+                }
+            }
+
+            administradorRepository.save(adminExistente);
+            return ResponseEntity.ok("Administrador actualizado exitosamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Administrador no encontrado con ID: " + id);
+        }
+    }
+
     @PatchMapping("/{id}/toggle-estado")
     public ResponseEntity<?> toggleEstadoAdministrador(@PathVariable int id) {
         Optional<Administrador> adminOptional = administradorRepository.findById(id);
@@ -77,8 +102,6 @@ public class AdministradorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Administrador no encontrado con ID: " + id);
         }
     }
-    // --- FIN NUEVO ENDPOINT ---
-
 
     // Endpoint para buscar usuario por RU (Considera moverlo a UsuarioController)
     @GetMapping("/usuarios/buscarPorRu/{ru}") // Cambiado path para claridad

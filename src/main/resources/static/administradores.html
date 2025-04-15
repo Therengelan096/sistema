@@ -531,13 +531,14 @@
             return;
         }
 
-
         const dataToSend = {
             usuario: usuario,
              // Incluir contraseña solo si es POST o si se escribió algo en PUT
              ...( (method === 'POST') || (method === 'PUT' && contraseña) ) && { contraseña: contraseña },
              // Incluir usuarioRef solo si es POST (asumiendo que no se cambia en PUT)
              ...(method === 'POST') && { usuarioRef: { idUsuario: parseInt(idUsuario) } }
+             // Eliminar esta línea para que no se envíe usuarioRef en la edición
+             // ...(method === 'PUT') && { usuarioRef: { idUsuario: parseInt(idUsuario) } }
         };
 
         fetch(url, {
