@@ -1,8 +1,10 @@
 package com.proyecto.sistema.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List; // Importa la clase List
 
 @Entity
 @Table(name = "Prestamos")
@@ -14,10 +16,6 @@ public class Prestamo {
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
-
-    @ManyToOne
-    @JoinColumn(name = "id_equipo", nullable = false)
-    private Equipo equipo;
 
     @ManyToOne
     @JoinColumn(name = "id_administrador", nullable = false)
@@ -35,7 +33,13 @@ public class Prestamo {
     @Column(nullable = false)
     private Date fechaDevolucionEstimada;
 
+    // **Nueva relación con DetallePrestamo**
+    @OneToMany(mappedBy = "prestamo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<DetallePrestamo> detallesPrestamo;
+
     // Getters y setters
+
     public int getIdPrestamo() {
         return idPrestamo;
     }
@@ -50,14 +54,6 @@ public class Prestamo {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-    }
-
-    public Equipo getEquipo() {
-        return equipo;
-    }
-
-    public void setEquipo(Equipo equipo) {
-        this.equipo = equipo;
     }
 
     public Administrador getAdministrador() {
@@ -98,5 +94,13 @@ public class Prestamo {
 
     public void setFechaDevolucionEstimada(Date fechaDevolucionEstimada) {
         this.fechaDevolucionEstimada = fechaDevolucionEstimada;
+    }
+
+    public List<DetallePrestamo> getDetallesPrestamo() {
+        return detallesPrestamo;
+    }
+
+    public void setDetallesPrestamo(List<DetallePrestamo> detallesPrestamo) {
+        this.detallesPrestamo = detallesPrestamo;
     }
 }

@@ -3,234 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prestamos</title>
+  <title>Préstamos</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/css/datepicker.min.css">
-  <style>
-    body {
-   display: flex;
-   min-height: 100vh;
-   margin: 0;
-   padding: 0;
-   background-color: #121212;
-   color: white;
- }
-
- .sidebar {
-   width: 280px;
-   background-color: #191970;
-   padding-top: 20px;
-   display: flex;
-   flex-direction: column;
-   height: 100vh;
-   position: sticky;
-   top: 0;
-   transition: width 0.3s ease;
- }
-
- .sidebar.collapsed {
-   width: 60px;
- }
-
- .sidebar a {
-   padding: 12px 15px;
-   color: white;
-   text-decoration: none;
-   transition: background-color 0.3s ease;
-   border-left: 5px solid transparent;
-   font-size: 0.9rem;
-   display: flex;
-   align-items: center;
- }
-
- .sidebar a:hover, .sidebar a.active {
-   background-color: #34495E;
-   border-left-color: #ff69b4;
- }
-
- .sidebar.collapsed a span {
-   display: none;
- }
-
- .sidebar span {
-   margin-left: 10px;
- }
-
- .sidebar hr {
-   border-color: #34495E;
-   width: 90%;
-   margin: 8px auto;
- }
-
- .sidebar .logout-btn {
-   margin-top: auto;
-   border-top: 1px solid #34495E;
- }
-
- .toggle-btn {
-   position: fixed;
-   top: 10px;
-   left: 10px;
-   background: none;
-   border: none;
-   color: white;
-   font-size: 1.5rem;
-   cursor: pointer;
-   z-index: 1000;
- }
-
- .content {
-   flex-grow: 1;
-   padding: 20px;
-   background-color: #283747;
-   position: relative;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
- }
-
- h1 {
-   color: #ff69b4;
-   text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
-   margin-bottom: 20px;
- }
-
- table {
-   width: 80%;
-   max-width: 800px;
-   background-color: #222;
-   border-radius: 10px;
-   box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
- }
-
- th, td {
-   border: 1px solid #333;
-   padding: 12px;
-   text-align: left;
- }
-
- th {
-   background-color: #ff69b4;
- }
-
- tr:nth-child(even) {
-   background-color: #333;
- }
-
- .form-container {
-   width: 80%;
-   max-width: 600px;
- }
-
- .form-group {
-   margin-bottom: 15px;
- }
-
- .form-container label {
-   display: block;
-   margin-bottom: 5px;
- }
-
- .form-container input, .form-container select {
-   width: 100%;
-   padding: 8px;
-   margin-bottom: 10px;
-   background-color: #333;
-   border: 1px solid #555;
-   color: white;
-   border-radius: 5px;
-   box-sizing: border-box;
- }
-
- .form-container button {
-   background-color: #ff69b4;
-   color: white;
-   padding: 10px 15px;
-   border: none;
-   border-radius: 5px;
-   cursor: pointer;
-   margin-top: 10px;
- }
-
- .user-info {
-   position: fixed;
-   top: 10px;
-   right: 20px;
-   text-align: right;
- }
-
- .user-info .username {
-   font-weight: bold;
- }
-
- .user-info .status {
-   font-size: 0.9rem;
-   color: #00FF00;
- }
-
- .footer {
-   position: fixed;
-   bottom: 10px;
-   right: 20px;
-   font-size: 0.9rem;
-   text-align: right;
- }
-
- .footer a {
-   color: #00BFFF;
-   text-decoration: none;
- }
-
- .footer a:hover {
-   text-decoration: underline;
- }
-
- /* Estilos para la ventana modal */
- .modal-content {
-   background-color: #121212; /* Fondo negro */
-   color: white; /* Letras blancas */
-   border: 1px solid #333; /* Borde opcional */
- }
-
- .modal-header {
-   border-bottom: 1px solid #333;
- }
-
- .modal-footer {
-   border-top: 1px solid #333;
- }
-
- .modal-content .form-control,
- .modal-content .form-select {
-   background-color: #222;
-   color: white;
-   border: 1px solid #444;
- }
-
- .modal-content .form-control:focus,
- .modal-content .form-select:focus {
-   background-color: #333;
-   border-color: #ff69b4;
-   box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
- }
-
- .modal-content .btn-primary {
-   background-color: #007bff;
-   border-color: #007bff;
- }
-
- .modal-content .btn-primary:hover {
-   background-color: #0056b3;
-   border-color: #0056b3;
- }
-
- .modal-header .btn-close {
-   color: #ffffff; /* Cambia el color del ícono de cierre a blanco */
-   opacity: 1; /* Asegura que el ícono sea completamente visible */
- }
-
-  </style>
+  <link rel="stylesheet" href="/css/prestamos.css">
 </head>
 <body>
 
@@ -252,7 +28,7 @@
   <hr>
   <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
   <hr>
-  <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
+  <a href="/prestamos.html" class="active"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
   <hr>
   <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
   <hr>
@@ -266,62 +42,80 @@
 
 <div class="content" id="content">
 
-  <h1>Prestamos</h1>
-  <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#prestamoModal">Agregar Préstamo</button>
+  <h1>Préstamos</h1>
+  <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#prestamoModal">Nuevo Préstamo</button>
   <div class="table-container">
     <table>
       <thead>
       <tr>
         <th>ID</th>
         <th>Usuario</th>
-        <th>Equipo</th>
+        <th>Equipos</th>
         <th>Administrador</th>
-        <th>Fecha Prestamo</th>
-        <th>Hora Prestamo</th>
+        <th>Fecha Préstamo</th>
+        <th>Hora Préstamo</th>
         <th>Estado</th>
         <th>Fecha Devolución Estimada</th>
         <th>Acciones</th>
       </tr>
       </thead>
-      <tbody id="prestamos-body"></tbody>
+      <tbody id="prestamos-body">
+      </tbody>
     </table>
   </div>
 
   <div class="modal fade" id="prestamoModal" tabindex="-1" aria-labelledby="prestamoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="prestamoModalLabel">Agregar Préstamo</h5>
+          <h5 class="modal-title" id="prestamoModalLabel">Nuevo Préstamo</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form id="prestamo-form">
+          <form id="nuevo-prestamo-form">
             <input type="hidden" id="prestamo-id">
-            <div class="form-group">
-              <label for="usuario">Usuario:</label>
-              <select id="usuario" class="form-select" required></select>
+            <div class="mb-3">
+              <label for="usuario" class="form-label">Usuario:</label>
+              <select class="form-select" id="usuario" name="usuario.idUsuario" required></select>
             </div>
-            <div class="form-group">
-              <label for="equipo">Equipo:</label>
-              <select id="equipo" class="form-select" required></select>
+            <div class="mb-3">
+              <label for="administrador" class="form-label">Administrador:</label>
+              <select class="form-select" id="administrador" name="administrador.idAdministrador" required></select>
             </div>
-            <div class="form-group">
-              <label for="administrador">Administrador:</label>
-              <select id="administrador" class="form-select" required></select>
+            <div class="mb-3">
+              <label for="laboratorio" class="form-label">Laboratorio:</label>
+              <select class="form-select" id="laboratorio" name="laboratorioId" required></select>
             </div>
-            <div class="form-group">
-              <label for="fechaPrestamo">Fecha y Hora Préstamo:</label>
-              <input type="datetime-local" id="fechaPrestamo" class="form-control" required>
+
+            <div id="seleccion-equipos-container" style="display: none;">
+              <h3 class="mt-3">Seleccionar Equipos</h3>
+              <div class="mb-3">
+                <label for="categoria" class="form-label">Categoría (Opcional):</label>
+                <select class="form-select" id="categoria" name="categoriaId">
+                  <option value="">Todas las Categorías</option>
+                </select>
+              </div>
+              <div id="equipos-disponibles-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+              </div>
+              <button type="button" class="btn btn-outline-primary mt-3" id="agregar-equipos-btn">Agregar Equipos Seleccionados</button>
             </div>
-            <div class="form-group">
-              <label for="estado">Estado:</label>
-              <input type="text" id="estado" class="form-control">
+
+            <div id="equipos-prestamo-lista" class="mt-3">
+              <h3>Equipos a Prestar:</h3>
+              <ul class="list-group">
+              </ul>
             </div>
-            <div class="form-group">
-              <label for="fechaDevolucionEstimada">Fecha y Hora Devolución Estimada:</label>
-              <input type="datetime-local" id="fechaDevolucionEstimada" class="form-control" required>
+
+            <div class="mb-3">
+              <label for="fechaPrestamo" class="form-label">Fecha y Hora Préstamo:</label>
+              <input type="datetime-local" class="form-control" id="fechaPrestamo" name="fechaPrestamo" required>
             </div>
-            <button type="submit" class="btn btn-primary" id="submit-button">Agregar Préstamo</button>
+            <div class="mb-3">
+              <label for="fechaDevolucionEstimada" class="form-label">Fecha y Hora Devolución Estimada:</label>
+              <input type="datetime-local" class="form-control" id="fechaDevolucionEstimada" name="fechaDevolucionEstimada" required>
+            </div>
+            <input type="hidden" name="detallesPrestamo" id="detalle-prestamo-input">
+            <button type="submit" class="btn btn-primary" id="guardar-prestamo-btn">Guardar Préstamo</button>
           </form>
         </div>
       </div>
@@ -335,165 +129,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/js/datepicker-full.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
-
-    toggleBtn.addEventListener('click', function () {
-      sidebar.classList.toggle('collapsed');
-    });
-
-    let prestamosData = []; // Almacena los datos de los préstamos
-    const prestamoModalElement = document.getElementById('prestamoModal');
-    const prestamoModal = new bootstrap.Modal(prestamoModalElement);
-    const prestamoForm = document.getElementById('prestamo-form');
-
-    cargarPrestamos();
-    populateSelects();
-
-    prestamoForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-      const id = document.getElementById('prestamo-id').value;
-      const usuarioId = document.getElementById('usuario').value;
-      const equipoId = document.getElementById('equipo').value;
-      const administradorId = document.getElementById('administrador').value;
-      const fechaPrestamoValue = document.getElementById('fechaPrestamo').value;
-      const estadoValue = document.getElementById('estado').value;
-      const fechaDevolucionEstimadaValue = document.getElementById('fechaDevolucionEstimada').value;
-
-      const method = id ? 'PUT' : 'POST';
-      const url = id ? `http://localhost:8083/prestamos/${id}` : 'http://localhost:8083/prestamos';
-
-      const dataToSend = {
-        usuario: { idUsuario: parseInt(usuarioId) },
-        equipo: { idEquipo: parseInt(equipoId) },
-        administrador: { idAdministrador: parseInt(administradorId) },
-        fechaPrestamo: fechaPrestamoValue,
-        horaPrestamo: fechaPrestamoValue.split('T')[1] || '',
-        estado: estadoValue,
-        fechaDevolucionEstimada: fechaDevolucionEstimadaValue,
-        horaDevolucionEstimada: fechaDevolucionEstimadaValue.split('T')[1] || ''
-      };
-
-      if (id) {
-        dataToSend.idPrestamo = parseInt(id);
-      }
-
-      fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataToSend)
-      })
-        .then(response => {
-          if (response.ok) {
-            cargarPrestamos();
-            prestamoModal.hide();
-            prestamoForm.reset();
-            document.getElementById('prestamo-id').value = '';
-            document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-          } else {
-            console.error('Error:', response);
-            // Aquí podrías mostrar un mensaje de error al usuario
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    prestamoModalElement.addEventListener('hidden.bs.modal', function () {
-      prestamoForm.reset();
-      document.getElementById('prestamo-id').value = '';
-      document.getElementById('submit-button').textContent = 'Agregar Préstamo';
-      document.getElementById('prestamoModalLabel').textContent = 'Agregar Préstamo';
-    });
-
-    function cargarPrestamos() {
-      fetch('http://localhost:8083/prestamos')
-        .then(response => response.json())
-        .then(data => {
-          prestamosData = data;
-          populateTable(data);
-        })
-        .catch(error => console.error('Error al cargar préstamos:', error));
-    }
-
-    function populateTable(data) {
-      const tableBody = document.getElementById('prestamos-body');
-      tableBody.innerHTML = '';
-      data.forEach(item => {
-        // Asegúrate de que las propiedades del objeto 'item' coincidan con los datos que devuelve tu API
-        tableBody.innerHTML += `
-          <tr>
-            <td>${item.idPrestamo}</td>
-            <td>${item.usuario ? item.usuario.nombre : 'N/A'}</td>
-            <td>${item.equipo ? item.equipo.nombre : 'N/A'}</td>
-            <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
-            <td>${item.fechaPrestamo}</td>
-            <td>${item.horaPrestamo}</td>
-            <td>${item.estado}</td>
-            <td>${item.fechaDevolucionEstimada}</td>
-            <td>
-              <button class="btn btn-sm btn-warning" onclick="editarPrestamo(${item.idPrestamo}, ${item.usuario ? item.usuario.idUsuario : null}, ${item.equipo ? item.equipo.idEquipo : null}, ${item.administrador ? item.administrador.idAdministrador : null}, '${item.fechaPrestamo ? item.fechaPrestamo.replace(' ', 'T') : ''}', '${item.estado}', '${item.fechaDevolucionEstimada ? item.fechaDevolucionEstimada.replace(' ', 'T') : ''}')">Modificar</button>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    function populateSelects() {
-      // Función para llenar los selectores de usuario, equipo y administrador
-      fetch('http://localhost:8083/usuarios')
-        .then(response => response.json())
-        .then(usuarios => {
-          const usuarioSelects = document.querySelectorAll('#usuario');
-          usuarioSelects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccionar Usuario</option>'; // Opción por defecto
-            usuarios.forEach(usuario => {
-              select.innerHTML += `<option value="${usuario.idUsuario}">${usuario.nombre}</option>`;
-            });
-          });
-        });
-
-      fetch('http://localhost:8083/equipos')
-        .then(response => response.json())
-        .then(equipos => {
-          const equipoSelects = document.querySelectorAll('#equipo');
-          equipoSelects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccionar Equipo</option>'; // Opción por defecto
-            equipos.forEach(equipo => {
-              select.innerHTML += `<option value="${equipo.idEquipo}">${equipo.nombre}</option>`;
-            });
-          });
-        });
-
-      fetch('http://localhost:8083/administradores')
-        .then(response => response.json())
-        .then(administradores => {
-          const administradorSelects = document.querySelectorAll('#administrador');
-          administradorSelects.forEach(select => {
-            select.innerHTML = '<option value="">Seleccionar Administrador</option>'; // Opción por defecto
-            administradores.forEach(admin => {
-              select.innerHTML += `<option value="${admin.idAdministrador}">${admin.usuario}</option>`;
-            });
-          });
-        });
-    }
-
-    window.editarPrestamo = function (id, usuarioId, equipoId, administradorId, fechaPrestamo, estado, fechaDevolucionEstimada) {
-      document.getElementById('prestamo-id').value = id;
-      document.getElementById('usuario').value = usuarioId;
-      document.getElementById('equipo').value = equipoId;
-      document.getElementById('administrador').value = administradorId;
-      document.getElementById('fechaPrestamo').value = fechaPrestamo;
-      document.getElementById('estado').value = estado;
-      document.getElementById('fechaDevolucionEstimada').value = fechaDevolucionEstimada;
-      document.getElementById('submit-button').textContent = 'Actualizar Préstamo';
-      document.getElementById('prestamoModalLabel').textContent = 'Modificar Préstamo';
-      prestamoModal.show();
-    };
-  });
-</script>
+<script src="/js/prestamos.js"></script>
 </body>
 </html>
