@@ -1,0 +1,73 @@
+USE Laboratorios;
+
+INSERT INTO Tipos_Usuarios (tipo) VALUES
+('Administrador'),
+('Docente'),
+('Estudiante');
+
+-- Usuarios
+INSERT INTO Usuarios (ru, nombre, apellido, ci, id_tipo_usuario, carrera, telefono, correo, materia, paralelo, semestre) VALUES
+(10001, 'Carlos', 'Fernández', 6543210, 1, 'Ingeniería en Sistemas', '76543210', 'carlos.fernandez@gmail.com', 'Bases de Datos', 'A', '4'),
+(10002, 'Ana', 'Gómez', 7532109, 2, 'Ingeniería Comercial', '65432109', 'ana.gomez@gmail.com', 'Marketing', 'B', '5'),
+(10003, 'Luis', 'Martínez', 8521098, 3, 'Contaduría', '54321098', 'luis.martinez@gmail.com', 'Finanzas', 'C', '3');
+
+-- LaboratoriosE
+INSERT INTO LaboratoriosE (nombre, ubicacion) VALUES
+('Laboratorio de Redes', 'Bloque A'),
+('Laboratorio de Hardware', 'Bloque B'),
+('Laboratorio de Electrónica', 'Bloque C');
+-- Categorías de Equipos
+INSERT INTO Categorias_Equipos (nombre_categoria) VALUES
+('Redes y Telecomunicaciones'),
+('Computación'),
+('Instrumentos de Medición'),
+('Equipos de Laboratorio'),
+('Herramientas Eléctricas'),
+('Mobiliario de Laboratorio');
+
+-- Equipos
+INSERT INTO Equipos (nombre, id_categoria, id_laboratorio, descripcion, estado, cantidad, marca) VALUES
+('Router Cisco', 1, 1, 'Router empresarial de alta velocidad', 'disponible', 10, 'Cisco'),
+('Laptop HP', 2, 2, 'Laptop de alto rendimiento', 'disponible', 8, 'HP'),
+('Osciloscopio Tektronix', 3, 3, 'Osciloscopio digital de 100 MHz', 'disponible', 5, 'Tektronix'),
+('Fuente de Alimentación DC', 4, 3, 'Fuente de alimentación regulada', 'disponible', 7, 'Keysight'),
+('Multímetro Digital', 3, 1, 'Multímetro de precisión', 'disponible', 12, 'Fluke'),
+('Generador de Funciones', 4, 3, 'Generador de señales arbitrarias', 'disponible', 4, 'Agilent'),
+('Taladro Inalámbrico', 5, 2, 'Taladro de batería con percutor', 'disponible', 6, 'Bosch'),
+('Juego de Destornilladores', 5, 1, 'Juego de destornilladores de diferentes tipos', 'disponible', 15, 'Stanley'),
+('Mesa de Trabajo', 6, 1, 'Mesa de laboratorio con superficie resistente', 'disponible', 5, 'Generic'),
+('Silla Ergonómica', 6, 2, 'Silla de laboratorio ajustable', 'disponible', 10, 'Herman Miller'),
+('Servidor Dell PowerEdge', 1, 1, 'Servidor rack de alto rendimiento', 'disponible', 3, 'Dell'),
+('Impresora Láser', 2, 2, 'Impresora láser monocromática', 'disponible', 5, 'Brother'),
+('Analizador de Espectro', 3, 3, 'Analizador de espectro de radiofrecuencia', 'disponible', 2, 'Rohde & Schwarz'),
+('Microscopio Óptico', 4, 3, 'Microscopio compuesto con diferentes aumentos', 'disponible', 6, 'Olympus'),
+('Pinzas Amperimétricas', 5, 1, 'Pinzas para medir corriente AC/DC', 'disponible', 8, 'UNI-T');
+-- Tipos de usuarios
+
+-- Administrador único
+INSERT INTO Administradores (usuario, contraseña, id_usuario, estado) VALUES
+('admin', 'wasa', 1, 'ACTIVO');
+
+-- Préstamos gestionados por el mismo administrador
+INSERT INTO Prestamos (id_usuario, fecha_prestamo, hora_prestamo, id_administrador, estado, fecha_devolucion_estimada) VALUES
+(2, '2025-04-10', '10:00:00', 1, 'pendiente', '2025-04-15'),
+(3, '2025-04-11', '15:30:00', 1, 'pendiente', '2025-04-16');
+
+-- Detalle de préstamos con múltiples equipos
+INSERT INTO Detalle_Prestamo (id_prestamo, id_equipo, cantidad) VALUES
+(1, 1, 2),
+(1, 2, 3),
+(2, 3, 1);
+
+-- Devolución
+INSERT INTO Devolucion (id_prestamo, fecha_devolucion, hora_devolucion, estado_equipo_al_devolver, observaciones) VALUES
+(1, '2025-04-15', '11:00:00', 'bueno', 'Sin daños visibles'),
+(2, '2025-04-16', '16:00:00', 'bueno', 'Equipo revisado');
+
+-- Sanciones
+INSERT INTO Sanciones (id_usuario, motivo_sancion, fecha_sancion, estado) VALUES
+(2, 'Retraso en la devolución', '2025-04-16', 'activa');
+
+-- Mantenimiento
+INSERT INTO Mantenimiento (id_equipo, fecha_mantenimiento, estado_inicial, estado_final, descripcion_problema, solucion_aplicada) VALUES
+(3, '2025-04-17', 'regular', 'bueno', 'Revisión de conectores', 'Conectores ajustados y limpiados');
