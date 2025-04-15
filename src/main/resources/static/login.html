@@ -184,9 +184,11 @@
     </div>
     <h1>Iniciar Sesión</h1>
 
-    <!-- Contenedor para el mensaje de error -->
     <div id="error-message" class="alert alert-danger" style="display: none;">
         Usuario o contraseña incorrecta. Inténtelo de nuevo.
+    </div>
+    <div id="disabled-message" class="alert alert-warning" style="display: none;">
+        Administrador inhabilitado.
     </div>
 
     <form action="/login" method="post">
@@ -208,7 +210,6 @@
     </form>
 </div>
 
-<!-- Contenedor para la animación de esferas -->
 <div class="animation-container">
     <div class="sphere"></div>
     <div class="sphere"></div>
@@ -223,6 +224,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('error') === 'true') {
         document.getElementById('error-message').style.display = 'block';
+        document.getElementById('disabled-message').style.display = 'none';
+    } else if (urlParams.get('error') === 'disabled') {
+        document.getElementById('disabled-message').style.display = 'block';
+        document.getElementById('error-message').style.display = 'none';
+    } else {
+        document.getElementById('error-message').style.display = 'none';
+        document.getElementById('disabled-message').style.display = 'none';
     }
 </script>
 </body>
