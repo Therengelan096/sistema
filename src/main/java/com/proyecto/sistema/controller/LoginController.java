@@ -21,17 +21,21 @@ public class LoginController {
 
     @PostMapping
     public void procesarLogin(@RequestParam String usuario, @RequestParam String contraseña, HttpServletResponse response, HttpSession session) throws IOException {
-        if (administradorService.autenticar(usuario, contraseña)) {
-            // Obtenemos el administrador autenticado
-            Administrador admin = administradorService.obtenerPorUsuario(usuario);
+        Administrador admin = administradorService.obtenerPorUsuarioYContraseña(usuario, contraseña);
 
-            // Guardamos el ID del usuario relacionado en la sesión
-            session.setAttribute("idUsuario", admin.getUsuarioRef().getIdUsuario());
+        if (admin != null) {
+            if (admin.getEstado() == com.proyecto.sistema.model.EstadoAdmin.ACTIVO) {
+                // Guardamos el ID del usuario relacionado en la sesión
+                session.setAttribute("idUsuario", admin.getUsuarioRef().getIdUsuario());
 
-            // Redirigimos al menú principal
-            response.sendRedirect("/menuprincipal.html");
+                // Redirigimos al menú principal
+                response.sendRedirect("/menuprincipal.html");
+            } else {
+                // Redirige al login con un parámetro de error de administrador inhabilitado
+                response.sendRedirect("/login.html?error=disabled");
+            }
         } else {
-            // Redirige al login con un parámetro de error
+            // Redirige al login con un parámetro de error de credenciales incorrectas
             response.sendRedirect("/login.html?error=true");
         }
     }
