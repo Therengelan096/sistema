@@ -15,6 +15,10 @@ public class Laboratorio {
     @Column(nullable = false, unique = true)
     private String nombre;
 
+    // Aquí debes agregar el campo ubicacion
+    @Column(nullable = false) // Asegúrate de que coincida con la configuración de tu base de datos
+    private String ubicacion;
+
     @OneToMany(mappedBy = "laboratorio")
     private List<Equipo> equipos;
 
@@ -42,6 +46,15 @@ public class Laboratorio {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    // Getters y setters para ubicacion
+    public String getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(String ubicacion) {
+        this.ubicacion = ubicacion;
     }
 
     public List<Equipo> getEquipos() {

@@ -292,34 +292,37 @@
       cargarLaboratorios();
 
       laboratorioForm.addEventListener('submit', function (event) {
-          event.preventDefault();
-          const id = laboratorioIdInput.value;
-          const nombre = nombreInput.value;
-          const ubicacion = ubicacionInput.value;
+    event.preventDefault();
+    const id = laboratorioIdInput.value;
+    const nombre = nombreInput.value;
+    const ubicacion = ubicacionInput.value;
 
-          const method = id ? 'PUT' : 'POST';
-          const url = id ? `http://localhost:8083/laboratorios/${id}` : 'http://localhost:8083/laboratorios';
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `http://localhost:8083/laboratorios/${id}` : 'http://localhost:8083/laboratorios';
 
-          fetch(url, {
-              method: method,
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ nombre: nombre, ubicacion: ubicacion })
-          })
-              .then(response => {
-                  if (response.ok) {
-                      cargarLaboratorios();
-                      laboratorioIdInput.value = '';
-                      nombreInput.value = '';
-                      ubicacionInput.value = '';
-                      submitButton.textContent = 'Agregar Laboratorio';
-                  } else {
-                      console.error('Error:', response);
-                  }
-              })
-              .catch(error => console.error('Error:', error));
-      });
+    const dataToSend = { nombre: nombre, ubicacion: ubicacion };
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+        .then(response => {
+            if (response.ok) {
+                cargarLaboratorios();
+                laboratorioIdInput.value = '';
+                nombreInput.value = '';
+                ubicacionInput.value = '';
+                submitButton.textContent = 'Agregar Laboratorio';
+            } else {
+                console.error('Error:', response);
+                response.text().then(text => console.log('Error body:', text));
+            }
+        })
+        .catch(error => console.error('Error:', error));
+});
   });
 </script>
 </body>
