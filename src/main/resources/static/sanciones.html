@@ -236,8 +236,8 @@
       content.classList.toggle('sidebar-collapsed');
     });
 
-  // === FUNCIÓN PARA MARCAR COMO CUMPLIDA ===
-  function marcarCumplida(id) {
+ // === FUNCIÓN PARA MARCAR COMO CUMPLIDA ===
+function marcarCumplida(id, button) {
     fetch(`http://localhost:8083/sanciones/cumplida/${id}`, {
         method: 'PUT'
     })
@@ -246,16 +246,16 @@
         return response.text();
     })
     .then(() => {
-       // alert("Sanción marcada como cumplida.");
-        location.reload();
+        button.textContent = 'Inactiva'; // Cambia el texto del botón
+        button.disabled = true; // Deshabilita el botón
     })
     .catch(error => {
         alert("Error: " + error.message);
     });
-  }
+}
 
-  // === FUNCIÓN PARA ENVIAR UNA NUEVA SANCIÓN ===
-  document.getElementById('form-sancion').addEventListener('submit', function(e) {
+// === FUNCIÓN PARA ENVIAR UNA NUEVA SANCIÓN ===
+document.getElementById('form-sancion').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const ru = document.getElementById('ruUsuario').value;
@@ -273,38 +273,36 @@
         return response.json();
     })
     .then(data => {
-      // alert("Sanción agregada correctamente.");
         location.reload();
     })
     .catch(error => {
         alert("Error: " + error.message);
     });
-  });
+});
 
-  // === FUNCIÓN PARA CARGAR Y MOSTRAR TODAS LAS SANCIONES ===
-  fetch('http://localhost:8083/sanciones')
-      .then(response => response.json())
-      .then(data => {
-          const tableBody = document.getElementById('sanciones-body');
-          tableBody.innerHTML = ''; // Limpia antes de agregar
+// === FUNCIÓN PARA CARGAR Y MOSTRAR TODAS LAS SANCIONES ===
+fetch('http://localhost:8083/sanciones')
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.getElementById('sanciones-body');
+        tableBody.innerHTML = '';
 
-          data.forEach(sancion => {
-              const row = `<tr>
+        data.forEach(sancion => {
+            const buttonContent = (sancion.estado === 'activa') ?
+                `<button class="btn btn-sm btn-success" onclick="marcarCumplida(${sancion.idSancion}, this)">Inactiva</button>` :
+                'inactiva';
+
+            const row = `<tr>
                 <td>${sancion.idSancion}</td>
                 <td>${sancion.usuario?.nombre ?? 'Sin nombre'}</td>
                 <td>${sancion.motivoSancion}</td>
                 <td>${sancion.fechaSancion ? new Date(sancion.fechaSancion).toLocaleDateString() : 'Sin fecha'}</td>
-                <td>
-                  ${(sancion.estado === 'activa') ?
-    `<button class="btn btn-sm btn-success" onclick="marcarCumplida(${sancion.idSancion})">Cumplida</button>`
-    : 'Cumplida'}
-
-                </td>
-              </tr>`;
-              tableBody.innerHTML += row;
-          });
-      })
-      .catch(error => console.error('Error al cargar sanciones:', error));
+                <td>${buttonContent}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    })
+    .catch(error => console.error('Error al cargar sanciones:', error));
 
 // Redirige a login.html después de cerrar sesión
     document.querySelector('.logout-btn').addEventListener('click', function (e) {
