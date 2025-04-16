@@ -114,7 +114,7 @@
      width: 70%;
      background-color: #222;
      border-radius: 10px;
-
+     border-collapse: collapse; /* Añadido para mejor manejo de bordes */
    }
 
    th, td {
@@ -125,6 +125,7 @@
 
    th {
      background-color: #ff69b4;
+     color: white; /* Añadido para que el texto del encabezado sea blanco */
    }
 
    tr:nth-child(even) {
@@ -186,6 +187,7 @@
 
    .form-container label {
      margin-top: 10px;
+     color: white; /* Añadido para que las etiquetas sean blancas */
    }
 
    .form-container input,
@@ -197,84 +199,81 @@
      border-radius: 5px;
      color: white;
    }
-
-}
   </style>
 
 </head>
 <body>
 
-  <div class="sidebar" id="sidebar">
-    <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
-    <hr>
-    <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
-    <hr>
-    <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
-    <hr>
-    <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a>
-    <hr>
-    <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a>
-    <hr>
-    <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
-    <hr>
-    <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
-    <hr>
-    <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
-    <hr>
-    <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
-    <hr>
-    <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
-    <a href="/logout" class="logout-btn">
-      <i class="bi bi-power"></i><span>Cerrar Sesión</span>
-    </a>
+<div class="sidebar" id="sidebar">
+  <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
+  <hr>
+  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+  <hr>
+  <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
+  <hr>
+  <a href="/mantenimiento.html" class=""><i class="bi bi-tools"></i><span>Mantenimiento</span></a>
+  <hr>
+  <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a>
+  <hr>
+  <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
+  <hr>
+  <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
+  <hr>
+  <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
+  <hr>
+  <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
+  <hr>
+  <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+  <a href="/logout" class="logout-btn">
+    <i class="bi bi-power"></i><span>Cerrar Sesión</span>
+  </a>
+</div>
+<div class="content" id="content">
+
+  <h1>Mantenimiento</h1>
+  <div class="button-container">
+    <button class="boton-celeste" onclick="mostrarFormulario('agregar')">Agregar Mantenimiento</button>
   </div>
-  <div class="content" id="content">
+  <div class="table-container">
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>ID Equipo</th>
+        <th>Fecha</th>
+        <th>Estado Inicial</th>
+        <th>Estado Final</th>
+        <th>Problema</th>
+        <th>Solución</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="mantenimiento-body"></tbody>
+    </table>
+  </div>
 
- <h1>Mantenimiento</h1>
-<div class="button-container">
-  <button class="boton-celeste" onclick="mostrarFormulario('agregar')">Agregar Mantenimiento</button>
-</div>
-<div class="table-container">
-  <table>
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>ID Equipo</th>
-      <th>Fecha</th>
-      <th>Estado Inicial</th>
-      <th>Estado Final</th>
-      <th>Problema</th>
-      <th>Solución</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody id="mantenimiento-body"></tbody>
-  </table>
-</div>
-
-<div id="mantenimiento-form" class="form-container">
-  <form id="mantenimiento-form-data">
-    <input type="hidden" id="idMantenimiento">
-    <label for="equipo">ID Equipo:</label>
-    <input type="number" id="equipo" required>
-    <label for="fechaMantenimiento">Fecha:</label>
-    <input type="date" id="fechaMantenimiento" required>
-    <label for="estadoInicial">Estado Inicial:</label>
-    <input type="text" id="estadoInicial" required>
-    <label for="estadoFinal">Estado Final:</label>
-    <input type="text" id="estadoFinal" required>
-    <label for="descripcionProblema">Problema:</label>
-    <input type="text" id="descripcionProblema">
-    <label for="solucionAplicada">Solución:</label>
-    <input type="text" id="solucionAplicada">
-    <div class="button-container">
-      <button type="button" class="boton-celeste" onclick="guardarMantenimiento()">Guardar</button>
-      <button type="button" class="boton-rojo" onclick="ocultarFormulario()">Cancelar</button>
-    </div>
-  </form>
-</div>
-
-<script>
+  <div id="mantenimiento-form" class="form-container">
+    <form id="mantenimiento-form-data">
+      <input type="hidden" id="idMantenimiento">
+      <label for="equipo">ID Equipo:</label>
+      <input type="number" id="equipo" required>
+      <label for="fechaMantenimiento">Fecha:</label>
+      <input type="date" id="fechaMantenimiento" required>
+      <label for="estadoInicial">Estado Inicial:</label>
+      <input type="text" id="estadoInicial" required>
+      <label for="estadoFinal">Estado Final:</label>
+      <input type="text" id="estadoFinal" required>
+      <label for="descripcionProblema">Problema:</label>
+      <input type="text" id="descripcionProblema">
+      <label for="solucionAplicada">Solución:</label>
+      <input type="text" id="solucionAplicada">
+      <div class="button-container">
+        <button type="button" class="boton-celeste" onclick="guardarMantenimiento()">Guardar</button>
+        <button type="button" class="boton-rojo" onclick="ocultarFormulario()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div> <script>
   const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
