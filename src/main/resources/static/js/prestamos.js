@@ -174,28 +174,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function populateTable(data) {
-    const tableBody = document.getElementById('prestamos-body');
-    tableBody.innerHTML = '';
-    data.forEach(item => {
-      const equiposPrestados = item.detallesPrestamo ?
-        item.detallesPrestamo.map(detalle => `${detalle.equipo.nombre} (${detalle.cantidad})`).join(', ') : 'N/A';
+      const tableBody = document.getElementById('prestamos-body');
+      tableBody.innerHTML = '';
+      data.forEach(item => {
+        const equiposPrestados = item.detallesPrestamo ?
+          item.detallesPrestamo.map(detalle => `${detalle.equipo.nombre} (${detalle.cantidad})`).join(', ') : 'N/A';
 
-      tableBody.innerHTML += `
-        <tr>
-          <td>${item.idPrestamo}</td>
-          <td>${item.usuario ? item.usuario.nombre + ' ' + item.usuario.apellido : 'N/A'}</td>
-          <td>${equiposPrestados}</td>
-          <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
-          <td>${item.fechaPrestamo ? new Date(item.fechaPrestamo).toLocaleDateString() : 'N/A'} ${item.horaPrestamo || ''}</td>
-          <td>${item.estado}</td>
-          <td>${item.fechaDevolucionEstimada ? new Date(item.fechaDevolucionEstimada).toLocaleDateString() : 'N/A'}</td>
-          <td>
-            <button class="btn btn-sm btn-warning" onclick="editarPrestamo(${item.idPrestamo})">Modificar</button>
-          </td>
-        </tr>
-      `;
-    });
-  }
+        const fechaPrestamo = item.fechaPrestamo ? new Date(item.fechaPrestamo).toLocaleDateString() : 'N/A';
+        const horaPrestamo = item.horaPrestamo ? item.horaPrestamo.slice(0, 5) : 'N/A';
+        const fechaDevolucionEstimada = item.fechaDevolucionEstimada ? new Date(item.fechaDevolucionEstimada).toLocaleDateString() : 'N/A';
+
+        tableBody.innerHTML += `
+          <tr>
+            <td>${item.idPrestamo}</td>
+            <td>${item.usuario ? item.usuario.nombre + ' ' + item.usuario.apellido : 'N/A'}</td>
+            <td>${equiposPrestados}</td>
+            <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
+            <td>${fechaPrestamo}</td>
+            <td>${horaPrestamo}</td>
+            <td>${item.estado}</td>
+            <td>${fechaDevolucionEstimada}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="editarPrestamo(${item.idPrestamo})">Modificar</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
 
   function cargarUsuarios() {
     fetch('/usuarios')
@@ -318,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .catch(error => console.error('Error al cargar préstamo para editar:', error));
   };
-
   // Cargar administradores al cargar la página
   cargarAdministradores();
 });
