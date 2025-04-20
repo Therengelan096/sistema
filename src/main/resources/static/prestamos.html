@@ -121,14 +121,48 @@
       </div>
     </div>
   </div>
-</div>
+  <div class="modal fade" id="devolucionModal" tabindex="-1" aria-labelledby="devolucionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="devolucionModalLabel">Registrar Devolución</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="devolucion-form">
+            <input type="hidden" id="devolucion-prestamo-id">
 
-<div class="footer">
+            <div class="mb-3">
+              <label for="fechaDevolucion" class="form-label">Fecha de Devolución:</label>
+              <input type="date" class="form-control" id="fechaDevolucion" required>
+            </div>
+            <div class="mb-3">
+              <label for="horaDevolucion" class="form-label">Hora de Devolución:</label>
+              <input type="time" class="form-control" id="horaDevolucion" required>
+            </div>
+            <div class="mb-3">
+              <label for="estadoEquipoAlDevolver" class="form-label">Estado del Equipo:</label>
+              <select class="form-select" id="estadoEquipoAlDevolver" required>
+                <option value="">Seleccionar Estado</option>
+                <option value="Bueno">Bueno</option>
+                <option value="Malo">Malo</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="observaciones" class="form-label">Observaciones:</label>
+              <textarea class="form-control" id="observaciones" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Devolución</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> <div class="footer">
   © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.3/dist/js/datepicker-full.min.js"></script>
 <script src="/js/prestamos.js"></script>
 <script src="/js/menu.js"></script>
 </body>
