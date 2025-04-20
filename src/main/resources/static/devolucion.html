@@ -1,20 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100 text-bg-dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devoluciones</title>
+    <title>Devoluciones - Sistema de Control</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
             background-color: #121212;
             color: white;
-            min-height: 100vh;
+            font-family: Arial, sans-serif; /* Añadido para consistencia */
+            flex-direction: row; /* Modificado para colocar el sidebar a la izquierda */
+            align-items: stretch; /* Estirar el sidebar para que ocupe toda la altura */
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: #191970;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            left: 0;
+            transition: width 0.3s ease;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar a {
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-left: 5px solid transparent;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #34495E;
+            border-left-color: #ff69b4;
+        }
+
+        .sidebar a i {
+            font-size: 1.2rem;
+        }
+
+        .sidebar a span {
+            margin-left: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+        }
+
+        .sidebar.collapsed a span {
+            opacity: 0;
+            width: 0;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .sidebar.collapsed a {
+            justify-content: center;
+        }
+
+        .sidebar hr {
+            border-color: #34495E;
+            margin: 5px 0;
+        }
+
+        .sidebar .logout-btn {
+            margin-top: auto;
+            border-top: 1px solid #34495E;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #283747;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
         }
 
         h1 {
@@ -23,12 +103,18 @@
             margin-bottom: 20px;
         }
 
-        table {
+        .table-container {
             width: 80%;
             max-width: 800px;
             background-color: #222;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+            margin-top: 20px; /* Añadido para espaciar del título */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Añadido para evitar doble borde */
         }
 
         th, td {
@@ -44,25 +130,118 @@
         tr:nth-child(even) {
             background-color: #333;
         }
+
+        .top-right-user {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            text-align: right;
+        }
+
+        .top-right-user i {
+            font-size: 1.5rem;
+        }
+
+        .top-right-user small {
+            font-size: 0.8rem;
+            color: #00ff00;
+        }
+
+        .bottom-right {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        .bottom-right a {
+            color: #00bfff;
+            text-decoration: none;
+        }
+
+        .bottom-right a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
-<h1>Devoluciones</h1>
-<div class="table-container">
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>ID Prestamo</th>
-            <th>Fecha Devolución</th>
-            <th>Hora Devolución</th>
-            <th>Estado</th>
-            <th>Observaciones</th>
-        </tr>
-        </thead>
-        <tbody id="devolucion-body"></tbody>
-    </table>
+
+<div class="sidebar" id="sidebar">
+    <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
+    <hr>
+    <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+    <hr>
+    <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
+    <hr>
+    <a href="/mantenimiento.html"><i class="bi bi-tools"></i><span>Mantenimiento</span></a>
+    <hr>
+    <a href="/reportes.html"><i class="bi bi-file-earmark-bar-graph"></i><span>Reportes</span></a>
+    <hr>
+    <a href="/equipos.html"><i class="bi bi-pc-display-horizontal"></i><span>Equipos</span></a>
+    <hr>
+    <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
+    <hr>
+    <a href="/devolucion.html"><i class="bi bi-arrow-return-left"></i><span>Devoluciones</span></a>
+    <hr>
+    <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
+    <hr>
+    <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
+    <hr>
+    <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+    <a href="/logout" class="logout-btn">
+        <i class="bi bi-power"></i><span>Cerrar Sesión</span>
+    </a>
 </div>
+
+<div class="content">
+    <div class="top-right-user">
+        <i class="bi bi-person-circle"></i> <strong id="user-name">Cargando...</strong><br>
+        <small>🟢 En línea</small>
+    </div>
+
+    <h1>Devoluciones</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID Prestamo</th>
+                <th>Fecha Devolución</th>
+                <th>Hora Devolución</th>
+                <th>Estado</th>
+                <th>Observaciones</th>
+            </tr>
+            </thead>
+            <tbody id="devolucion-body"></tbody>
+        </table>
+    </div>
+
+    <div class="bottom-right">
+        2025 Control de laboratorio | <a href="/contacto.html">Contáctanos</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        toggleBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            sidebar.classList.toggle('collapsed');
+        });
+    });
+
+    // Redirige a login.html después de cerrar sesión
+    document.querySelector('.logout-btn').addEventListener('click', function (e) {
+        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
+        window.location.href = '/login.html'; // Redirige a login.html
+    });
+</script>
+<script src="/js/usuario.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     fetch('http://localhost:8083/devolucion')
         .then(response => response.json())

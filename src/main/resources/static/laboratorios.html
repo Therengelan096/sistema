@@ -16,57 +16,73 @@
         color: white;
     }
 
-    .sidebar {
-        width: 280px;
-        background-color: #191970;
-        padding-top: 20px;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-        transition: width 0.3s ease;
-    }
+.sidebar {
+       width: 280px;
+       background-color: #191970;
+       padding-top: 20px;
+       display: flex;
+       flex-direction: column;
+       height: 100vh;
+       position: fixed;
+       top: 0;
+       left: 0;
+       transition: width 0.3s ease;
+       overflow: hidden;
+     }
 
-    .sidebar.collapsed {
-        width: 60px;
-    }
+     .sidebar.collapsed {
+       width: 60px;
+     }
 
-    .sidebar a {
-        padding: 12px 15px;
-        color: white;
-        text-decoration: none;
-        transition: background-color 0.3s ease;
-        border-left: 5px solid transparent;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-    }
+     .sidebar a {
+       padding: 12px 15px;
+       color: white;
+       text-decoration: none;
+       transition: background-color 0.3s ease;
+       border-left: 5px solid transparent;
+       font-size: 0.9rem;
+       display: flex;
+       align-items: center;
+       white-space: nowrap;
+     }
 
-    .sidebar a:hover, .sidebar a.active {
-        background-color: #34495E;
-        border-left-color: #ff69b4;
-    }
+     .sidebar a:hover,
+     .sidebar a.active {
+       background-color: #34495E;
+       border-left-color: #ff69b4;
+     }
 
-    .sidebar.collapsed a span {
-        display: none;
-    }
+     .sidebar a i {
+       font-size: 1.2rem;
+     }
 
-    .sidebar span {
-        margin-left: 10px;
-    }
+     .sidebar a span {
+       margin-left: 10px;
+       white-space: nowrap;
+       overflow: hidden;
+       transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+     }
 
-    .sidebar hr {
-        border-color: #34495E;
-        width: 90%;
-        margin: 8px auto;
-    }
+     .sidebar.collapsed a span {
+       opacity: 0;
+       width: 0;
+       margin: 0;
+       pointer-events: none;
+     }
 
-    .sidebar .logout-btn {
-        margin-top: auto;
-        border-top: 1px solid #34495E;
-    }
+     .sidebar.collapsed a {
+       justify-content: center;
+     }
 
+     .sidebar hr {
+       border-color: #34495E;
+       margin: 5px 0;
+     }
+
+     .sidebar .logout-btn {
+       margin-top: auto;
+       border-top: 1px solid #34495E;
+     }
     .toggle-btn {
         position: fixed;
         top: 10px;
@@ -84,6 +100,12 @@
         padding: 20px;
         background-color: #283747;
         position: relative;
+        margin-left: 280px; /* Asegúrate de que el contenido no se superponga con el sidebar fijo */
+        transition: margin-left 0.3s ease; /* Añadida transición para el cambio de margen */
+    }
+
+    .content.sidebar-collapsed {
+        margin-left: 60px; /* Ancho del sidebar colapsado */
     }
 
     .form-container {
@@ -182,6 +204,8 @@
   <hr>
   <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
   <hr>
+  <a href="/devolucion.html"><i class="bi bi-arrow-return-left"></i><span>Devoluciones</span></a>
+  <hr>
   <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
   <hr>
   <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
@@ -235,6 +259,7 @@
   document.addEventListener('DOMContentLoaded', function () {
       const toggleBtn = document.getElementById('toggleSidebar');
       const sidebar = document.getElementById('sidebar');
+      const content = document.getElementById('content'); // Obtén el elemento content
       const laboratorioForm = document.getElementById('laboratorio-form');
       const laboratorioIdInput = document.getElementById('laboratorio-id');
       const nombreInput = document.getElementById('nombre');
@@ -244,6 +269,7 @@
 
       toggleBtn.addEventListener('click', function () {
           sidebar.classList.toggle('collapsed');
+          content.classList.toggle('sidebar-collapsed'); // Agrega o remueve la clase del contenido
       });
 
       function cargarLaboratorios() {
