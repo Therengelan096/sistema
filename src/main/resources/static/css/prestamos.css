@@ -28,7 +28,7 @@ body {
 }
 
 .sidebar a {
-  padding: 12px 15px;
+  padding: 15px 15px;
   color: white;
   text-decoration: none;
   transition: background-color 0.3s ease;
@@ -93,7 +93,7 @@ h1 {
 }
 
 .table-container {
-  width: 98%; /* Aumentamos el ancho del contenedor de la tabla */
+  width: 95%; /* Aumentamos el ancho del contenedor de la tabla */
   max-width: none; /* Eliminamos el ancho máximo para que se expanda si es necesario */
   margin: 20px auto;
   overflow-x: auto; /* Mantenemos el scroll horizontal por si acaso */
