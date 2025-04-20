@@ -50,49 +50,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Esta sigue siendo local, solo la llama cargarPrestamos
   function populateTable(data) {
-      const tableBody = document.getElementById('prestamos-body');
-      tableBody.innerHTML = '';
-      if (data.length === 0) {
-           tableBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay préstamos registrados.</td></tr>`;
-           return;
+        const tableBody = document.getElementById('prestamos-body');
+        tableBody.innerHTML = '';
+        if (data.length === 0) {
+             tableBody.innerHTML = `<tr><td colspan="9" class="text-center">No hay préstamos registrados.</td></tr>`;
+             return;
+        }
+
+        data.forEach(item => {
+          const equiposPrestados = item.detallesPrestamo && item.detallesPrestamo.length > 0 ?
+            item.detallesPrestamo.map(detalle => `${detalle.equipo ? detalle.equipo.nombre : 'Equipo Desconocido'} (${detalle.cantidad})`).join(', ') : 'N/A';
+
+          const fechaPrestamo = item.fechaPrestamo ? new Date(item.fechaPrestamo).toLocaleDateString() : 'N/A';
+          const horaPrestamo = item.horaPrestamo ? item.horaPrestamo.slice(0, 5) : 'N/A';
+          const fechaDevolucionEstimada = item.fechaDevolucionEstimada ? new Date(item.fechaDevolucionEstimada).toLocaleDateString() : 'N/A';
+
+          let estadoTexto = item.estado;
+          let estadoClase = '';
+          let botonModificarHTML = '';
+          let botonDevolucionHTML = '';
+
+          switch (item.estado) {
+            case 'pendiente':
+              estadoClase = 'text-warning';
+              botonModificarHTML = `<button class="btn btn-sm btn-warning me-1" onclick="editarPrestamo(${item.idPrestamo})">Modificar</button>`;
+              botonDevolucionHTML = `<button class="btn btn-sm btn-success btn-entregar" data-id="${item.idPrestamo}">Entregar</button>`;
+              break;
+            case 'devuelto':
+              estadoClase = 'text-success';
+              botonModificarHTML = `<button class="btn btn-sm btn-warning me-1" disabled>Modificar</button>`;
+              botonDevolucionHTML = `<button class="btn btn-sm btn-danger btn-cancelar-devolucion" data-id="${item.idPrestamo}">Cancelar</button>`;
+              break;
+            case 'retrasado':
+              estadoClase = 'text-danger';
+              botonModificarHTML = `<button class="btn btn-sm btn-warning me-1" onclick="editarPrestamo(${item.idPrestamo})">Modificar</button>`;
+              botonDevolucionHTML = `<button class="btn btn-sm btn-success btn-entregar" data-id="${item.idPrestamo}">Entregar</button>`;
+              break;
+          }
+
+          tableBody.innerHTML += `
+            <tr>
+              <td>${item.idPrestamo}</td>
+              <td>${item.usuario ? item.usuario.nombre + ' ' + item.usuario.apellido : 'N/A'}</td>
+              <td>${equiposPrestados}</td>
+              <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
+              <td>${fechaPrestamo}</td>
+              <td>${horaPrestamo}</td>
+              <td class="${estadoClase}">${estadoTexto}</td>
+              <td>${fechaDevolucionEstimada}</td>
+              <td>
+                ${botonModificarHTML}
+                ${botonDevolucionHTML}
+              </td>
+            </tr>
+          `;
+        });
       }
-
-      data.forEach(item => {
-        const equiposPrestados = item.detallesPrestamo && item.detallesPrestamo.length > 0 ?
-          item.detallesPrestamo.map(detalle => `${detalle.equipo ? detalle.equipo.nombre : 'Equipo Desconocido'} (${detalle.cantidad})`).join(', ') : 'N/A';
-
-        const fechaPrestamo = item.fechaPrestamo ? new Date(item.fechaPrestamo).toLocaleDateString() : 'N/A';
-        const horaPrestamo = item.horaPrestamo ? item.horaPrestamo.slice(0, 5) : 'N/A';
-        const fechaDevolucionEstimada = item.fechaDevolucionEstimada ? new Date(item.fechaDevolucionEstimada).toLocaleDateString() : 'N/A';
-
-        // Determina si mostrar el botón "Entregar" (solo si el estado es 'pendiente')
-        const botonEntregar = item.estado === 'pendiente' ?
-           `<button class="btn btn-sm btn-success btn-entregar me-1" data-id="${item.idPrestamo}">Entregar</button>` : '';
-
-
-        // Mostrar el botón Modificar solo si el estado es 'pendiente'
-        const botonModificar = item.estado === 'pendiente' ?
-           // Mantenemos onclick="editarPrestamo(...)" porque el usuario quiere arreglar SOLO ESO
-           `<button class="btn btn-sm btn-warning" onclick="editarPrestamo(${item.idPrestamo})">Modificar</button>` : '';
-
-
-        tableBody.innerHTML += `
-          <tr>
-            <td>${item.idPrestamo}</td>
-            <td>${item.usuario ? item.usuario.nombre + ' ' + item.usuario.apellido : 'N/A'}</td>
-            <td>${equiposPrestados}</td>
-            <td>${item.administrador ? item.administrador.usuario : 'N/A'}</td>
-            <td>${fechaPrestamo}</td>
-            <td>${horaPrestamo}</td>
-            <td>${item.estado}</td>
-            <td>${fechaDevolucionEstimada}</td>
-            <td>
-              ${botonModificar}
-              ${botonEntregar} </td>
-          </tr>
-        `;
-      });
-    }
 
   // OTRAS FUNCIONES DE CARGA QUE DEBEN SER ACCESIBLES POR editarPrestamo
   window.cargarUsuarios = function() { // <-- HECHO GLOBAL
@@ -190,8 +203,11 @@ document.addEventListener('DOMContentLoaded', function () {
                   ${equipo.nombre}
                 </label>
               </div>
+              <div class="mt-1" style="color: #aaa;">
+                Disponibles: ${equipo.cantidad}
+              </div>
               <div class="mt-2">
-                <label for="cantidad-${equipo.idEquipo}" class="form-label small">Cantidad:</label>
+                <label for="cantidad-${equipo.idEquipo}" class="form-label small">Cantidad a prestar:</label>
                 <input type="number" class="form-control form-control-sm bg-dark border-secondary text-white" id="cantidad-${equipo.idEquipo}" value="1" min="1" style="width: 70px;">
               </div>
             </div>
@@ -342,8 +358,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Evento de clic en el toggle del sidebar
-  toggleBtn.addEventListener('click', function () {
-    sidebar.classList.toggle('collapsed');
+  document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    toggleBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      sidebar.classList.toggle('collapsed');
+    });
   });
 
   // Evento de clic usando delegación para los botones 'Entregar' en la tabla
@@ -383,31 +405,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Evento al hacer clic en "Agregar Equipos Seleccionados" (Ya estaba)
   agregarEquiposBtn.addEventListener('click', function () {
-    const equiposCheckboxes = equiposDisponiblesContainer.querySelectorAll('input[type="checkbox"]:checked');
-    if (equiposCheckboxes.length === 0) {
+      const equiposCheckboxes = equiposDisponiblesContainer.querySelectorAll('input[type="checkbox"]:checked');
+      if (equiposCheckboxes.length === 0) {
         alert("Selecciona al menos un equipo para agregar.");
         return;
-    }
-    equiposCheckboxes.forEach(checkbox => {
-      const equipoId = checkbox.value;
-      const cantidadInput = checkbox.closest('.equipo-item').querySelector('input[type="number"]');
-      const nombreEquipoSpan = checkbox.closest('.equipo-item').querySelector('.nombre-equipo');
-      const nombreEquipo = nombreEquipoSpan ? nombreEquipoSpan.textContent : 'Equipo Desconocido';
-      const cantidad = parseInt(cantidadInput.value);
+      }
 
-      if (cantidad > 0) {
+      equiposCheckboxes.forEach(checkbox => {
+        const equipoId = checkbox.value;
+        const cantidadInput = checkbox.closest('.equipo-item').querySelector('input[type="number"]');
+        const nombreEquipoSpan = checkbox.closest('.equipo-item').querySelector('.nombre-equipo');
+        const nombreEquipo = nombreEquipoSpan ? nombreEquipoSpan.textContent : 'Equipo Desconocido';
+        const cantidadSolicitada = parseInt(cantidadInput.value);
+
+        // Obtener la cantidad disponible del equipo directamente del DOM
+        const cantidadDisponibleElement = checkbox.closest('.card').querySelector('div[style*="color"]');
+        const cantidadDisponibleTexto = cantidadDisponibleElement ? cantidadDisponibleElement.textContent : '';
+        const cantidadDisponibleMatch = cantidadDisponibleTexto.match(/Disponibles: (\d+)/);
+        const cantidadDisponible = cantidadDisponibleMatch ? parseInt(cantidadDisponibleMatch[1]) : 0;
+
+        if (isNaN(cantidadSolicitada) || cantidadSolicitada <= 0) {
+          alert(`La cantidad para "${nombreEquipo}" debe ser mayor que cero.`);
+          return; // No agregar este equipo si la cantidad no es válida
+        }
+
+        if (cantidadSolicitada > cantidadDisponible) {
+          alert(`No hay suficientes unidades disponibles de "${nombreEquipo}". Disponibles: ${cantidadDisponible}. Por favor, selecciona una cantidad menor o igual.`);
+          return; // No agregar este equipo si la cantidad solicitada excede la disponible
+        }
+
         const index = equiposSeleccionados.findIndex(e => e.idEquipo == equipoId);
         if (index !== -1) {
-          equiposSeleccionados[index].cantidad += cantidad;
+          equiposSeleccionados[index].cantidad += cantidadSolicitada;
         } else {
-          equiposSeleccionados.push({ idEquipo: parseInt(equipoId), nombre: nombreEquipo, cantidad: cantidad });
+          equiposSeleccionados.push({ idEquipo: parseInt(equipoId), nombre: nombreEquipo, cantidad: cantidadSolicitada });
         }
-      }
-      checkbox.checked = false;
-      cantidadInput.value = 1;
+
+        checkbox.checked = false;
+        cantidadInput.value = 1;
+      });
+      window.actualizarEquiposPrestamoLista();
     });
-    window.actualizarEquiposPrestamoLista(); // <-- LLAMADA A FUNCIÓN AHORA GLOBAL
-  });
 
   // Evento para eliminar un equipo de la lista de préstamo (delegación en la lista) (Ya estaba)
   equiposPrestamoLista.addEventListener('click', function (event) {
@@ -547,5 +585,32 @@ document.addEventListener('DOMContentLoaded', function () {
       devolucionForm.reset();
       devolucionPrestamoIdInput.value = '';
   });
-
+// Evento de clic usando delegación para los botones 'Cancelar' devolución
+  tableBody.addEventListener('click', function(event) {
+      if (event.target.classList.contains('btn-cancelar-devolucion')) {
+          const prestamoId = event.target.dataset.id;
+          if (confirm(`¿Seguro que deseas cancelar la devolución del préstamo con ID ${prestamoId}?`)) {
+              fetch(`/prestamos/devolucion/cancelar/${prestamoId}`, { // Correcto
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              })
+              .then(async response => {
+                  if (response.ok) {
+                      window.cargarPrestamos(); // Recargar la tabla para reflejar los cambios
+                      alert('Devolución cancelada con éxito.');
+                  } else {
+                      const text = await response.text();
+                      console.error('Error al cancelar la devolución:', response.status, text);
+                      alert('Error al cancelar la devolución: ' + text);
+                  }
+              })
+              .catch(error => {
+                  console.error('Error en la petición de cancelación de devolución:', error);
+                  alert('Ocurrió un error al intentar cancelar la devolución.');
+              });
+          }
+      }
+  });
 }); // Cierre del DOMContentLoaded
