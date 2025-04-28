@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.error('Error en la respuesta HTTP:', response.status, response.statusText); // Log del error HTTP
                     // Intentar leer el mensaje de error del cuerpo de la respuesta
                     return response.json().then(errData => {
-                        const errorMessage = errData.message || 'Error al crear la sanción (detalle desconocido).';
+                        let errorMessage = errData.message || 'Error al crear la sanción (detalle desconocido).';
                         // Incluir detalles del error HTTP si están disponibles
                         if (response.status) errorMessage += ` (Status: ${response.status})`;
                         console.error('Mensaje de error del servidor:', errData); // Log del mensaje de error del backend
