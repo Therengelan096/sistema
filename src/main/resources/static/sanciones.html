@@ -3,198 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sanciones</title>
+  <title>Gestion de Sanciones</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/prestamos.css">
+
   <style>
-    body {
-        display: flex;
-       min-height: 100vh;
-       margin: 0;
-       padding: 0;
-       background-color: #121212;
-       color: white;
+    /* Estilos adicionales/modificados específicos para sanciones.html */
+
+    /* Estilos para la sección de filtrado de sanciones */
+    .filter-section {
+      margin-bottom: 20px;
+      padding: 15px; /* Mantiene el padding vertical existente */
+      margin-left: 2cm; /* Añade margen izquierdo de 2cm */
+      margin-right: 2cm; /* Añade margen derecho de 2cm */
+      background-color: #1e2a38; /* Color de fondo similar a la tabla */
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-     .sidebar {
-       width: 280px;
-       background-color: #191970;
-       padding-top: 20px;
-       display: flex;
-       flex-direction: column;
-       height: 100vh;
-       position: fixed;
-       top: 0;
-       left: 0;
-       transition: width 0.3s ease;
-       overflow: hidden;
-     }
+    .filter-section h3 {
+      color: #f8f9fa;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
 
-     .sidebar.collapsed {
-       width: 60px;
-     }
+    .filter-section .row {
+      margin-bottom: 15px;
+    }
 
-     .sidebar a {
-       padding: 12px 15px;
-       color: white;
-       text-decoration: none;
-       transition: background-color 0.3s ease;
-       border-left: 5px solid transparent;
-       font-size: 0.9rem;
-       display: flex;
-       align-items: center;
-       white-space: nowrap;
-     }
+    .filter-section label {
+      color: #ccc;
+      display: block;
+      margin-bottom: 5px;
+    }
 
-     .sidebar a:hover,
-     .sidebar a.active {
-       background-color: #34495E;
-       border-left-color: #ff69b4;
-     }
+    .filter-section .row .col input[type="text"],
+    .filter-section .row .col input[type="date"],
+    .filter-section .row .col select {
+      background-color: #283747; /* Color de fondo similar al contenido principal */
+      color: white;
+      border: 1px solid #34495E; /* Color de borde similar */
+      padding: 10px;
+      border-radius: 5px;
+    }
 
-     .sidebar a i {
-       font-size: 1.2rem;
-     }
+    .filter-section .row .col input[type="text"]:focus,
+    .filter-section .row .col input[type="date"]:focus,
+    .filter-section .row .col select:focus {
+      outline: none;
+      border-color: #ff69b4; /* Color de enfoque rosado */
+      box-shadow: 0 0 5px rgba(255, 105, 180, 0.5); /* Sombra rosada */
+    }
 
-     .sidebar a span {
-       margin-left: 10px;
-       white-space: nowrap;
-       overflow: hidden;
-       transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
-     }
+    .filter-section .btn-outline-light {
+      margin-top: 25px;
+    }
 
-     .sidebar.collapsed a span {
-       opacity: 0;
-       width: 0;
-       margin: 0;
-       pointer-events: none;
-     }
+    /* Estilos para las barras de llenado de datos (inputs) */
+    /* Aplicamos los estilos a los inputs dentro del modal también */
+    #modalNuevaSancion .form-control,
+    #modalNuevaSancion .form-select {
+      background-color: #333 !important; /* Asegura que el estilo oscuro se aplique en el modal */
+      border: 1px solid #555 !important;
+      color: white !important;
+    }
 
-     .sidebar.collapsed a {
-       justify-content: center;
-     }
+    #modalNuevaSancion .form-control:focus,
+    #modalNuevaSancion .form-select:focus {
+      background-color: #444 !important;
+      border-color: #ff69b4 !important;
+      box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25) !important;
+      color: white !important;
+    }
 
-     .sidebar hr {
-       border-color: #34495E;
-       margin: 5px 0;
-     }
+    /* Estilos para el botón de "Nueva Sanción" (ahora en la esquina superior derecha) */
+    .top-right-button {
+      position: absolute; /* Posicionamiento absoluto dentro del contenedor relativo */
+      top: 20px; /* Ajusta la distancia desde la parte superior */
+      right: 20px; /* Ajusta la distancia desde la derecha */
+      z-index: 10; /* Asegura que esté por encima de otros elementos si es necesario */
+      background-color: #ff69b4 !important; /* Color de fondo rosado */
+      border-color: #ff69b4 !important; /* Color de borde rosado */
+      color: white !important; /* Color del texto blanco */
+      padding: 10px 20px; /* Espaciado interno */
+      border-radius: 5px; /* Bordes redondeados */
+      font-size: 1rem; /* Tamaño de fuente */
+      transition: background-color 0.3s ease; /* Transición suave al pasar el ratón */
+    }
 
-     .sidebar .logout-btn {
-       margin-top: auto;
-       border-top: 1px solid #34495E;
-     }
+    .top-right-button:hover {
+      background-color: #d6418a !important; /* Color rosado más oscuro al pasar el ratón */
+      border-color: #d6418a !important;
+    }
 
-     .toggle-btn {
-       background: none;
-       border: none;
-       color: white;
-       font-size: 1.5rem;
-       cursor: pointer;
-       z-index: 1000;
-     }
+    /* Estilos para el texto de info del usuario debajo del RU */
+    .form-text.text-success {
+      color: #28a745 !important; /* Verde Bootstrap */
+    }
 
-     /* === CONTENIDO PRINCIPAL === */
-     .content {
-       flex-grow: 1;
-       padding: 20px;
-       background-color: #283747;
-       position: relative;
-       margin-left: 280px;
-       transition: margin-left 0.3s ease;
-     }
+    .form-text.text-danger {
+      color: #dc3545 !important; /* Rojo Bootstrap */
+    }
+    /* Añadido: Estilo para texto de info/advertencia */
+    .form-text.text-secondary {
+      color: #6c757d !important; /* Gris Bootstrap */
+    }
 
-     .content.sidebar-collapsed {
-       margin-left: 60px;
-     }
-
-  .form-container {
-   width: 95%; /* Más ancho en pantallas pequeñas */
-   max-width: 800px; /* Ancho máximo del formulario */
-   margin: 20px auto 30px auto; /* Centrado y con márgenes */
-   background-color: #1e2a38; /* Fondo ligeramente diferente para el form */
-   padding: 25px;
-   border-radius: 10px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-   text-align: left; /* Alinear texto a la izquierda dentro del form */
-}
-
-.form-group label {
-   margin-bottom: 5px;
-   display: block;
-   color: #ccc; /* Color más claro para etiquetas */
-}
-
-h1 {
-  color: #ff69b4;
-  text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.table-container {
-   width: 95%; /* Ancho de la tabla */
-   max-width: 1000px; /* Ancho máximo */
-   margin: 20px auto; /* Centrado */
-   overflow-x: auto; /* Scroll horizontal si es necesario */
-}
-
-table {
-    width: 100%; /* Tabla ocupa todo el contenedor */
-    background-color: #1e2a38; /* Fondo de la tabla */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    border-collapse: separate; /* Permite border-radius en celdas */ [[3](https://mosaic.uoc.edu/ac/le/es/m6/ud7/index.html)]
-    border-spacing: 0;
-    overflow: hidden; /* Para que el radius funcione bien */
-}
-
-th, td {
-    border-bottom: 1px solid #34495E; /* Línea separadora horizontal */
-    padding: 12px 15px; /* Espaciado interno */
-    text-align: left;
-    vertical-align: middle; /* Alineación vertical */
-}
-
-td {
-   color: #e0e0e0; /* Color de texto en celdas */
-}
-
-th {
-    background-color: #34495E; /* Fondo para cabeceras */
-    color: #ff69b4; /* Color rosa para texto de cabecera */
-    font-weight: 600;
-}
-
-tr:last-child td {
-   border-bottom: none; /* Sin borde en la última fila */
-}
-
-tr:hover {
-   background-color: #2c3e50; /* Color al pasar el mouse sobre una fila */
-}
-
-/* === BOTÓN PERSONALIZADO === */
-     .btn-pink {
-       background-color: #ff69b4;
-       border: none;
-       color: white;
-       padding: 10px 15px;
-       border-radius: 5px;
-       cursor: pointer;
-       transition: opacity 0.2s ease;
-       margin-top: 15px;
-     }
-
-     .btn-pink:hover {
-       opacity: 0.9;
-     }
-
-     .btn-sm {
-        padding: 0.25rem 0.5rem; /* Botones un poco más pequeños */
-        font-size: 0.8rem;
-      }
 
   </style>
+
 </head>
 <body>
 
@@ -225,123 +143,105 @@ tr:hover {
   </a>
 </div>
 
-<div class="content" id="content">
+<div class="content" id="content" style="position: relative;">
+  <h1>Gestión de Sanciones</h1>
 
-<h1>Sanciones</h1>
+  <button type="button" class="btn top-right-button" id="btn-nueva-sancion" data-bs-toggle="modal" data-bs-target="#modalNuevaSancion">
+    Nueva Sanción
+  </button>
 
-  <div class="form-container">
-    <form id="form-sancion">
-      <div class="form-group">
-        <label for="ruUsuario">Código RU del Usuario:</label>
-        <input type="text" id="ruUsuario" class="form-control" required>
+
+  <div class="filter-section">
+    <h3>Filtrar Sanciones</h3>
+    <div class="row">
+      <div class="col-md-4">
+        <label for="filtro-ru">Buscar por RU:</label>
+        <input type="text" id="filtro-ru" class="form-control">
       </div>
-      <div class="form-group">
-        <label for="motivo">Motivo de la Sanción:</label>
-        <input type="text" id="motivo" class="form-control" required>
+      <div class="col-md-4">
+        <label for="filtro-motivo">Buscar por Motivo:</label>
+        <input type="text" id="filtro-motivo" class="form-control">
       </div>
-      <button type="submit" class="btn-pink">Agregar Sanción</button>
-    </form>
+      <div class="col-md-4">
+        <label for="filtro-estado">Filtrar por Estado:</label>
+        <select id="filtro-estado" class="form-select">
+          <option value="">Todos</option>
+          <option value="activa">Activas</option>
+          <option value="inactiva">Inactivas</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <label for="filtro-fecha-inicio">Fecha Inicio:</label>
+        <input type="date" id="filtro-fecha-inicio" class="form-control">
+      </div>
+      <div class="col-md-6">
+        <label for="filtro-fecha-fin">Fecha Fin:</label>
+        <input type="date" id="filtro-fecha-fin" class="form-control">
+      </div>
+    </div>
+    <button class="btn btn-outline-light btn-sm" id="btn-limpiar-filtros">Limpiar Filtros</button>
+  </div>
+
+  <div class="modal fade" id="modalNuevaSancion" tabindex="-1" aria-labelledby="modalNuevaSancionLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalNuevaSancionLabel">Registrar Nueva Sanción</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="form-sancion">
+            <div class="mb-3">
+              <label for="ruUsuario" class="form-label">Código RU del Usuario:</label>
+              <input type="text" id="ruUsuario" class="form-control" required>
+              <div class="form-text" id="usuarioInfoDiv"></div>
+            </div>
+            <div class="mb-3">
+              <label for="motivo" class="form-label">Motivo de la Sanción:</label>
+              <input type="text" id="motivo" class="form-control" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" form="form-sancion" class="btn btn-primary">Guardar Sanción</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 
   <div class="table-container">
-  <table>
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>Usuario</th>
-      <th>Motivo</th>
-      <th>Fecha</th>
-      <th>Estado</th>
-    </tr>
-    </thead>
-    <tbody id="sanciones-body"></tbody>
-  </table>
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>RU</th>
+        <th>Motivo</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="sanciones-body"></tbody>
+    </table>
+  </div>
+
+  <div class="toast-container" id="toast-container" style="position: fixed; bottom: 20px; right: 20px;">
+  </div>
+
 </div>
 
-<script>
-  const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+<div class="footer">
+  © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
+</div>
 
-    toggleSidebarBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      content.classList.toggle('sidebar-collapsed');
-    });
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/sanciones.js"></script>
+<script src="/js/menu.js"></script>
 
- // === FUNCIÓN PARA MARCAR COMO CUMPLIDA ===
-function marcarCumplida(id, button) {
-    fetch(`http://localhost:8083/sanciones/cumplida/${id}`, {
-        method: 'PUT'
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('No se pudo actualizar el estado.');
-        return response.text();
-    })
-    .then(() => {
-        button.textContent = 'Inactiva'; // Cambia el texto del botón
-        button.disabled = true; // Deshabilita el botón
-    })
-    .catch(error => {
-        alert("Error: " + error.message);
-    });
-}
-
-// === FUNCIÓN PARA ENVIAR UNA NUEVA SANCIÓN ===
-document.getElementById('form-sancion').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const ru = document.getElementById('ruUsuario').value;
-    const motivo = document.getElementById('motivo').value;
-
-    fetch(`http://localhost:8083/sanciones/crear/${ru}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ motivoSancion: motivo })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('No se pudo crear la sanción. Verifica el RU.');
-        }
-        return response.json();
-    })
-    .then(data => {
-        location.reload();
-    })
-    .catch(error => {
-        alert("Error: " + error.message);
-    });
-});
-
-// === FUNCIÓN PARA CARGAR Y MOSTRAR TODAS LAS SANCIONES ===
-fetch('http://localhost:8083/sanciones')
-    .then(response => response.json())
-    .then(data => {
-        const tableBody = document.getElementById('sanciones-body');
-        tableBody.innerHTML = '';
-
-        data.forEach(sancion => {
-            const buttonContent = (sancion.estado === 'activa') ?
-                `<button class="btn btn-sm btn-success" onclick="marcarCumplida(${sancion.idSancion}, this)">Inactiva</button>` :
-                'inactiva';
-
-            const row = `<tr>
-                <td>${sancion.idSancion}</td>
-                <td>${sancion.usuario?.nombre ?? 'Sin nombre'}</td>
-                <td>${sancion.motivoSancion}</td>
-                <td>${sancion.fechaSancion ? new Date(sancion.fechaSancion).toLocaleDateString() : 'Sin fecha'}</td>
-                <td>${buttonContent}</td>
-            </tr>`;
-            tableBody.innerHTML += row;
-        });
-    })
-    .catch(error => console.error('Error al cargar sanciones:', error));
-
-// Redirige a login.html después de cerrar sesión
-    document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
-        window.location.href = '/login.html'; // Redirige a login.html
-    });
-</script></div>
 </body>
 </html>

@@ -1,0 +1,397 @@
+/* sanciones.css */
+/* Estilos Generales - Ajustados para layout flexbox */
+body {
+    display: flex; /* Usamos flexbox para sidebar y content */
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: white;
+    font-family: sans-serif; /* Añadimos font-family para consistencia */
+}
+
+/* Barra lateral - Copiado de prestamos.css */
+.sidebar {
+    width: 280px;
+    background-color: #191970;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky; /* Mantenemos el sticky */
+    top: 0;
+    transition: width 0.3s ease;
+    flex-shrink: 0; /* Evita que se encoja */
+    overflow-y: auto; /* Añadido para scroll si hay muchos elementos */
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+.sidebar a {
+    padding: 15px 15px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border-left: 5px solid transparent;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #34495E;
+    border-left-color: #ff69b4;
+}
+
+.sidebar.collapsed a span {
+    display: none;
+}
+
+.sidebar span {
+    margin-left: 10px;
+}
+
+.sidebar hr {
+    border-color: #34495E;
+    width: 90%;
+    margin: 8px auto;
+}
+
+.sidebar .logout-btn {
+    margin-top: auto;
+    border-top: 1px solid #34495E;
+}
+
+/* Botón de toggle - Copiado de prestamos.css */
+/* Posición fija si lo quieres fuera del flujo del sidebar, o déjalo dentro si lo pones en el header del sidebar */
+/* Si ya está en el HTML dentro del sidebar, este estilo podría no ser necesario o ajustarse */
+/* Asumiendo que #toggleSidebar está dentro del .sidebar como en prestamos.html */
+#toggleSidebar {
+    /* Puedes necesitar ajustar el padding o margenes del primer elemento del sidebar si #toggleSidebar es el primero */
+    /* Los estilos específicos para el botón de toggle cuando está *fuera* del sidebar (como en prestamos.css original) */
+    /* Si el toggle está dentro del sidebar, estos estilos pueden cambiar */
+}
+
+
+/* Contenido Principal - Ajustado para layout flexbox */
+.content {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 20px;
+    background-color: #283747;
+    position: relative;
+    /* margin-left: 0 !important; -- Eliminado */
+    /* width: 100%; -- Eliminado o ajustado si es necesario para flexbox */
+    min-height: 100vh;
+    overflow-y: auto; /* Permite scroll si el contenido es largo */
+}
+
+/* Información del usuario - Copiado de prestamos.css */
+.user-info {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    text-align: right;
+    color: white;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.user-info .username {
+    font-weight: bold;
+}
+
+.user-info .status {
+    font-size: 0.9rem;
+    color: #00FF00;
+}
+
+/* Pie de página - Copiado de prestamos.css */
+.footer {
+    position: fixed; /* Mantenemos el footer fijo */
+    bottom: 10px;
+    right: 20px;
+    font-size: 0.9rem;
+    text-align: right;
+    color: white;
+    z-index: 1000; /* Asegura que esté por encima */
+}
+
+.footer a {
+    color: #00BFFF;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+
+/* Estilos específicos de tu página de sanciones (manteniendo los existentes) */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #34495E;
+}
+
+.top-bar h1 {
+    color: #ff69b4;
+    text-shadow: 0 2px 4px rgba(255, 105, 180, 0.6);
+    margin: 0;
+}
+
+.btn-primary-pink {
+    background-color: #ff69b4;
+    border-color: #ff69b4;
+    color: white;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary-pink:hover {
+    background-color: #e05da8;
+    border-color: #e05da8;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #1e2a38;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.filter-section h3 {
+    color: #f8f9fa;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.filter-section .row {
+    margin-bottom: 15px;
+}
+
+.filter-section label {
+    color: #ccc;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.filter-section .row .col input[type="text"],
+.filter-section .row .col input[type="date"],
+.filter-section .row .col select {
+    background-color: #283747;
+    color: white;
+    border: 1px solid #34495E;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.filter-section .row .col input[type="text"]:focus,
+.filter-section .row .col input[type="date"]:focus,
+.filter-section .row .col select:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+}
+
+.filter-section .btn-outline-light {
+    margin-top: 25px;
+}
+
+.form-container {
+    width: 95%;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #1e2a38;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+.form-container h2 {
+    color: #ff69b4;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    display: block;
+    color: #ccc;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"] {
+    width: calc(100% - 10px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #34495E;
+    border-radius: 5px;
+    background-color: #283747;
+    color: white;
+}
+
+.form-group button {
+    background-color: #ff69b4;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-top: 10px;
+}
+
+.form-group button:hover {
+    opacity: 0.9;
+}
+
+.table-container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 20px auto;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    background-color: #1e2a38;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+}
+
+th, td {
+    border-bottom: 1px solid #34495E;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+td {
+    color: #e0e0e0;
+}
+
+th {
+    background-color: #34495E;
+    color: #ff69b4;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: #2c3e50;
+}
+
+.status-active {
+    background-color: #28a745;
+    color: white;
+    padding: 0.2em 0.6em;
+    border-radius: 5px;
+    font-size: 0.8em;
+}
+
+.status-inactive {
+    background-color: #6c757d;
+    color: white;
+    padding: 0.2em 0.6em;
+    border-radius: 5px;
+    font-size: 0.8em;
+}
+
+.action-buttons button {
+    background: none;
+    border: none;
+    color: #f8f9fa;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 0.9em;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.action-buttons button:hover {
+    background-color: #34495E;
+}
+
+.action-buttons .edit-button {
+    color: #007bff; /* Puedes ajustar estos colores si quieres */
+}
+
+.action-buttons .inactive-button {
+    color: #dc3545;
+}
+
+.action-buttons .active-button {
+    color: #28a745;
+}
+
+.collapsed {
+    display: none;
+}
+
+/* Notificaciones Toast */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.toast {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    opacity: 0.9;
+    animation: fadeOut 3s forwards;
+}
+
+.toast.success {
+    background-color: #28a745;
+}
+
+.toast.error {
+    background-color: #dc3545;
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-20px); }
+}
+
+/* El footer ahora se posiciona considerando el layout principal */
+/* Si el body es display: flex y el .content tiene flex-grow, el footer dentro del content
+   se irá al final. Si el footer está como hermano del .content, puede requerir position: fixed */
+/* Mantenemos position: fixed como en prestamos.css */
+/* Los estilos del footer ya estaban en tu sanciones.css, solo aseguramos la consistencia */
+.footer {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 0.9rem;
+    text-align: right;
+    color: #ccc; /* Usamos color #ccc de tu sanciones.css */
+    z-index: 1000;
+}
+
+.footer a {
+    color: #00BFFF;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}

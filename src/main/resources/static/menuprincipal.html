@@ -3,141 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laboratorios - Sistema de Control</title>
+    <title>Sistema de Control y Préstamo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
     <style>
         body {
-            display: flex;
-           min-height: 100vh;
-           margin: 0;
-           padding: 0;
-           background-color: #121212;
-           color: white;
+            display: flex; /* Usar flexbox para colocar sidebar y contenido principal lado a lado */
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: white;
+            font-family: 'Roboto', sans-serif; /* Fuente principal para el cuerpo */
         }
 
-         .sidebar {
-           width: 280px;
-           background-color: #191970;
-           padding-top: 20px;
-           display: flex;
-           flex-direction: column;
-           height: 100vh;
-           position: sticky; /* Cambiado a sticky para que coincida con tu HTML actual */
-           top: 0;
-           left: 0;
-           transition: width 0.3s ease;
-           overflow: hidden;
-         }
+        /* Barra lateral - Ahora fija */
+        .sidebar {
+            width: 280px;
+            background-color: #191970;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Ocupa toda la altura de la ventana */
+            position: fixed; /* Fija la barra lateral */
+            top: 0;
+            left: 0;
+            transition: width 0.3s ease;
+            overflow-y: auto; /* Permite scroll si el contenido es largo */
+            z-index: 1050; /* Z-index alto para estar encima de otros elementos */
+        }
 
-         .sidebar.collapsed {
-           width: 60px;
-         }
+        .sidebar.collapsed {
+            width: 60px;
+        }
 
-         .sidebar a {
-           padding: 12px 15px;
-           color: white;
-           text-decoration: none;
-           transition: background-color 0.3s ease;
-           border-left: 5px solid transparent;
-           font-size: 0.9rem;
-           display: flex;
-           align-items: center;
-           white-space: nowrap;
-         }
+        .sidebar a {
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-left: 5px solid transparent;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
 
-         .sidebar a:hover,
-         .sidebar a.active {
-           background-color: #34495E;
-           border-left-color: #ff69b4;
-         }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #34495E;
+            border-left-color: #ff69b4;
+        }
 
-         .sidebar a i {
-           font-size: 1.2rem;
-         }
+        .sidebar a i {
+            font-size: 1.2rem;
+        }
 
-         .sidebar a span {
-           margin-left: 10px;
-           white-space: nowrap;
-           overflow: hidden;
-           transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
-         }
+        .sidebar a span {
+            margin-left: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+        }
 
-         .sidebar.collapsed a span {
-           opacity: 0;
-           width: 0;
-           margin: 0;
-           pointer-events: none;
-         }
+        .sidebar.collapsed a span {
+            opacity: 0;
+            width: 0;
+            margin: 0;
+            pointer-events: none; /* Evita interacciones con el texto oculto */
+        }
 
-         .sidebar.collapsed a {
-           justify-content: center;
-         }
+        .sidebar.collapsed a {
+            justify-content: center; /* Centra el icono cuando el texto está oculto */
+        }
 
-         .sidebar hr {
-           border-color: #34495E;
-           margin: 5px 0;
-         }
+        .sidebar hr {
+            border-color: #34495E;
+            margin: 5px 0;
+        }
 
-         .sidebar .logout-btn {
-           margin-top: auto;
-           border-top: 1px solid #34495E;
-         }
+        .sidebar .logout-btn {
+            margin-top: auto;
+            border-top: 1px solid #34495E;
+        }
 
-         .content {
-           flex-grow: 1;
-           padding: 20px;
-           background-color: #283747;
-           position: relative;
-           min-height: calc(100vh - 40px);
-         }
+        /* Wrapper para el contenido principal (header + contenido scrollable) */
+        .page-content-wrapper {
+            flex-grow: 1; /* Ocupa el espacio restante */
+            margin-left: 280px; /* Margen igual al ancho de la sidebar */
+            transition: margin-left 0.3s ease; /* Transición suave al colapsar */
+            position: relative; /* Para posicionar elementos absolutos dentro (usuario, footer) */
+            display: flex;
+            flex-direction: column; /* Apilar header y contenido */
+        }
 
-         .content.sidebar-collapsed {
-           margin-left: 60px;
-         }
+        .page-content-wrapper.sidebar-collapsed {
+            margin-left: 60px; /* Ajusta el margen cuando la sidebar está colapsada */
+        }
 
-  .top-right-user {
-   position: absolute;
-   top: 20px; /* Alinea con el padding superior del .content [[6](https://css-tricks.com/almanac/properties/t/top-right-bottom-left/)] */
-   right: 20px; /* Alinea con el padding derecho del .content */
-   text-align: right; /* Alinea el texto a la derecha */
-   color: #ccc; /* Color de texto opcional */
- }
+        /* Barra superior fija para el logo y título */
+        .top-header {
+            width: calc(100% - 280px); /* Ancho igual al wrapper menos la sidebar */
+            height: 70px; /* Altura de la barra superior */
+            background-color: #1e2a38; /* Color de fondo */
+            display: flex;
+            align-items: center; /* Centra verticalmente logo y texto */
+            padding: 0 20px; /* Padding horizontal */
+            position: fixed; /* Fija la barra superior */
+            top: 0;
+            left: 280px; /* Posiciona después de la sidebar */
+            z-index: 1000; /* Z-index para estar encima del contenido */
+            transition: left 0.3s ease, width 0.3s ease; /* Transición al colapsar sidebar */
+        }
 
- .top-right-user i {
-   font-size: 1.5rem; /* Tamaño opcional para el icono */
-   vertical-align: middle; /* Alinea el icono con el texto */
- }
+        .top-header.sidebar-collapsed {
+            left: 60px; /* Ajusta la posición cuando la sidebar está colapsada */
+            width: calc(100% - 60px); /* Ajusta el ancho cuando la sidebar está colapsada */
+        }
 
- .bottom-right {
-   position: absolute;
-   bottom: 20px; /* Alinea con el padding inferior del .content */
-   right: 20px; /* Alinea con el padding derecho del .content */
-   text-align: right; /* Alinea el texto a la derecha */
-   font-size: 0.85rem; /* Tamaño de fuente opcional */
-   color: #aaa; /* Color de texto opcional */
- }
+        /* Estilos para la imagen del logo en la barra superior */
+        .top-header img {
+            height: 40px; /* Altura del logo (ajusta si es necesario) */
+            width: auto; /* Mantiene la proporción */
+            margin-right: 15px; /* Espacio entre el logo y el título */
+        }
 
- .bottom-right a {
-    color: #659bde; /* Color opcional para el enlace */
-    text-decoration: none;
- }
+        /* Estilos para el título principal en la barra superior */
+        .top-header h1 {
+            font-family: 'DM Serif Display', serif; /* Fuente solicitada */
+            color: white; /* Color blanco */
+            font-size: 1.5rem; /* Tamaño de fuente reducido (ajusta si es necesario) */
+            margin: 0; /* Elimina márgenes por defecto */
+            text-align: left; /* Alinea el texto a la izquierda */
+            line-height: 1.3; /* Espaciado entre líneas */
+            /* Elimina text-shadow si lo tenía, para un look más limpio */
+            text-shadow: none;
+        }
 
- .bottom-right a:hover {
-    text-decoration: underline;
- }
+        /* Información del usuario - Posicionada dentro del wrapper */
+        .top-right-user {
+            position: absolute;
+            top: 80px; /* Ajusta la distancia desde la parte superior (debajo del header) */
+            right: 20px;
+            text-align: right;
+            color: #ccc;
+            z-index: 10;
+        }
 
- /* Ajuste opcional para que el H1 no se solape si el texto superior es largo */
- .content h1 {
-     margin-top: 30px; /* Añade margen superior al H1 si es necesario */
- }
+        .top-right-user i {
+            font-size: 1.5rem;
+            vertical-align: middle;
+        }
 
-         /* Estos estilos para el formulario, tabla, etc., NO se incluyen aquí */
-         /* Solo se incluye el CSS relacionado con el menú lateral */
+        /* Contenido principal - Scrollable */
+        .content {
+            flex-grow: 1; /* Ocupa el espacio restante verticalmente */
+            padding: 20px;
+            background-color: #283747;
+            /* margin-top: 70px;  No es necesario si el header está fixed y el padding se aplica al contenido */
+            padding-top: 90px; /* Añade padding superior para que el contenido no quede debajo del header fijo */
+            min-height: calc(100vh - 70px); /* Altura mínima para que el footer se posicione correctamente */
+        }
 
-         .sidebar span {
-           margin-left: 10px; /* Asegúrate de que esta regla esté presente para el espaciado del texto */
-         }
+
+        /* Pie de página - Posicionado dentro del wrapper */
+        .bottom-right {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 0.85rem;
+            color: #aaa;
+            z-index: 10;
+        }
+
+        .bottom-right a {
+            color: #659bde;
+            text-decoration: none;
+        }
+
+        .bottom-right a:hover {
+            text-decoration: underline;
+        }
 
     </style>
 </head>
@@ -170,37 +220,55 @@
     </a>
 </div>
 
-<div class="content">
-    <!-- Contenedor para mostrar el nombre del usuario -->
+<div class="page-content-wrapper" id="page-content-wrapper">
+
+    <div class="top-header" id="top-header">
+        <img src="/images/logouniversidad.png" alt="Logo de la Universidad"> <h1>Sistema de Control y Préstamo de Laboratorio de Electrónica, Hardware, Redes y Telecomunicaciones</h1> </div>
+
     <div class="top-right-user">
         <i class="bi bi-person-circle"></i> <strong id="user-name">Cargando...</strong><br>
         <small>🟢 En línea</small>
     </div>
 
 
-    <h1>Sistema de Control</h1>
+    <div class="content" id="content">
+        <h2 class="text-center mt-5">Bienvenido al Sistema de Control y Préstamo</h2>
+        <p class="text-center">Utiliza el menú lateral para navegar por las diferentes secciones del sistema.</p>
+    </div>
 
     <div class="bottom-right">
-        2025 Control de laboratorio | <a href="/contacto.html">Contáctanos</a>
+        © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
     </div>
-</div>
 
-<script>
+</div> <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const toggleBtn = document.getElementById('toggleSidebar');
-      const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const pageContentWrapper = document.getElementById('page-content-wrapper');
+        const topHeader = document.getElementById('top-header');
 
-      toggleBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        sidebar.classList.toggle('collapsed');
-      });
+        toggleBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            sidebar.classList.toggle('collapsed');
+            pageContentWrapper.classList.toggle('sidebar-collapsed');
+            topHeader.classList.toggle('sidebar-collapsed');
+        });
     });
 
     // Redirige a login.html después de cerrar sesión
     document.querySelector('.logout-btn').addEventListener('click', function (e) {
         e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
+        // Aquí podrías hacer una llamada a la API para cerrar la sesión en el backend si es necesario
+        // fetch('/api/logout', { method: 'POST' }).then(() => {
         window.location.href = '/login.html'; // Redirige a login.html
+        // });
     });
+
+    // Script para cargar el nombre del usuario (asumiendo que usuario.js maneja esto)
+    // Este script debe ejecutarse después de que el elemento con id="user-name" exista
+    // Si usuario.js ya maneja la carga del nombre en ese ID, no necesitas hacer nada aquí.
+    // Si no, podrías añadir una función aquí o en usuario.js para hacer un fetch al backend
+    // y actualizar el innerText del elemento con id="user-name".
 </script>
 <script src="/js/usuario.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

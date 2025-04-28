@@ -38,47 +38,80 @@ public class SancionController {
     @PostMapping("/crear/{ru}")
     public ResponseEntity<?> crearSancion(@PathVariable int ru, @RequestBody Sancion sancion) {
         logger.debug("Creando nueva sanción para el usuario con RU: {}", ru);
-        try {
-            Optional<Usuario> usuarioOptional = usuarioRepository.findByRu(ru);
-            if (usuarioOptional.isPresent()) {
-                sancion.setUsuario(usuarioOptional.get());
-                sancion.setFechaSancion(new Date());
-                sancion.setEstado("activa");
-                Sancion sancionCreada = sancionRepository.save(sancion);
-                logger.debug("Sanción creada con ID: {}", sancionCreada.getIdSancion());
-                return ResponseEntity.ok(sancionCreada);
-            } else {
-                logger.warn("Usuario con RU {} no encontrado.", ru);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
-            }
-        } catch (Exception e) {
-            logger.error("Error al crear la sanción.", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la sanción.");
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByRu(ru);
+        if (usuarioOptional.isPresent()) {
+            sancion.setUsuario(usuarioOptional.get());
+            sancion.setFechaSancion(new Date());
+            sancion.setEstado("activa");
+            Sancion sancionCreada = sancionRepository.save(sancion);
+            logger.debug("Sanción creada con ID: {}", sancionCreada.getIdSancion());
+            return ResponseEntity.ok(sancionCreada);
+        } else {
+            logger.warn("Usuario con RU {} no encontrado.", ru);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+    }
+
+    @PutMapping("/activar/{id}")
+    public ResponseEntity<?> activarSancion(@PathVariable int id) {
+        logger.debug("Marcando sanción con ID: {} como activa.", id);
+        Optional<Sancion> sancionOptional = sancionRepository.findById(id);
+        if (sancionOptional.isPresent()) {
+            Sancion sancion = sancionOptional.get();
+            sancion.setEstado("activa");
+            sancionRepository.save(sancion);
+            logger.debug("Sanción con ID: {} marcada como activa.", id);
+            return ResponseEntity.ok("Estado actualizado a activa");
+        } else {
+            logger.warn("Sanción con ID: {} no encontrada.", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sanción no encontrada.");
         }
     }
 
     @PutMapping("/cumplida/{id}")
     public ResponseEntity<?> marcarCumplida(@PathVariable int id) {
         logger.debug("Marcando sanción con ID: {} como inactiva.", id);
-        try {
-            if (id <= 0) {
-                logger.warn("ID de sanción no válido: {}", id);
-                return ResponseEntity.badRequest().body("ID de sanción no válido.");
+        Optional<Sancion> sancionOptional = sancionRepository.findById(id);
+        if (sancionOptional.isPresent()) {
+            Sancion sancion = sancionOptional.get();
+            sancion.setEstado("inactiva");
+            sancionRepository.save(sancion);
+            logger.debug("Sanción con ID: {} marcada como inactiva.", id);
+            return ResponseEntity.ok("Estado actualizado a inactiva");
+        } else {
+            logger.warn("Sanción con ID: {} no encontrada.", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sanción no encontrada.");
+        }
+    }
+    // En UsuarioController.java o SancionController.java
+    @GetMapping("/usuarios/buscarPorRu/{ru}")
+    public ResponseEntity<?> buscarUsuarioPorRu(@PathVariable int ru) {
+        logger.debug("Buscando usuario por RU: {}", ru);
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByRu(ru);
+        if (usuarioOptional.isPresent()) {
+            return ResponseEntity.ok(usuarioOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarSancion(@PathVariable int id, @RequestBody Sancion sancionActualizada) {
+        logger.debug("Actualizando la sanción con ID: {}", id);
+        Optional<Sancion> sancionOptional = sancionRepository.findById(id);
+        if (sancionOptional.isPresent()) {
+            Sancion sancionExistente = sancionOptional.get();
+            sancionExistente.setMotivoSancion(sancionActualizada.getMotivoSancion());
+            if (sancionActualizada.getUsuario() != null && sancionActualizada.getUsuario().getRu() > 0) {
+                usuarioRepository.findByRu(sancionActualizada.getUsuario().getRu())
+                        .ifPresent(sancionExistente::setUsuario);
             }
-            Optional<Sancion> sancionOptional = sancionRepository.findById(id);
-            if (sancionOptional.isPresent()) {
-                Sancion sancion = sancionOptional.get();
-                sancion.setEstado("inactiva");
-                sancionRepository.save(sancion);
-                logger.debug("Sanción con ID: {} marcada como inactiva.", id);
-                return ResponseEntity.ok("Estado actualizado a inactiva");
-            } else {
-                logger.warn("Sanción con ID: {} no encontrada.", id);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sanción no encontrada.");
-            }
-        } catch (Exception e) {
-            logger.error("Error al marcar la sanción como inactiva.", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el estado de la sanción.");
+            Sancion sancionGuardada = sancionRepository.save(sancionExistente);
+            logger.debug("Sanción con ID: {} actualizada.", id);
+            return ResponseEntity.ok(sancionGuardada);
+        } else {
+            logger.warn("Sanción con ID: {} no encontrada para actualizar.", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sanción no encontrada.");
         }
     }
 }
