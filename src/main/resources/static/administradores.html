@@ -6,281 +6,7 @@
     <title>Administradores</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body {
-         display: flex;
-         min-height: 100vh;
-         margin: 0;
-         padding: 0;
-         background-color: #121212; /* Fondo oscuro general */
-         color: white;
-        }
-
-     .sidebar {
-       width: 280px;
-       background-color: #191970; /* Azul marino oscuro para sidebar */
-       padding-top: 20px;
-       display: flex;
-       flex-direction: column;
-       height: 100vh;
-       position: fixed;
-       top: 0;
-       left: 0;
-       transition: width 0.3s ease;
-       overflow: hidden;
-     }
-
-     .sidebar.collapsed {
-       width: 60px; /* Ancho cuando está colapsado */
-     }
-
-     .sidebar a {
-       padding: 12px 15px;
-       color: white;
-       text-decoration: none;
-       transition: background-color 0.3s ease;
-       border-left: 5px solid transparent;
-       font-size: 0.9rem;
-       display: flex;
-       align-items: center;
-       white-space: nowrap; /* Evita que el texto se divida */
-     }
-
-     .sidebar a:hover,
-     .sidebar a.active {
-       background-color: #34495E; /* Color de fondo al pasar el mouse/activo */
-       border-left-color: #ff69b4; /* Color del borde izquierdo */
-     }
-
-     .sidebar a i {
-       font-size: 1.2rem; /* Tamaño de iconos */
-     }
-
-     .sidebar a span {
-       margin-left: 10px;
-       white-space: nowrap;
-       overflow: hidden;
-       transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
-     }
-
-     .sidebar.collapsed a span {
-       opacity: 0;
-       width: 0;
-       margin: 0;
-       pointer-events: none; /* Evita interacción con texto oculto */
-     }
-
-     .sidebar.collapsed a {
-       justify-content: center; /* Centra icono cuando está colapsado */
-     }
-
-     .sidebar hr {
-       border-color: #34495E; /* Color del separador */
-       margin: 5px 0;
-     }
-
-     .sidebar .logout-btn {
-       margin-top: auto; /* Empuja el botón de logout hacia abajo */
-       border-top: 1px solid #34495E;
-     }
-
-     .toggle-btn { /* Estilos para el botón de menú hamburguesa si lo usas explícitamente */
-       background: none;
-       border: none;
-       color: white;
-       font-size: 1.5rem;
-       cursor: pointer;
-       z-index: 1000;
-     }
-
-     /* === CONTENIDO PRINCIPAL === */
-     .content {
-       flex-grow: 1;
-       padding: 20px;
-       background-color: #283747; /* Fondo del área de contenido */
-       position: relative;
-       margin-left: 280px; /* Espacio para la sidebar */
-       transition: margin-left 0.3s ease;
-     }
-
-     .content.sidebar-collapsed {
-       margin-left: 60px; /* Espacio reducido cuando la sidebar está colapsada */
-     }
-
-     /* === FORMULARIO Y TABLA === */
-      h1 {
-          color: #ff69b4; /* Color rosa para el título principal */
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Sombra sutil para el título */
-          margin-bottom: 30px; /* Más espacio debajo del título */
-          text-align: center;
-      }
-
-     .form-container {
-       width: 95%; /* Más ancho en pantallas pequeñas */
-       max-width: 600px; /* Ancho máximo del formulario */
-       margin: 20px auto 30px auto; /* Centrado y con márgenes */
-       background-color: #1e2a38; /* Fondo ligeramente diferente para el form */
-       padding: 25px;
-       border-radius: 10px;
-       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-       text-align: left; /* Alinear texto a la izquierda dentro del form */
-     }
-
-     .form-group label {
-        margin-bottom: 5px;
-        display: block;
-        color: #ccc; /* Color más claro para etiquetas */
-     }
-
-     .table-container {
-        width: 95%; /* Ancho de la tabla */
-        max-width: 1000px; /* Ancho máximo */
-        margin: 20px auto; /* Centrado */
-        overflow-x: auto; /* Scroll horizontal si es necesario */
-     }
-
-     table {
-         width: 100%; /* Tabla ocupa todo el contenedor */
-         background-color: #1e2a38; /* Fondo de la tabla */
-         border-radius: 8px; /* Bordes redondeados */
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-         border-collapse: separate; /* Permite border-radius en celdas */
-         border-spacing: 0;
-         overflow: hidden; /* Para que el radius funcione bien */
-     }
-
-     th, td {
-         border-bottom: 1px solid #34495E; /* Línea separadora horizontal */
-         padding: 12px 15px; /* Espaciado interno */
-         text-align: left;
-         vertical-align: middle; /* Alineación vertical */
-     }
-     td {
-        color: #e0e0e0; /* Color de texto en celdas */
-     }
-
-     th {
-         background-color: #34495E; /* Fondo para cabeceras */
-         color: #ff69b4; /* Color rosa para texto de cabecera */
-         font-weight: 600;
-     }
-
-     tr:last-child td {
-        border-bottom: none; /* Sin borde en la última fila */
-     }
-
-     tr:hover {
-        background-color: #2c3e50; /* Color al pasar el mouse sobre una fila */
-     }
-
-     .btn {
-         transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-         margin-right: 5px; /* Espacio entre botones */
-     }
-     .btn:last-child {
-        margin-right: 0;
-     }
-     .btn:hover {
-         opacity: 0.9;
-     }
-      .btn-sm {
-        padding: 0.25rem 0.5rem; /* Botones un poco más pequeños */
-        font-size: 0.8rem;
-      }
-
-        /* === MODAL === */
-     .modal {
-         position: fixed;
-         top: 0;
-         left: 0;
-         width: 100%;
-         height: 100%;
-         background: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
-         display: none; /* Oculto por defecto */
-         justify-content: center;
-         align-items: center;
-         z-index: 1050; /* Encima de otros elementos */
-         backdrop-filter: blur(3px); /* Efecto blur opcional */
-     }
-
-     .modal-content {
-         background: #1e2a38; /* Fondo del modal */
-         padding: 30px;
-         border-radius: 10px;
-         width: 90%;
-         max-width: 500px; /* Ancho máximo del modal */
-         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-         position: relative;
-     }
-
-     .modal h2 {
-         color: #ff69b4; /* Color rosa para título del modal */
-         margin-top: 0;
-         margin-bottom: 25px;
-         text-align: center;
-     }
-
-     .modal .form-control {
-        background-color: #2c3e50; /* Fondo de inputs en modal */
-        color: white;
-        border: 1px solid #34495E;
-     }
-      .modal .form-control::placeholder {
-        color: #aaa;
-      }
-
-     .btn-primary {
-         background-color: #ff69b4;
-         border-color: #ff69b4;
-         color: #121212; /* Texto oscuro para contraste */
-         font-weight: bold;
-     }
-
-     .btn-primary:hover {
-         background-color: #e055a0;
-         border-color: #e055a0;
-     }
-
-     .btn-secondary {
-         background-color: #555;
-         border-color: #555;
-     }
-
-     .btn-secondary:hover {
-         background-color: #666;
-         border-color: #666;
-     }
-
-     /* Estilo para los badges de estado */
-     .badge {
-         cursor: default; /* Para que no parezca clickeable el badge en sí */
-         font-size: 0.85em;
-         padding: 0.5em 0.7em;
-         font-weight: bold;
-         text-transform: uppercase;
-         letter-spacing: 0.5px;
-     }
-     .bg-success { background-color: #28a745 !important; } /* Verde para Activo */
-     .bg-secondary { background-color: #6c757d !important; } /* Gris para Inactivo */
-
-     .btn-warning { /* Estilo para botón desactivar */
-          background-color: #ffc107;
-          border-color: #ffc107;
-          color: #000; /* Texto negro para mejor contraste en amarillo */
-     }
-      .btn-warning:hover {
-            background-color: #e0a800;
-            border-color: #d39e00;
-      }
-     .btn-success { /* Estilo para botón activar */
-        background-color: #28a745;
-        border-color: #28a745;
-     }
-     .btn-success:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-     }
-    </style>
+    <link rel="stylesheet" href="/css/administradores.css">
 </head>
 <body>
 
@@ -306,24 +32,28 @@
     <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
     <hr>
     <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
-    <hr class="flex-grow-1"> <a href="/logout" class="logout-btn">
-    <i class="bi bi-power"></i><span>Cerrar Sesión</span>
-</a>
+    <hr class="flex-grow-1">
+    <a href="#" id="logout-link" class="logout-btn">
+        <i class="bi bi-power"></i><span>Cerrar Sesión</span>
+    </a>
 </div>
 
 <div class="content" id="content">
 
-    <h1>Administradores</h1>
+    <h1>Gestión de Administradores</h1>
 
     <div class="form-container">
+        <h2>Registrar Nuevo Administrador</h2>
         <form id="buscar-ru-form">
             <div class="form-group mb-3">
-                <label for="ru-buscar">Buscar Usuario por RU para Registrar:</label>
+                <label for="ru-buscar">Buscar Usuario por RU:</label>
                 <input type="number" id="ru-buscar" name="ru" class="form-control" placeholder="Ingrese RU" required>
             </div>
             <button type="submit" class="btn btn-primary">Buscar Usuario</button>
         </form>
-        <div id="resultado-usuario" style="margin-top: 15px;"></div> </div>
+        <div id="resultado-usuario" style="margin-top: 15px;">
+        </div>
+    </div>
 
     <div id="modal-administrador" class="modal">
         <div class="modal-content">
@@ -332,28 +62,36 @@
                 <input type="hidden" id="id-administrador">
                 <input type="hidden" id="id-usuario">
                 <div class="form-group mb-3">
-                    <label for="usuario">Nombre de Usuario:</label>
-                    <input type="text" id="usuario" name="usuario" class="form-control" required>
+                    <label for="usuario-nombre">Usuario Seleccionado:</label>
+                    <input type="text" id="usuario-nombre" class="form-control" readonly>
+                    <label for="nombre-login-admin" class="mt-2">Nombre de Login (Admin):</label>
+                    <input type="text" id="nombre-login-admin" name="usuario" class="form-control" required placeholder="Ej: admin_laboratorio">
                 </div>
                 <div class="form-group mb-3">
                     <label for="contraseña">Contraseña:</label>
                     <input type="password" id="contraseña" name="contraseña" class="form-control" required>
                 </div>
-                <div class="d-flex justify-content-end"> <button type="button" class="btn btn-secondary me-2" onclick="cerrarModal()">Cancelar</button>
+
+                <div id="form-messages" class="mb-3" style="color: red;"></div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2" onclick="cerrarModal()">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <h2>Lista de Administradores</h2>
     <div class="table-container">
         <table>
             <thead>
             <tr>
-                <th>ID</th>
-                <th>Usuario</th>
-                <th>Nombre del Usuario</th>
-                <th>Estado</th> <th>Acciones</th>
+                <th>ID Admin</th>
+                <th>Nombre Login Admin</th>
+                <th>Usuario Asociado</th>
+                <th>Estado</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody id="administradores-body">
@@ -362,225 +100,7 @@
     </div>
 </div>
 
-<script>
-    const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
-
-    toggleSidebarBtn.addEventListener('click', (e) => {
-      e.preventDefault(); // Prevenir comportamiento por defecto del enlace '#'
-      sidebar.classList.toggle('collapsed');
-      content.classList.toggle('sidebar-collapsed');
-    });
-
-    // Cargar administradores en la tabla
-    function cargarAdministradores() {
-        fetch('/administradores')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tableBody = document.getElementById('administradores-body');
-                tableBody.innerHTML = ''; // Limpiar tabla antes de llenar
-                if (data.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No hay administradores registrados.</td></tr>`;
-                    return;
-                }
-                data.forEach(admin => {
-                    // Determinar clase y texto para el badge/botón de estado
-                    const estadoClass = admin.estado === 'ACTIVO' ? 'bg-success' : 'bg-secondary';
-                    const accionEstadoTexto = admin.estado === 'ACTIVO' ? 'Desactivar' : 'Activar';
-                    const accionEstadoClass = admin.estado === 'ACTIVO' ? 'btn-warning' : 'btn-success'; // warning para desactivar, success para activar
-
-                    const row = `<tr>
-                        <td>${admin.idAdministrador}</td>
-                        <td>${admin.usuario}</td>
-                        <td>${admin.usuarioRef ? `${admin.usuarioRef.nombre} ${admin.usuarioRef.apellido}` : 'N/A'}</td>
-                        <td>
-                            <span class="badge ${estadoClass}">${admin.estado}</span> </td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="abrirModalEditar(${admin.idAdministrador}, '${admin.usuario}', '${admin.usuarioRef ? `${admin.usuarioRef.nombre} ${admin.usuarioRef.apellido}` : 'N/A'}', ${admin.usuarioRef ? admin.usuarioRef.idUsuario : null})">Editar</button>
-
-                            <button class="btn ${accionEstadoClass} btn-sm" onclick="toggleEstadoAdmin(${admin.idAdministrador})">
-                                ${accionEstadoTexto}
-                            </button>
-                        </td>
-                    </tr>`;
-                    tableBody.innerHTML += row;
-                });
-            })
-            .catch(error => {
-                console.error('Error al cargar administradores:', error);
-                // Mostrar error al usuario de forma más amigable
-                const tableBody = document.getElementById('administradores-body');
-                tableBody.innerHTML = `<tr><td colspan="5" style="color: red; text-align: center;">Error al cargar datos: ${error.message}</td></tr>`;
-            });
-    }
-
-    // --- FUNCIÓN PARA CAMBIAR ESTADO ---
-    function toggleEstadoAdmin(idAdministrador) {
-        fetch(`/administradores/${idAdministrador}/toggle-estado`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                // Agregar headers de autenticación si son necesarios
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Error ${response.status}: ${text || response.statusText}`);
-                });
-            }
-            return response.json();
-        })
-        .then(updatedAdmin => {
-            console.log('Estado actualizado:', updatedAdmin);
-            // Opcional: Mostrar notificación de éxito
-            cargarAdministradores(); // Recargar la tabla para ver el cambio
-        })
-        .catch(error => {
-            console.error('Error al cambiar estado:', error);
-            alert(`Error al cambiar estado: ${error.message}`);
-        });
-    }
-    // --- FIN FUNCIÓN CAMBIAR ESTADO ---
-
-
-    // --- Código existente y modificado ---
-    // Función buscar usuario por RU
-    document.getElementById('buscar-ru-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const ru = document.getElementById('ru-buscar').value;
-        const resultadoDiv = document.getElementById('resultado-usuario');
-        resultadoDiv.innerHTML = '<p>Buscando...</p>';
-
-        fetch(`/administradores/usuarios/buscarPorRu/${ru}`) // Usar /usuarios/buscarPorRu si se movió el endpoint
-            .then(response => {
-                if (!response.ok) {
-                     return response.text().then(text => {
-                         throw new Error(text || `Usuario no encontrado (RU: ${ru})`);
-                     });
-                }
-                return response.json();
-            })
-            .then(usuario => {
-                resultadoDiv.innerHTML = `
-                    <p>Usuario encontrado: ${usuario.nombre} ${usuario.apellido} (ID: ${usuario.idUsuario})</p>
-                    <button class="btn btn-success" onclick="abrirModalAgregar(${usuario.idUsuario})">Registrar como Administrador</button>
-                `;
-            })
-            .catch(error => {
-                resultadoDiv.innerHTML = `
-                    <p style="color: red;">Error: ${error.message}</p>
-                `;
-                console.error("Error en búsqueda RU:", error);
-            });
-    });
-
-    function abrirModalAgregar(idUsuario) {
-        document.getElementById('administrador-form').reset();
-        document.getElementById('id-administrador').value = '';
-        document.getElementById('id-usuario').value = idUsuario;
-        document.getElementById('contraseña').placeholder = 'Ingrese contraseña (obligatoria)';
-        document.getElementById('modal-title').textContent = 'Registrar Administrador';
-        document.getElementById('modal-administrador').style.display = 'flex';
-    }
-
-    function abrirModalEditar(idAdministrador, usuario, nombreCompleto, idUsuario) {
-        if (idUsuario === null) {
-            alert("No se puede editar un administrador sin un usuario asociado válido.");
-            return;
-        }
-        document.getElementById('administrador-form').reset();
-        document.getElementById('id-administrador').value = idAdministrador;
-        document.getElementById('id-usuario').value = idUsuario; // Necesario si el PUT requiere usuarioRef
-        document.getElementById('usuario').value = usuario;
-        document.getElementById('contraseña').value = ''; // Limpiar campo contraseña
-        document.getElementById('contraseña').placeholder = 'Dejar en blanco para no cambiar'; // Indicar que es opcional
-        document.getElementById('contraseña').required = false; // Hacer no requerido al editar
-        document.getElementById('modal-title').textContent = `Editar Administrador (${nombreCompleto})`;
-        document.getElementById('modal-administrador').style.display = 'flex';
-    }
-
-    function cerrarModal() {
-        document.getElementById('contraseña').required = true; // Restaurar requerido por si acaso
-        document.getElementById('modal-administrador').style.display = 'none';
-    }
-
-    document.getElementById('administrador-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const idAdministrador = document.getElementById('id-administrador').value;
-        const idUsuario = document.getElementById('id-usuario').value;
-        const usuario = document.getElementById('usuario').value;
-        const contraseña = document.getElementById('contraseña').value;
-
-        const esEdicion = !!idAdministrador;
-        const url = esEdicion ? `/administradores/${idAdministrador}` : '/administradores';
-        const method = esEdicion ? 'PUT' : 'POST';
-
-        // Validar contraseña solo si es creación o si se ingresó algo en edición
-        if (!esEdicion && !contraseña) {
-            alert('La contraseña es obligatoria para crear un nuevo administrador.');
-            return;
-        }
-        // Asegurar que idUsuario esté presente para la creación
-         if (!esEdicion && !idUsuario) {
-            alert('Error: No se encontró el ID del usuario asociado.');
-            return;
-        }
-
-        const dataToSend = {
-            usuario: usuario,
-             // Incluir contraseña solo si es POST o si se escribió algo en PUT
-             ...( (method === 'POST') || (method === 'PUT' && contraseña) ) && { contraseña: contraseña },
-             // Incluir usuarioRef solo si es POST (asumiendo que no se cambia en PUT)
-             ...(method === 'POST') && { usuarioRef: { idUsuario: parseInt(idUsuario) } }
-             // Eliminar esta línea para que no se envíe usuarioRef en la edición
-             // ...(method === 'PUT') && { usuarioRef: { idUsuario: parseInt(idUsuario) } }
-        };
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dataToSend),
-        })
-            .then(response => {
-                if (response.ok) {
-                     return response.text(); // O .json()
-                } else {
-                    return response.text().then(text => {
-                        throw new Error(`Error ${response.status}: ${text || 'Error al procesar la solicitud'}`);
-                    });
-                }
-            })
-            .then(responseTextOrJson => {
-                 alert(esEdicion ? 'Administrador actualizado correctamente' : 'Administrador creado correctamente');
-                 cerrarModal();
-                 cargarAdministradores();
-            })
-            .catch(error => {
-                console.error('Error en formulario admin:', error);
-                alert(`Error: ${error.message}`);
-             });
-    });
-
-    // Redirige a login.html después de cerrar sesión
-    document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault();
-        // Aquí podrías añadir lógica para invalidar sesión en el backend si es necesario
-        console.log("Cerrando sesión...");
-        window.location.href = '/login.html'; // Redirige a login.html
-    });
-
-    // Carga inicial de administradores al cargar la página
-    document.addEventListener('DOMContentLoaded', cargarAdministradores);
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/administradores.js"></script>
 </body>
 </html>

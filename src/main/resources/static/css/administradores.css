@@ -1,0 +1,274 @@
+/* Styles from the original HTML file */
+body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #121212; /* Fondo oscuro general */
+    color: white;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #191970; /* Azul marino oscuro para sidebar */
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 60px; /* Ancho cuando está colapsado */
+}
+
+.sidebar a {
+    padding: 12px 15px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border-left: 5px solid transparent;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap; /* Evita que el texto se divida */
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #34495E; /* Color de fondo al pasar el mouse/activo */
+    border-left-color: #ff69b4; /* Color del borde izquierdo */
+}
+
+.sidebar a i {
+    font-size: 1.2rem; /* Tamaño de iconos */
+}
+
+.sidebar a span {
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+}
+
+.sidebar.collapsed a span {
+    opacity: 0;
+    width: 0;
+    margin: 0;
+    pointer-events: none; /* Evita interacción con texto oculto */
+}
+
+.sidebar.collapsed a {
+    justify-content: center; /* Centra icono cuando está colapsado */
+}
+
+.sidebar hr {
+    border-color: #34495E; /* Color del separador */
+    margin: 5px 0;
+}
+
+.sidebar .logout-btn {
+    margin-top: auto; /* Empuja el botón de logout hacia abajo */
+    border-top: 1px solid #34495E;
+}
+
+.toggle-btn { /* Estilos para el botón de menú hamburguesa si lo usas explícitamente */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* === CONTENIDO PRINCIPAL === */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #283747; /* Fondo del área de contenido */
+    position: relative;
+    margin-left: 280px; /* Espacio para la sidebar */
+    transition: margin-left 0.3s ease;
+}
+
+.content.sidebar-collapsed {
+    margin-left: 60px; /* Espacio reducido cuando la sidebar está colapsada */
+}
+
+/* === FORMULARIO Y TABLA === */
+h1 {
+    color: #ff69b4; /* Color rosa para el título principal */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Sombra sutil para el título */
+    margin-bottom: 30px; /* Más espacio debajo del título */
+    text-align: center;
+}
+
+.form-container {
+    width: 95%; /* Más ancho en pantallas pequeñas */
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin: 20px auto 30px auto; /* Centrado y con márgenes */
+    background-color: #1e2a38; /* Fondo ligeramente diferente para el form */
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: left; /* Alinear texto a la izquierda dentro del form */
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    display: block;
+    color: #ccc; /* Color más claro para etiquetas */
+}
+
+.table-container {
+    width: 95%; /* Ancho de la tabla */
+    max-width: 1000px; /* Ancho máximo */
+    margin: 20px auto; /* Centrado */
+    overflow-x: auto; /* Scroll horizontal si es necesario */
+}
+
+table {
+    width: 100%; /* Tabla ocupa todo el contenedor */
+    background-color: #1e2a38; /* Fondo de la tabla */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-collapse: separate; /* Permite border-radius en celdas */
+    border-spacing: 0;
+    overflow: hidden; /* Para que el radius funcione bien */
+}
+
+th, td {
+    border-bottom: 1px solid #34495E; /* Línea separadora horizontal */
+    padding: 12px 15px; /* Espaciado interno */
+    text-align: left;
+    vertical-align: middle; /* Alineación vertical */
+}
+td {
+    color: #e0e0e0; /* Color de texto en celdas */
+}
+
+th {
+    background-color: #34495E; /* Fondo para cabeceras */
+    color: #ff69b4; /* Color rosa para texto de cabecera */
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none; /* Sin borde en la última fila */
+}
+
+tr:hover {
+    background-color: #2c3e50; /* Color al pasar el mouse sobre una fila */
+}
+
+.btn {
+    transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    margin-right: 5px; /* Espacio entre botones */
+}
+.btn:last-child {
+    margin-right: 0;
+}
+.btn:hover {
+    opacity: 0.9;
+}
+.btn-sm {
+    padding: 0.25rem 0.5rem; /* Botones un poco más pequeños */
+    font-size: 0.8rem;
+}
+
+/* === MODAL === */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Fondo semitransparente */
+    display: none; /* Oculto por defecto */
+    justify-content: center;
+    align-items: center;
+    z-index: 1050; /* Encima de otros elementos */
+    backdrop-filter: blur(3px); /* Efecto blur opcional */
+}
+
+.modal-content {
+    background: #1e2a38; /* Fondo del modal */
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px; /* Ancho máximo del modal */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal h2 {
+    color: #ff69b4; /* Color rosa para título del modal */
+    margin-top: 0;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.modal .form-control {
+    background-color: #2c3e50; /* Fondo de inputs en modal */
+    color: white;
+    border: 1px solid #34495E;
+}
+.modal .form-control::placeholder {
+    color: #aaa;
+}
+
+.btn-primary {
+    background-color: #ff69b4;
+    border-color: #ff69b4;
+    color: #121212; /* Texto oscuro para contraste */
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #e055a0;
+    border-color: #e055a0;
+}
+
+.btn-secondary {
+    background-color: #555;
+    border-color: #555;
+}
+
+.btn-secondary:hover {
+    background-color: #666;
+    border-color: #666;
+}
+
+/* Estilo para los badges de estado */
+.badge {
+    cursor: default; /* Para que no parezca clickeable el badge en sí */
+    font-size: 0.85em;
+    padding: 0.5em 0.7em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.bg-success { background-color: #28a745 !important; } /* Verde para Activo */
+.bg-secondary { background-color: #6c757d !important; } /* Gris para Inactivo */
+
+.btn-warning { /* Estilo para botón desactivar */
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000; /* Texto negro para mejor contraste en amarillo */
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+.btn-success { /* Estilo para botón activar */
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
