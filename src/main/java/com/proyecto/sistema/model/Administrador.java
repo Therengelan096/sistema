@@ -50,4 +50,9 @@ public class Administrador {
     public void setContraseña(String contraseña) { this.contraseña = contraseña; }
     public Usuario getUsuarioRef() { return usuarioRef; }
     public void setUsuarioRef(Usuario usuarioRef) { this.usuarioRef = usuarioRef; }
+
+    public String getNombre() {
+        return this.usuarioRef.getNombre();
+    }
+
 }
