@@ -1,0 +1,63 @@
+### GET request to example server
+POST http://localhost:8083/usuarios
+Content-Type: application/json
+
+{
+  "ru": 10004,
+  "nombre": "Roberto",
+  "apellido": "Pérez",
+  "ci": 9876543,
+  "idTipoUsuario": 3,
+  "carrera": "Ingeniería Civil",
+  "telefono": "55551234",
+  "correo": "roberto.perez@example.com",
+  "materia": "Cálculo I",
+  "paralelo": "D",
+  "semestre": "1"
+}
+### Crear Nuevo Equipo
+POST http://localhost:8083/equipos
+Content-Type: application/json
+
+{
+"nombre": "Analizador de Redes",
+"idCategoria": 1,
+"idLaboratorio": 1,
+"descripcion": "Equipo para análisis de tráfico de red",
+"estado": "disponible",
+"cantidad": 5,
+"marca": "Keysight"
+}
+###
+### Petición POST para crear un nuevo préstamo (Ajustado a tus datos de base de datos - SIN comentarios en el JSON)
+POST http://localhost:8083/prestamos
+Content-Type: application/json
+
+{
+  "usuario": {
+    "idUsuario": 3
+  },
+  "administrador": {
+    "idAdministrador": 1
+  },
+  "fechaPrestamo": "2025-05-03",
+  "horaPrestamo": "15:00:00",
+  "estado": "pendiente",
+  "fechaDevolucionEstimada": "2025-05-10",
+
+  "detallesPrestamo": [
+    {
+      "equipo": {
+        "idEquipo": 1
+      },
+      "cantidad": 2
+    },
+    {
+      "equipo": {
+        "idEquipo": 2
+      },
+      "cantidad": 1
+    }
+  ]
+}
+###

@@ -1,0 +1,15 @@
+### GET request to example server
+# Obtener todos los préstamos registrados en el sistema.
+GET http://localhost:8083/prestamos
+###
+# Obtener todos los equipos disponibles del laboratorio con ID = 3.
+GET http://localhost:8083/laboratorios/3/equipos
+###
+# Obtener datos consolidados o resumen para reportes generales de uso de laboratorios.
+GET http://localhost:8083/reportes/laboratorios
+###
+# Buscar un usuario específico por su RU (Registro Único).
+GET http://localhost:8083/usuarios/buscarPorRu/10003
+###
+# Obtener la lista de préstamos que aún no han sido devueltos.
+GET http://localhost:8083/devolucion

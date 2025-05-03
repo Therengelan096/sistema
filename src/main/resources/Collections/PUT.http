@@ -1,0 +1,30 @@
+### GET request to example server
+###Actualizar un Préstamo Existente (ej. el Préstamo con ID 1):
+PUT http://localhost:8083/prestamos/1
+Content-Type: application/json
+
+{
+  "idPrestamo": 1,
+  "usuario": {
+    "idUsuario": 2
+  },
+  "administrador": {
+    "idAdministrador": 1
+  },
+  "fechaPrestamo": "2025-04-10",
+  "horaPrestamo": "10:00:00",
+  "estado": "devuelto",
+  "fechaDevolucionEstimada": "2025-04-15",
+
+  "detallesPrestamo": [
+    {
+      "equipo": { "idEquipo": 1 },
+      "cantidad": 2
+    },
+    {
+      "equipo": { "idEquipo": 2 },
+      "cantidad": 3
+    }
+  ]
+}
+###

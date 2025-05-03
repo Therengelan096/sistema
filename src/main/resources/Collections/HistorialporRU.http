@@ -1,0 +1,11 @@
+### Petición POST para obtener el historial de préstamos de un usuario por su RU
+POST http://localhost:8083/reportes/generarReporte
+Content-Type: application/json
+
+{
+  "reportes": ["historial-prestamos-usuario"],
+  "usuarioRu": 10003,
+  "filtros": {
+  }
+}
+###

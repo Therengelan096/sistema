@@ -1,0 +1,24 @@
+### GET request to example server
+# Paso 1: Consultar stock inicial de un equipo (ej. Router Cisco ID 1)
+GET http://localhost:8083/equipos/1
+###
+# Paso 2: Registrar un Préstamo que incluya ese equipo (ej. prestando 2 Routers Cisco)
+POST http://localhost:8083/prestamos
+Content-Type: application/json
+
+{
+  "usuario": { "idUsuario": 3 },
+  "administrador": { "idAdministrador": 1 },
+  "fechaPrestamo": "2025-05-03",
+  "horaPrestamo": "15:00:00",
+  "estado": "pendiente",
+  "fechaDevolucionEstimada": "2025-05-10",
+  "detallesPrestamo": [
+    { "equipo": { "idEquipo": 2 }, "cantidad": 1 },
+    { "equipo": { "idEquipo": 4 }, "cantidad": 1 }
+  ]
+}
+###
+# Paso 3: Consultar stock final del mismo equipo (Router Cisco ID 1) para verificar la disminución
+GET http://localhost:8083/equipos/2
+###

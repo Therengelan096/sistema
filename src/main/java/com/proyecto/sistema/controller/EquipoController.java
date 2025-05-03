@@ -27,7 +27,14 @@ public class EquipoController {
     public Equipo crearEquipo(@RequestBody Equipo equipo) {
         return equipoRepository.save(equipo);
     }
-
+    // Obtener un equipo por su ID
+    @GetMapping("/{id}") // << Añade esta anotación con la ruta de la variable {id}
+    public ResponseEntity<Equipo> obtenerEquipoPorId(@PathVariable int id) {
+        // Usa el repositorio para buscar el equipo por ID
+        return equipoRepository.findById(id)
+                .map(equipo -> ResponseEntity.ok(equipo)) // Si se encuentra el equipo, retorna 200 OK con el equipo
+                .orElse(ResponseEntity.notFound().build()); // Si no se encuentra, retorna 404 Not Found
+    }
     // Actualizar un equipo existente
     @PutMapping("/{id}")
     public ResponseEntity<Equipo> actualizarEquipo(@PathVariable int id, @RequestBody Equipo equipoDetalles) {

@@ -1,0 +1,27 @@
+###
+GET http://localhost:8083/prestamos/1
+
+###
+PUT http://localhost:8083/prestamos/1
+Content-Type: application/json
+
+{
+  "idPrestamo": 1,
+  "usuario": { "idUsuario": 1 },
+  "administrador": {"idAdministrador":1},
+  "fechaPrestamo": "...",
+  "horaPrestamo": "...",
+  "estado": "devuelto",
+  "fechaDevolucionEstimada": "...",
+  "detallesPrestamo": [
+    { "equipo": { "idEquipo": 1 }, "cantidad": 2 },
+    { "equipo": { "idEquipo": 2 }, "cantidad": 3 }
+  ]
+}
+
+###
+GET http://localhost:8083/equipos/1
+
+###
+GET http://localhost:8083/equipos/2
+###

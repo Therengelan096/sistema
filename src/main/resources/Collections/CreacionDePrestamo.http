@@ -1,0 +1,29 @@
+### --- Flujo: Creación de Préstamo ---
+
+# Paso 1: Buscar Usuario (ej. por RU 10003 - Luis Martínez)
+GET http://localhost:8083/usuarios/buscarPorRu/10003
+
+###
+# Paso 2: Consultar Equipos Disponibles (ej. obtener lista completa para revisar stock/estado)
+GET http://localhost:8083/equipos
+
+###
+# Paso 3: Registrar el nuevo Préstamo
+# Usa un JSON como el que ajustamos antes (con IDs válidos y cantidades con stock suficiente).
+POST http://localhost:8083/prestamos
+Content-Type: application/json
+
+{
+  "usuario": { "idUsuario": 3 },
+  "administrador": { "idAdministrador": 1 },
+  "fechaPrestamo": "2025-05-03",
+  "horaPrestamo": "15:00:00",
+  "estado": "pendiente",
+  "fechaDevolucionEstimada": "2025-05-10",
+  "detallesPrestamo": [
+    { "equipo": { "idEquipo": 1 }, "cantidad": 1 },
+    { "equipo": { "idEquipo": 2 }, "cantidad": 1 }
+  ]
+}
+
+###
