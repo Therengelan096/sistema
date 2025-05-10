@@ -426,10 +426,11 @@ public class ReporteController {
             // Asegurarse de que las relaciones no sean nulas antes de acceder a propiedades
             mantenimientoData.put("equipo", mantenimiento.getEquipo() != null ? mantenimiento.getEquipo().getNombre() : "N/A");
             mantenimientoData.put("fechaMantenimiento", mantenimiento.getFechaMantenimiento());
-            mantenimientoData.put("estadoInicial", mantenimiento.getEstadoInicial());
-            mantenimientoData.put("estadoFinal", mantenimiento.getEstadoFinal());
-            mantenimientoData.put("descripcionProblema", mantenimiento.getDescripcionProblema());
-            mantenimientoData.put("solucionAplicada", mantenimiento.getSolucionAplicada());
+            mantenimientoData.put("cantidad", mantenimiento.getCantidad());
+           // mantenimientoData.put("estadoInicial", mantenimiento.getEstadoInicial());
+          //  mantenimientoData.put("estadoFinal", mantenimiento.getEstadoFinal());
+           // mantenimientoData.put("descripcionProblema", mantenimiento.getDescripcionProblema());
+           // mantenimientoData.put("solucionAplicada", mantenimiento.getSolucionAplicada());
             // Opcional: Añadir Lab/Cat del equipo mantenido si es relevante
             // mantenimientoData.put("laboratorio", mantenimiento.getEquipo() != null && mantenimiento.getEquipo().getLaboratorio() != null ? mantenimiento.getEquipo().getLaboratorio().getNombre() : "N/A");
             // mantenimientoData.put("categoria", mantenimiento.getEquipo() != null && mantenimiento.getEquipo().getCategoria() != null ? mantenimiento.getEquipo().getCategoria().getNombreCategoria() : "N/A");

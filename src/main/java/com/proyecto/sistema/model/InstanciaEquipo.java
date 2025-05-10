@@ -32,8 +32,6 @@ public class InstanciaEquipo {
     @Temporal(TemporalType.DATE) // Indica que solo guardaremos la fecha
     private Date fechaAdquisicion; // Campo opcional
 
-    @Column(name = "notas")
-    private String notas; // Campo opcional
 
     // --- Getters y Setters ---
     public int getIdInstancia() {
@@ -76,13 +74,6 @@ public class InstanciaEquipo {
         this.fechaAdquisicion = fechaAdquisicion;
     }
 
-    public String getNotas() {
-        return notas;
-    }
-
-    public void setNotas(String notas) {
-        this.notas = notas;
-    }
 
     // Considera agregar constructores si los necesitas
 

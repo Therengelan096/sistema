@@ -15,7 +15,6 @@ public interface EquipoRepository extends JpaRepository<Equipo, Integer> {
     List<Equipo> findByLaboratorio(Laboratorio laboratorio);
     List<Equipo> findByLaboratorioAndCategoria(Laboratorio laboratorio, CategoriaEquipo categoria);
 
-    // *** ¡ASEGÚRATE DE QUE ESTE MÉTODO ESTÉ AQUÍ! ***
     @Query("SELECT e FROM Equipo e JOIN FETCH e.categoria JOIN FETCH e.laboratorio")
     List<Equipo> findAllWithCategoriaAndLaboratorio();
 }
