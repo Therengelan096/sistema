@@ -5,6 +5,7 @@ import com.proyecto.sistema.model.TipoUsuario;
 import com.proyecto.sistema.model.Usuario;
 import com.proyecto.sistema.service.AdministradorService;
 import com.proyecto.sistema.service.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest; // AÑADIDO
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +26,17 @@ public class LoginController {
     private AdministradorService administradorService;
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioService usuarioService; // Usarás el UsuarioService que proporcionaste
 
-    // Método para manejar la solicitud GET a /login
-    // Simplemente redirige a la ubicación estática del archivo login.html
     @GetMapping
     public String mostrarLogin() {
-        // Redirigimos directamente al recurso estático
-        // Esto hace que el navegador pida el archivo login.html de /static
-        return "redirect:/login.html";
+        return "redirect:/login.html"; // Asume que login.html está en static
     }
 
     @PostMapping
-    public void procesarLogin(@RequestParam String usuario, @RequestParam String contraseña, HttpServletResponse response, HttpSession session) throws IOException {
-
+    public void procesarLogin(@RequestParam String usuario, @RequestParam String contraseña,
+                              HttpServletRequest request, // AÑADIDO para getContextPath
+                              HttpServletResponse response, HttpSession session) throws IOException {
         try {
             Integer ru = null;
             boolean isNumericUser = false;
@@ -51,23 +49,25 @@ public class LoginController {
 
             Administrador admin = null;
             if (!isNumericUser) {
+                // Asumo que tienes un método para buscar admin por usuario y contraseña
+                // Si no, deberías implementarlo en AdministradorService
                 admin = administradorService.obtenerPorUsuarioYContraseña(usuario, contraseña);
             }
 
             if (admin != null) {
-                if (admin.getEstado() == com.proyecto.sistema.model.EstadoAdmin.ACTIVO) {
-                    if (admin.getUsuarioRef() != null) {
+                // Lógica para administrador
+                if (admin.getEstado() == com.proyecto.sistema.model.EstadoAdmin.ACTIVO) { // Asegúrate que EstadoAdmin sea accesible
+                    if (admin.getUsuarioRef() != null) { // Asumo que Administrador tiene una referencia a Usuario
                         session.setAttribute("idUsuario", admin.getUsuarioRef().getIdUsuario());
                     }
-                    // Éxito - Redirigir a endpoint (asumiendo que también tienes Controllers para estos)
-                    response.sendRedirect("/menuprincipal.html");
+                    response.sendRedirect(request.getContextPath() + "/menuprincipal.html"); // O la ruta del dashboard de admin
                 } else {
-                    // Administrador inactivo - Redirigir al archivo estático con parámetro
-                    response.sendRedirect("/login.html?error=disabled");
+                    response.sendRedirect(request.getContextPath() + "/login.html?error=disabled");
                 }
             } else if (isNumericUser) {
                 try {
                     int ci = Integer.parseInt(contraseña);
+                    // Usamos el método de tu UsuarioService
                     Optional<Usuario> usuarioEncontradoOpt = usuarioService.obtenerUsuarioPorRuYCi(ru, ci);
 
                     if (usuarioEncontradoOpt.isPresent()) {
@@ -75,40 +75,35 @@ public class LoginController {
                         TipoUsuario tipoUsuario = usuarioEncontrado.getTipoUsuario();
 
                         if (tipoUsuario != null) {
-                            if ("docente".equalsIgnoreCase(tipoUsuario.getTipo())) {
-                                session.setAttribute("idUsuario", usuarioEncontrado.getIdUsuario());
-                                response.sendRedirect("/docentes.html"); // Redirigir a endpoint
-                            } else if ("estudiante".equalsIgnoreCase(tipoUsuario.getTipo())) {
-                                session.setAttribute("idUsuario", usuarioEncontrado.getIdUsuario());
-                                response.sendRedirect("/estudiantes.html"); // Redirigir a endpoint
+                            session.setAttribute("idUsuario", usuarioEncontrado.getIdUsuario());
+
+                            if ("docente".equalsIgnoreCase(tipoUsuario.getTipo()) || "estudiante".equalsIgnoreCase(tipoUsuario.getTipo())) {
+                                response.sendRedirect(request.getContextPath() + "/usuario/dashboard"); // Redirección al UserController
                             } else {
-                                // Tipo no esperado - Redirigir al archivo estático con error genérico
-                                response.sendRedirect("/login.html?error=true");
+                                // Tipo no esperado pero logueado, quizás un dashboard genérico o error
+                                response.sendRedirect(request.getContextPath() + "/login.html?error=unknown_type");
                             }
                         } else {
-                            // Usuario encontrado pero sin tipo - Redirigir al archivo estático con error genérico
-                            response.sendRedirect("/login.html?error=true");
+                            // Usuario sin tipo asignado
+                            response.sendRedirect(request.getContextPath() + "/login.html?error=no_type");
                         }
                     } else {
-                        // Usuario RU/CI no encontrado - Redirigir al archivo estático con error genérico
-                        response.sendRedirect("/login.html?error=true");
+                        // RU o CI incorrectos
+                        response.sendRedirect(request.getContextPath() + "/login.html?error=invalid_credentials");
                     }
                 } catch (NumberFormatException e) {
-                    // Contraseña no numérica - Redirigir al archivo estático con error genérico
-                    response.sendRedirect("/login.html?error=true");
+                    // Contraseña (CI) no numérica
+                    response.sendRedirect(request.getContextPath() + "/login.html?error=ci_format");
                 }
             } else {
-                // No es numérico y no se encontró como admin - Redirigir al archivo estático con error genérico
-                response.sendRedirect("/login.html?error=true");
+                // Usuario no numérico (no admin) y no encontrado
+                response.sendRedirect(request.getContextPath() + "/login.html?error=not_found");
             }
 
         } catch (Exception e) {
-            // Captura CUALQUIER otra excepción inesperada
-            e.printStackTrace(); // Imprime la traza en la consola
-
-            // En caso de cualquier error, redirige al archivo estático con error genérico
+            e.printStackTrace();
             if (!response.isCommitted()) {
-                response.sendRedirect("/login.html?error=true");
+                response.sendRedirect(request.getContextPath() + "/login.html?error=true");
             }
         }
     }

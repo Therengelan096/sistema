@@ -13,21 +13,25 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Método para obtener usuario por RU y CI (en este caso, la contraseña es el CI)
+    // Método para obtener usuario por RU y CI (contraseña es el CI)
+    // Este es el método que tú proporcionaste
     public Optional<Usuario> obtenerUsuarioPorRuYCi(int ru, int ci) {
-        // Primero, obtenemos el usuario por su RU
-        Optional<Usuario> usuario = usuarioRepository.findByRu(ru);
+        Optional<Usuario> usuario = usuarioRepository.findByRu(ru); // Asumiendo que findByRu existe en UsuarioRepository
 
         if (usuario.isPresent()) {
-            // Verificamos que el CI coincida
-            if (usuario.get().getCi() == ci) {
-                return usuario;  // Si CI y RU coinciden, devolvemos el usuario
+            if (usuario.get().getCi() == ci) { // Compara el CI del usuario con el CI proporcionado
+                return usuario;
             }
         }
-
-        return Optional.empty();  // Si no coincide, devolvemos vacío
+        return Optional.empty();
     }
 
-    // Puedes agregar otros métodos según necesites, como obtener usuario por otro criterio
+    // Método para obtener usuario por su ID (PK)
+    public Optional<Usuario> obtenerUsuarioPorId(Integer idUsuario) {
+        if (idUsuario == null) {
+            return Optional.empty();
+        }
+        return usuarioRepository.findById(idUsuario);
+    }
+    // Otros métodos del servicio de usuario si los necesitas...
 }
-

@@ -1,4 +1,3 @@
-DROP DATABASE IF EXISTS Laboratorios;
 CREATE DATABASE Laboratorios;
 USE Laboratorios;
 CREATE TABLE Tipos_Usuarios (
@@ -122,4 +121,15 @@ CREATE TABLE Detalle_Mantenimiento(
     fase ENUM('mantenimiento','reparado') DEFAULT 'mantenimiento',
     FOREIGN KEY (id_instancia) REFERENCES instancias_equipo(id_instancia),
     FOREIGN KEY (id_mantenimiento) REFERENCES Mantenimiento(id_mantenimiento)
+);
+
+CREATE TABLE Horario_Laboratorio (
+    id_horario INT PRIMARY KEY AUTO_INCREMENT,
+    id_laboratorio INT NOT NULL,
+    dia_semana ENUM('LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO') NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    ocupado BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_laboratorio) REFERENCES LaboratoriosE(id_laboratorio) ON DELETE CASCADE, -- Se borra el horario si se borra el laboratorio
+    UNIQUE KEY (id_laboratorio, dia_semana, hora_inicio) -- Para evitar duplicados
 );

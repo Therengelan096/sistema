@@ -190,7 +190,6 @@
     <div id="disabled-message" class="alert alert-warning" style="display: none;">
         Administrador inhabilitado.
     </div>
-
     <form action="/login" method="post">
         <div class="form-group">
             <label for="usuario">Usuario:</label>
@@ -220,18 +219,43 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Detecta el parámetro 'error' en la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('error') === 'true') {
-        document.getElementById('error-message').style.display = 'block';
-        document.getElementById('disabled-message').style.display = 'none';
-    } else if (urlParams.get('error') === 'disabled') {
-        document.getElementById('disabled-message').style.display = 'block';
-        document.getElementById('error-message').style.display = 'none';
-    } else {
-        document.getElementById('error-message').style.display = 'none';
-        document.getElementById('disabled-message').style.display = 'none';
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const errorMessageArea = document.getElementById('error-message');
+        const disabledMessageArea = document.getElementById('disabled-message');
+        // Si añadiste más divs para otros errores, obtenlos aquí
+
+        // Oculta todos los mensajes al inicio (aunque el style="display: none;" ya lo hace)
+        errorMessageArea.style.display = 'none';
+        disabledMessageArea.style.display = 'none';
+        // Oculta otros divs si los añadiste
+
+        if (error) {
+            if (error === 'disabled') {
+                // Muestra solo el mensaje de administrador inhabilitado
+                disabledMessageArea.style.display = 'block';
+            } else {
+                // Para CUALQUIER otro código de error ('true', 'invalid_credentials', 'no_type', 'ci_format', 'not_found', etc.)
+                // muestra el mensaje genérico de usuario/contraseña incorrecta.
+                errorMessageArea.style.display = 'block';
+
+                // Opcional: Si quieres un mensaje más específico para algún código en el div genérico,
+                // podrías modificar el textContent basado en 'error'.
+                // switch (error) {
+                //    case 'invalid_credentials':
+                //        errorMessageArea.textContent = 'Usuario o contraseña incorrectos.';
+                //        break;
+                //    case 'no_type':
+                //        errorMessageArea.textContent = 'Error: Usuario sin tipo asignado.';
+                //        break;
+                //    // ... otros casos ...
+                //    default: // Fallback para cualquier otro error no manejado
+                //        errorMessageArea.textContent = 'Error al intentar iniciar sesión.';
+                //}
+            }
+        }
+    });
 </script>
 </body>
 </html>
