@@ -1,21 +1,30 @@
 package com.proyecto.sistema.controller;
 
-import com.proyecto.sistema.model.*;
-import com.proyecto.sistema.repository.*;
+import com.proyecto.sistema.model.*; // Importar todos los modelos necesarios (Usuario, Laboratorio, HorarioLaboratorio, etc.)
+import com.proyecto.sistema.model.DiaSemana; // Importar el ENUM DiaSemana si está dentro de HorarioLaboratorio
+import com.proyecto.sistema.repository.*; // Importar todos los repositorios necesarios (UsuarioRepository, LaboratorioRepository, HorarioLaboratorioRepository, etc.)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalTime; // Importar si usas LocalTime
+import java.sql.Date; // Usar java.sql.Date para el mapeo de fechas de BD
+import java.util.List; // Mantener importaciones de util
+import java.util.Map; // Mantener importaciones de util
+import java.util.HashMap; // Mantener importaciones de util
+import java.util.Arrays; // Mantener importaciones de util
+import java.util.Optional; // Para Optional en la búsqueda de entidades
+
+import java.util.ArrayList; // Importar ArrayList
+import java.util.stream.Collectors; // Importar si usas streams
+
 
 @RestController
-@RequestMapping("/reportes") // El nombre del controlador no importa, lo importante es la ruta del método
+@RequestMapping("/reportes")
 public class ReporteController {
-    // Inyección de Repositorios. Asegúrate de que todos están definidos y funcionales.
+
+    // Inyección de Repositorios. Asegúrate de que todos están definidos y funcionales en tu proyecto.
     @Autowired
     private PrestamoRepository prestamoRepository;
     @Autowired
@@ -23,21 +32,30 @@ public class ReporteController {
     @Autowired
     private SancionRepository sancionRepository;
     @Autowired
-    private MantenimientoRepository mantenimientoRepository;
+    private MantenimientoRepository mantenimientoRepository; // Para reportes de mantenimiento
     @Autowired
-    private LaboratorioRepository laboratorioRepository;
+    private LaboratorioRepository laboratorioRepository; // Para listar laboratorios
     @Autowired
-    private CategoriaEquipoRepository categoriaEquipoRepository;
+    private CategoriaEquipoRepository categoriaEquipoRepository; // Para listar categorías y filtros
 
-    // Endpoint para obtener todos los laboratorios
+    // Inyección de HorarioLaboratorioRepository
+    @Autowired
+    private HorarioLaboratorioRepository horarioLaboratorioRepository;
+
+
+    // --- ENDPOINTS PÚBLICOS ---
+
+    // Endpoint para obtener todos los laboratorios (útil para el selector de laboratorio en reportes)
     // Mapeado a /reportes/laboratorios
     @GetMapping("/laboratorios")
     public ResponseEntity<List<Laboratorio>> getLaboratorios() {
         // Asumiendo que Laboratorio es tu entidad para la tabla LaboratoriosE y tiene un repository
-        List<Laboratorio> laboratorios = laboratorioRepository.findAll(); // JpaRepository proporciona findAll()
+        List<Laboratorio> laboratorios = laboratorioRepository.findAll();
+        // Nota: @JsonIgnoreProperties en Laboratorio debe permitir serializar ID, nombre, ubicacion.
         return ResponseEntity.ok(laboratorios);
     }
 
+    // Endpoint para obtener categorías (probablemente para otros reportes/filtros)
     // Mapeado a /reportes/categorias o /reportes/categorias?laboratorioId=X
     @GetMapping("/categorias")
     public ResponseEntity<List<CategoriaEquipo>> getCategoriasByLaboratorio(
@@ -45,161 +63,188 @@ public class ReporteController {
 
         List<CategoriaEquipo> categorias;
         if (laboratorioId != null) {
-            // Usar el método del repositorio que filtra por ID de laboratorio
-            // Asegúrate de que findByLaboratorioId exista en CategoriaEquipoRepository con la @Query corregida
+            // Asegúrate de que findByLaboratorioId existe en CategoriaEquipoRepository (podría requerir un Join Fetch)
             categorias = categoriaEquipoRepository.findByLaboratorioId(laboratorioId);
         } else {
-            // Si no se proporciona laboratorioId, obtener todas las categorías
-            // Asegúrate de que findAll() exista en CategoriaEquipoRepository
             categorias = categoriaEquipoRepository.findAll();
         }
         return ResponseEntity.ok(categorias);
     }
 
-    // Método principal para manejar la generación de reportes
+
+    // Método principal para generar reportes (Actualizado el switch case para incluir horario-laboratorio)
+    // Mapeado a POST /reportes/generarReporte
     @PostMapping("/generarReporte")
     public ResponseEntity<?> generarReporte(@RequestBody Map<String, Object> reporteRequest) {
         try {
-            // String tipoReporte = (String) reporteRequest.get("tipoReporte"); // No parece usarse
             List<String> reportesSeleccionados = (List<String>) reporteRequest.get("reportes");
-            // Obtener el mapa de filtros. Asegurarse de que no sea null si no se envían filtros.
             Map<String, Object> filtros = (Map<String, Object>) reporteRequest.get("filtros");
             if (filtros == null) {
-                filtros = new HashMap<>(); // Inicializar un mapa vacío si no hay filtros
+                filtros = new HashMap<>();
             }
 
             Integer usuarioRu = reporteRequest.get("usuarioRu") != null ? (Integer) reporteRequest.get("usuarioRu") : null;
 
-
             Map<String, Object> reportesData = new HashMap<>();
 
+            // Itera sobre los reportes seleccionados y llama al método privado correspondiente
             for (String reporteSeleccionado : reportesSeleccionados) {
-                // Asegurarse de que todos los métodos llamados aquí acepten el mapa 'filtros'
                 switch (reporteSeleccionado) {
                     case "equipos-mas-prestados":
                         reportesData.put("equiposMasPrestados", generarReporteEquiposMasPrestados(filtros));
                         break;
                     case "usuarios-mas-prestaron":
-                        // Pasar filtros al método de generación (ahora solo hay una versión que acepta filtros)
-                        reportesData.put("usuariosMasPrestaron", generarReportarUsuariosMasPrestaron(filtros)); // Corregido nombre si es necesario
+                        reportesData.put("usuariosMasPrestaron", generarReportarUsuariosMasPrestaron(filtros));
                         break;
-                    case "prestamos-por-fecha":
+                    case "prestamos-por-fecha": // Este nombre parece duplicar prestamos-fecha-fecha en el switch, revisar
                         reportesData.put("prestamosPorFecha", generarReportePrestamosPorFecha(filtros));
                         break;
                     case "mantenimientos":
-                        // Pasar filtros al método de generación (ya implementado)
                         reportesData.put("mantenimientos", generarReporteMantenimientos(filtros));
                         break;
                     case "prestamos-fecha-fecha":
-                        // Pasar filtros al método de generación
                         reportesData.put("prestamosFechaFecha", generarReportePrestamosPorRangoDeFechas(filtros));
                         break;
                     case "administradores-prestamo":
-                        // Pasar filtros al método de generación
                         reportesData.put("administradoresPrestamo", generarReporteAdministradoresPrestamo(filtros));
                         break;
                     case "sanciones-activas-inactivas":
-                        // Pasar filtros al método de generación (se pasa el mapa, aunque no se usen filtros aquí)
                         reportesData.put("sancionesActivasInactivas", generarReporteSancionesActivasInactivas(filtros));
                         break;
-                    // --- Casos para reportes de Usuario (ya manejan filtros, se pasa el mapa) ---
+                    // --- Casos para reportes de Usuario ---
                     case "historial-prestamos-usuario":
                         if (usuarioRu != null) {
                             reportesData.put("historialPrestamosUsuario", generarReporteHistorialPrestamosUsuario(usuarioRu, filtros));
+                        } else {
+                            // Opcional: Lanzar un error si se intenta generar un reporte de usuario sin RU
+                            System.err.println("Intento de generar reporte de usuario sin RU: " + reporteSeleccionado);
+                            // throw new RuntimeException("El reporte '" + reporteSeleccionado + "' requiere un RU de usuario.");
                         }
                         break;
                     case "sanciones-usuario":
                         if (usuarioRu != null) {
                             reportesData.put("sancionesUsuario", generarReporteSancionesUsuario(usuarioRu, filtros));
+                        } else {
+                            System.err.println("Intento de generar reporte de usuario sin RU: " + reporteSeleccionado);
+                            // throw new RuntimeException("El reporte '" + reporteSeleccionado + "' requiere un RU de usuario.");
                         }
                         break;
                     case "info-usuario":
-                        // info-usuario no usa filtros globales, pero si el método lo espera por consistencia, pásalo.
-                        // Tu método generarReporteInfoUsuario(int ru) NO acepta filtros. Está bien así.
                         if (usuarioRu != null) {
                             reportesData.put("infoUsuario", generarReporteInfoUsuario(usuarioRu));
+                        } else {
+                            System.err.println("Intento de generar reporte de usuario sin RU: " + reporteSeleccionado);
+                            // throw new RuntimeException("El reporte '" + reporteSeleccionado + "' requiere un RU de usuario.");
                         }
                         break;
-                    // Agrega aquí los demás casos para cada tipo de reporte si tienes más
+                    // --- NUEVO CASE: Para el reporte de horario de laboratorio ---
+                    case "horario-laboratorio":
+                        // Este reporte usa filtros globales, especialmente el ID del laboratorio y los días
+                        reportesData.put("horario-laboratorio", generarReporteHorarioLaboratorio(filtros));
+                        break;
+                    // --- FIN NUEVO CASE ---
+
+                    default:
+                        System.err.println("Reporte seleccionado no reconocido: " + reporteSeleccionado);
+                        // Considera lanzar una excepción aquí si un reporte no reconocido es un error grave
+                        // throw new RuntimeException("Tipo de reporte no válido: " + reporteSeleccionado);
+                        break;
                 }
             }
             return ResponseEntity.ok(reportesData);
+
         } catch (RuntimeException e) {
-            // Captura RuntimeException para mensajes de error controlados (ej: Usuario no encontrado, formato de fecha incorrecto)
-            // Esto envía un 400 Bad Request con el mensaje de error de la excepción
+            // Manejar errores esperados (ej. validación de filtros)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                    "timestamp", new Date(),
+                    "timestamp", new java.util.Date(), // Usar java.util.Date
                     "status", HttpStatus.BAD_REQUEST.value(),
                     "error", "Bad Request",
-                    "message", e.getMessage() // Envía el mensaje de la RuntimeException
+                    "message", e.getMessage() // Mostrar el mensaje de la RuntimeException
             ));
         }
         catch (Exception e) {
-            // Captura cualquier otra excepción general
-            e.printStackTrace(); // Imprimir stack trace en el servidor para depuración
+            // Manejar otros errores inesperados del servidor
+            e.printStackTrace(); // Imprimir stack trace en el log del servidor
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "timestamp", new Date(),
+                    "timestamp", new java.util.Date(), // Usar java.util.Date
                     "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     "error", "Internal Server Error",
-                    // Envía un mensaje de error genérico en producción
-                    "message", "Error inesperado al generar el reporte."
-                    // En desarrollo, podrías enviar e.getMessage() o e.toString() para más detalles:
-                    // "message", "Error inesperado al generar el reporte: " + e.getMessage()
+                    "message", "Error inesperado al generar el reporte." // Mensaje genérico para el usuario
             ));
         }
     }
 
-    // --- Métodos para generar cada tipo de reporte (Modificados para aceptar filtros) ---
 
-    // --- Método para "Equipos más prestados" ---
-    // Modificado: Ahora acepta el mapa de filtros
+    // --- MÉTODOS PRIVADOS PARA GENERAR REPORTES ---
+    // Estos métodos son llamados por generarReporte() según los reportes seleccionados.
+    // Cada uno debe retornar un Map<String, Object> con la estructura:
+    // { "titulo": "...", "tipo": "tabla"|"lista"|"texto", "cabecera": [...], "datos": [...] }
+    // O la estructura correspondiente para tipos no tabulares.
+
+
+    // Implementación del método de equipos más prestados
     private Map<String, Object> generarReporteEquiposMasPrestados(Map<String, Object> filtros) {
-        // Lógica para obtener los equipos más prestados
-
-        // --- Extraer y Parsear Filtros Globales ---
         Integer laboratorioId = null;
         Integer categoriaId = null;
-        // Date fechaInicio = null; // Si tu consulta nativa en el repositorio soporta fechas de préstamo
-        // Date fechaFin = null;   // Si tu consulta nativa en el repositorio soporta fechas de préstamo
+        // Date fechaInicio = null; // Si tu consulta nativa soporta fechas de préstamo
+        // Date fechaFin = null;   // Si tu consulta nativa soporta fechas de préstamo
 
-        // Extraer y parsear filtro de Laboratorio (igual que en Mantenimientos)
+        // --- Extraer y Parsear Filtros Globales (Mejorado el parseo) ---
+        // Asegúrate de que las claves aquí ("laboratorio", "categoria", "fechaInicio", "fechaFin")
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
         if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
             try {
-                laboratorioId = Integer.parseInt(filtros.get("laboratorio").toString());
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Laboratorio global incorrecto.");
             }
         }
-        // Extraer y parsear filtro de Categoría (igual que en Mantenimientos)
         if (filtros.containsKey("categoria") && filtros.get("categoria") != null && !filtros.get("categoria").toString().isEmpty()) {
             try {
-                categoriaId = Integer.parseInt(filtros.get("categoria").toString());
+                Object catFilter = filtros.get("categoria");
+                if (catFilter instanceof Integer) {
+                    categoriaId = (Integer) catFilter;
+                } else if (catFilter instanceof String) {
+                    String catIdStr = (String) catFilter;
+                    if (!catIdStr.isEmpty()){
+                        categoriaId = Integer.parseInt(catIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de categoría.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Categoría global incorrecto.");
             }
         }
-        // Extraer y parsear filtros de Fecha si tu consulta nativa los soporta
-        // if (filtros.containsKey("fechaInicio") && ...) { ... parse fechaInicio }
-        // if (filtros.containsKey("fechaFin") && ...) { ... parse fechaFin }
-        // --- Fin de Extraer y Parsear Filtros Globales ---
+        // Nota: Si este reporte soporta filtros de fecha, debes extraerlos aquí también.
 
 
-        List<Object[]> resultados;
         // *** Llamar al método del repositorio con los filtros ***
         // ASUME: El método obtenerEquiposMasPrestados en PrestamoRepository
         // ha sido modificado (con @Query nativeQuery=true) para aceptar Integer laboratorioId, Integer categoriaId
         // y que la consulta nativa usa esos parámetros para filtrar los resultados.
-        resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId);
+        List<Object[]> resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId);
         // Si tu consulta nativa soporta fechas, pásalos aquí también:
-        // resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId, fechaInicio, fechaFin);
+        // List<Object[]> resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId, fechaInicio, fechaFin);
 
 
         List<Map<String, Object>> datos = new ArrayList<>();
         // Asumiendo que la consulta nativa retorna [nombre_equipo, cantidad_prestada] (Object[0], Object[1])
         for (Object[] resultado : resultados) {
             Map<String, Object> equipo = new HashMap<>();
-            equipo.put("nombre", resultado[0]);
-            equipo.put("cantidadPrestada", resultado[1]);
+            // Asegúrate de manejar posibles nulos si la consulta nativa puede retornarlos
+            equipo.put("nombre", resultado[0] != null ? resultado[0].toString() : "N/A");
+            equipo.put("cantidadPrestada", resultado[1] != null ? resultado[1] : 0); // Debería ser un número
             datos.add(equipo);
         }
         Map<String, Object> reporte = new HashMap<>();
@@ -213,55 +258,69 @@ public class ReporteController {
     }
 
 
-    // --- Método para "Usuarios que más prestaron" ---
-    // Modificado: Acepta el mapa de filtros (elimina el método sin filtros si existe)
+    // Implementación del método de usuarios que más prestaron
     private Map<String, Object> generarReportarUsuariosMasPrestaron(Map<String, Object> filtros) { // Corregido nombre si es necesario
-        // Lógica para obtener los usuarios que más prestaron
-
-        // --- Extraer y Parsear Filtros Globales ---
         Integer laboratorioId = null;
         Integer categoriaId = null;
         // Date fechaInicio = null; // Si tu consulta nativa soporta fechas de préstamo
         // Date fechaFin = null;   // Si tu consulta nativa soporta fechas de préstamo
 
-        // Extraer y parsear filtro de Laboratorio (igual que en Mantenimientos)
+        // --- Extraer y Parsear Filtros Globales (Mejorado el parseo) ---
+        // Asegúrate de que las claves aquí ("laboratorio", "categoria", "fechaInicio", "fechaFin")
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
         if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
             try {
-                laboratorioId = Integer.parseInt(filtros.get("laboratorio").toString());
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Laboratorio global incorrecto.");
             }
         }
-        // Extraer y parsear filtro de Categoría (igual que en Mantenimientos)
         if (filtros.containsKey("categoria") && filtros.get("categoria") != null && !filtros.get("categoria").toString().isEmpty()) {
             try {
-                categoriaId = Integer.parseInt(filtros.get("categoria").toString());
+                Object catFilter = filtros.get("categoria");
+                if (catFilter instanceof Integer) {
+                    categoriaId = (Integer) catFilter;
+                } else if (catFilter instanceof String) {
+                    String catIdStr = (String) catFilter;
+                    if (!catIdStr.isEmpty()){
+                        categoriaId = Integer.parseInt(catIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de categoría.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Categoría global incorrecto.");
             }
         }
-        // Extraer y parsear filtros de Fecha si tu consulta nativa los soporta
-        // if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) { ... parse fechaInicio }
-        // if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) { ... parse fechaFin }
-        // --- Fin de Extraer y Parsear Filtros Globales ---
+        // Nota: Si este reporte soporta filtros de fecha, debes extraerlos aquí también.
 
-        List<Object[]> resultados;
         // *** Llamar al método del repositorio con los filtros ***
         // ASUME: El método obtenerUsuariosMasPrestaron en PrestamoRepository
         // ha sido modificado (con @Query nativeQuery=true) para aceptar Integer laboratorioId, Integer categoriaId
         // y que la consulta nativa usa esos parámetros para filtrar los resultados.
-        resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId);
+        List<Object[]> resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId);
         // Si tu consulta nativa soporta fechas, pásalos aquí también:
-        // resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId, fechaInicio, fechaFin);
+        // List<Object[]> resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId, fechaInicio, fechaFin);
 
 
         List<Map<String, Object>> datos = new ArrayList<>();
         // Asumiendo que la consulta nativa retorna [nombre_usuario, apellido_usuario, cantidad_prestamos]
         for (Object[] resultado : resultados) {
             Map<String, Object> usuario = new HashMap<>();
-            usuario.put("nombre", resultado[0]);
-            usuario.put("apellido", resultado[1]);
-            usuario.put("cantidadPrestamos", resultado[2]);
+            // Asegúrate de manejar posibles nulos
+            usuario.put("nombre", resultado[0] != null ? resultado[0].toString() : "N/A");
+            usuario.put("apellido", resultado[1] != null ? resultado[1].toString() : "N/A");
+            usuario.put("cantidadPrestamos", resultado[2] != null ? resultado[2] : 0); // Debería ser un número
             datos.add(usuario);
         }
         Map<String, Object> reporte = new HashMap<>();
@@ -275,43 +334,60 @@ public class ReporteController {
     }
 
 
-    // --- Método para "Préstamos por Fecha" ---
-    // Ya acepta filtros, añadir extracción de Lab/Cat (aunque no se usen en el repo actual)
+    // Implementación del método de préstamos por fecha (Probablemente necesite refinarse en el repositorio para usar filtros Lab/Cat)
     private Map<String, Object> generarReportePrestamosPorFecha(Map<String, Object> filtros) {
-        // Lógica para obtener los préstamos por fecha
-
-        // --- Extraer y Parsear Filtros Globales ---
         Date fechaInicio = null;
         Date fechaFin = null;
-        Integer laboratorioId = null; // Añadir extracción de Lab/Cat para consistencia
-        Integer categoriaId = null;   // Añadir extracción de Lab/Cat para consistencia
+        Integer laboratorioId = null;
+        Integer categoriaId = null;
 
-        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) {
+        // --- Extraer y Parsear Filtros Globales ---
+        // Asegúrate de que las claves aquí ("laboratorio", "categoria", "fechaInicio", "fechaFin")
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
+        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") instanceof String && !((String)filtros.get("fechaInicio")).isEmpty()) {
             try {
-                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicio").toString());
+                fechaInicio = java.sql.Date.valueOf((String)filtros.get("fechaInicio"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de inicio global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Inicio global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) {
+        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") instanceof String && !((String)filtros.get("fechaFin")).isEmpty()) {
             try {
-                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFin").toString());
+                fechaFin = java.sql.Date.valueOf((String)filtros.get("fechaFin"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de fin global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Fin global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        // Extraer y parsear filtro de Laboratorio (igual que en Mantenimientos)
         if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
             try {
-                laboratorioId = Integer.parseInt(filtros.get("laboratorio").toString());
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Laboratorio global incorrecto.");
             }
         }
-        // Extraer y parsear filtro de Categoría (igual que en Mantenimientos)
         if (filtros.containsKey("categoria") && filtros.get("categoria") != null && !filtros.get("categoria").toString().isEmpty()) {
             try {
-                categoriaId = Integer.parseInt(filtros.get("categoria").toString());
+                Object catFilter = filtros.get("categoria");
+                if (catFilter instanceof Integer) {
+                    categoriaId = (Integer) catFilter;
+                } else if (catFilter instanceof String) {
+                    String catIdStr = (String) catFilter;
+                    if (!catIdStr.isEmpty()){
+                        categoriaId = Integer.parseInt(catIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de categoría.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Categoría global incorrecto.");
             }
@@ -320,41 +396,25 @@ public class ReporteController {
 
 
         List<Prestamo> prestamos;
-        // *** NOTA: Aquí necesitas modificar el método del repositorio si quieres filtrar por Lab/Cat ***
-        // Los métodos findByFechaPrestamoBetween, GreaterThanEqual, LessThanEqual, findAll en PrestamoRepository
-        // actualmente NO aceptan filtros de Laboratorio o Categoría.
-        // Si quieres que esos filtros funcionen para este reporte, necesitas añadir nuevos métodos
-        // en PrestamoRepository con @Query JPQL que se unan a DetallePrestamo, Equipo, Laboratorio, CategoriaEquipo
-        // y usen los parámetros fechaInicio, fechaFin, laboratorioId, categoriaId.
+        // *** NOTA: Necesitas modificar métodos del repositorio para que acepten filtros combinados ***
+        // Lógica para llamar a métodos de PrestamoRepository que usen fechaInicio, fechaFin, laboratorioId, categoriaId
+        // Usando solo los filtros de fecha que soporta por defecto JpaRepository si no tienes métodos personalizados:
         if (fechaInicio != null && fechaFin != null) {
-            // Llama a un método que acepte todos los filtros si existe:
-            // prestamos = prestamoRepository.findFilteredByFechaAndLabCat(fechaInicio, fechaFin, laboratorioId, categoriaId);
-            // Sino, llama al método existente solo con fechas:
-            prestamos = prestamoRepository.findByFechaPrestamoBetween(fechaInicio, fechaFin); // Implementa este método si no existe
-
+            prestamos = prestamoRepository.findByFechaPrestamoBetween(fechaInicio, fechaFin);
         } else if (fechaInicio != null) {
-            // Llama a un método que acepte todos los filtros si existe:
-            // prestamos = prestamoRepository.findFilteredByFechaInicioAndLabCat(fechaInicio, laboratorioId, categoriaId);
-            // Sino, llama al método existente solo con fechas:
             prestamos = prestamoRepository.findByFechaPrestamoGreaterThanEqual(fechaInicio);
-
         } else if (fechaFin != null) {
-            // Llama a un método que acepte todos los filtros si existe:
-            // prestamos = prestamoRepository.findFilteredByFechaFinAndLabCat(fechaFin, laboratorioId, categoriaId);
-            // Sino, llama al método existente solo con fechas:
             prestamos = prestamoRepository.findByFechaPrestamoLessThanEqual(fechaFin);
-
         }
         else {
-            // Llama a un método que acepte todos los filtros si existe:
-            // prestamos = prestamoRepository.findFilteredByLabCat(laboratorioId, categoriaId);
-            // Sino, llama al método existente sin filtros:
-            prestamos = prestamoRepository.findAll(); // Cuidado: Este findAll no filtra por Lab/Cat
+            // Si no hay fechas, y los métodos de repo no filtran por Lab/Cat, obtendrá todos.
+            prestamos = prestamoRepository.findAll();
         }
 
         List<Map<String, Object>> datos = new ArrayList<>();
         for (Prestamo prestamo : prestamos) {
             Map<String, Object> prestamoData = new HashMap<>();
+            // Asegurarse de que las relaciones no sean nulas antes de acceder a propiedades
             prestamoData.put("idPrestamo", prestamo.getIdPrestamo());
             prestamoData.put("usuario", prestamo.getUsuario() != null ? prestamo.getUsuario().getNombre() + " " + prestamo.getUsuario().getApellido() : "N/A"); // Manejar si usuario es null
             prestamoData.put("fechaPrestamo", prestamo.getFechaPrestamo());
@@ -374,48 +434,69 @@ public class ReporteController {
         return reporte;
     }
 
-    // --- Método para "Mantenimientos" ---
-    // Ya implementado el parseo y uso de filtros correctamente con findFiltered en el repositorio.
+    // Implementación del método de mantenimientos
     private Map<String, Object> generarReporteMantenimientos(Map<String, Object> filtros) {
-        // Lógica para obtener los mantenimientos
         Date fechaInicio = null;
         Date fechaFin = null;
         Integer laboratorioId = null;
         Integer categoriaId = null;
 
         // --- Extraer y Parsear Filtros Globales ---
-        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) {
+        // Asegúrate de que las claves aquí ("laboratorio", "categoria", "fechaInicio", "fechaFin")
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
+        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") instanceof String && !((String)filtros.get("fechaInicio")).isEmpty()) {
             try {
-                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicio").toString());
+                fechaInicio = java.sql.Date.valueOf((String)filtros.get("fechaInicio"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de Fecha Inicio global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Inicio global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) {
+        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") instanceof String && !((String)filtros.get("fechaFin")).isEmpty()) {
             try {
-                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFin").toString());
+                fechaFin = java.sql.Date.valueOf((String)filtros.get("fechaFin"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de Fecha Fin global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Fin global incorrecto. UseYYYY-MM-DD.");
             }
         }
         if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
             try {
-                laboratorioId = Integer.parseInt(filtros.get("laboratorio").toString());
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Laboratorio global incorrecto.");
             }
         }
         if (filtros.containsKey("categoria") && filtros.get("categoria") != null && !filtros.get("categoria").toString().isEmpty()) {
             try {
-                categoriaId = Integer.parseInt(filtros.get("categoria").toString());
+                Object catFilter = filtros.get("categoria");
+                if (catFilter instanceof Integer) {
+                    categoriaId = (Integer) catFilter;
+                } else if (catFilter instanceof String) {
+                    String catIdStr = (String) catFilter;
+                    if (!catIdStr.isEmpty()){
+                        categoriaId = Integer.parseInt(catIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de categoría.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Categoría global incorrecto.");
             }
         }
         // --- Fin de Extraer y Parsear Filtros Globales ---
 
+
         List<Mantenimiento> mantenimientos;
-        // *** Llamar al método filtrado del repositorio (Este ya funciona con todos los filtros) ***
+        // *** Llamar al método filtrado del repositorio ***
         // ASUME: findFiltered en MantenimientoRepository existe y usa todos los parámetros.
         mantenimientos = mantenimientoRepository.findFiltered(fechaInicio, fechaFin, laboratorioId, categoriaId);
 
@@ -427,163 +508,195 @@ public class ReporteController {
             mantenimientoData.put("equipo", mantenimiento.getEquipo() != null ? mantenimiento.getEquipo().getNombre() : "N/A");
             mantenimientoData.put("fechaMantenimiento", mantenimiento.getFechaMantenimiento());
             mantenimientoData.put("cantidad", mantenimiento.getCantidad());
-           // mantenimientoData.put("estadoInicial", mantenimiento.getEstadoInicial());
-          //  mantenimientoData.put("estadoFinal", mantenimiento.getEstadoFinal());
-           // mantenimientoData.put("descripcionProblema", mantenimiento.getDescripcionProblema());
-           // mantenimientoData.put("solucionAplicada", mantenimiento.getSolucionAplicada());
-            // Opcional: Añadir Lab/Cat del equipo mantenido si es relevante
-            // mantenimientoData.put("laboratorio", mantenimiento.getEquipo() != null && mantenimiento.getEquipo().getLaboratorio() != null ? mantenimiento.getEquipo().getLaboratorio().getNombre() : "N/A");
-            // mantenimientoData.put("categoria", mantenimiento.getEquipo() != null && mantenimiento.getEquipo().getCategoria() != null ? mantenimiento.getEquipo().getCategoria().getNombreCategoria() : "N/A");
+            // Nota: estadoInicial, estadoFinal, etc. son parte de DetalleMantenimiento.
+            // Si quieres esos detalles, necesitarías cargar los DetalleMantenimiento asociados aquí.
             datos.add(mantenimientoData);
         }
         Map<String, Object> reporte = new HashMap<>();
-        reporte.put("titulo", "Mantenimientos");
+        reporte.put("titulo", "Reporte de Mantenimientos");
         reporte.put("tipo", "tabla");
-        // Asegúrate de que esta cabecera coincida con las claves que pones en 'datos'
-        reporte.put("cabecera", Arrays.asList("ID Mantenimiento", "Equipo", "Fecha de Mantenimiento", "Estado Inicial", "Estado Final", "Descripción del Problema", "Solución Aplicada"));
-        // Si añadiste columnas opcionales, agrégalas aquí
-        // Arrays.asList("ID Mantenimiento", "Equipo", "Laboratorio", "Categoría", "Fecha de Mantenimiento", ...)
+        reporte.put("cabecera", Arrays.asList("ID Mantenimiento", "Equipo", "Fecha", "Cantidad"));
         reporte.put("datos", datos);
         return reporte;
     }
 
-    // --- Método para "Préstamos por Rango de Fechas" ---
-    // Ya acepta filtros, añadir extracción de Lab/Cat (aunque no se usen en el repo actual)
+
+    // Implementación del método de préstamos por rango de fechas
     private Map<String, Object> generarReportePrestamosPorRangoDeFechas(Map<String, Object> filtros) {
         Date fechaInicio = null;
         Date fechaFin = null;
-        Integer laboratorioId = null; // Añadir extracción de Lab/Cat para consistencia
-        Integer categoriaId = null;   // Añadir extracción de Lab/Cat para consistencia
+        Integer laboratorioId = null;
+        Integer categoriaId = null;
 
-        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) {
+        // --- Extraer y Parsear Filtros Globales ---
+        // Asegúrate de que las claves aquí ("laboratorio", "categoria", "fechaInicio", "fechaFin")
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
+        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") instanceof String && !((String)filtros.get("fechaInicio")).isEmpty()) {
             try {
-                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicio").toString());
+                fechaInicio = java.sql.Date.valueOf((String)filtros.get("fechaInicio"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de inicio global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Inicio global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) {
+        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") instanceof String && !((String)filtros.get("fechaFin")).isEmpty()) {
             try {
-                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFin").toString());
+                fechaFin = java.sql.Date.valueOf((String)filtros.get("fechaFin"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de fin global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Fin global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        // Extraer y parsear filtro de Laboratorio
         if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
             try {
-                laboratorioId = Integer.parseInt(filtros.get("laboratorio").toString());
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Laboratorio global incorrecto.");
             }
         }
-        // Extraer y parsear filtro de Categoría
         if (filtros.containsKey("categoria") && filtros.get("categoria") != null && !filtros.get("categoria").toString().isEmpty()) {
             try {
-                categoriaId = Integer.parseInt(filtros.get("categoria").toString());
+                Object catFilter = filtros.get("categoria");
+                if (catFilter instanceof Integer) {
+                    categoriaId = (Integer) catFilter;
+                } else if (catFilter instanceof String) {
+                    String catIdStr = (String) catFilter;
+                    if (!catIdStr.isEmpty()){
+                        categoriaId = Integer.parseInt(catIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de categoría.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Categoría global incorrecto.");
             }
         }
+        // --- Fin de Extraer y Parsear Filtros Globales ---
+
 
         List<Prestamo> prestamos;
-        // *** NOTA: Aquí necesitas modificar el método del repositorio si quieres filtrar por Lab/Cat ***
-        // El método findByFechaPrestamoBetween en PrestamoRepository
-        // actualmente NO acepta filtros de Laboratorio o Categoría.
-        // Si quieres que esos filtros funcionen para este reporte, necesitas añadir un nuevo método
-        // en PrestamoRepository con @Query JPQL que se una a DetallePrestamo, Equipo, Laboratorio, CategoriaEquipo
-        // y use los parámetros fechaInicio, fechaFin, laboratorioId, categoriaId.
+        // *** NOTA: Necesitas modificar métodos del repositorio para que acepten filtros combinados ***
+        // Lógica para llamar a métodos de PrestamoRepository que usen fechaInicio, fechaFin, laboratorioId, categoriaId
+        // Usando solo los filtros de fecha que soporta por defecto JpaRepository si no tienes métodos personalizados:
         if (fechaInicio != null && fechaFin != null) {
-            // Llama a un método que acepte todos los filtros si existe:
-            // prestamos = prestamoRepository.findFilteredByRangeAndLabCat(fechaInicio, fechaFin, laboratorioId, categoriaId);
-            // Sino, llama al método existente solo con fechas:
-            prestamos = prestamoRepository.findByFechaPrestamoBetween(fechaInicio, fechaFin); // Implementa este método si no existe
-        } else {
-            // Llama a un método que acepte todos los filtros si existe (sin rango de fechas pero con Lab/Cat):
-            // prestamos = prestamoRepository.findFilteredByLabCat(laboratorioId, categoriaId);
-            // Sino, llama al método existente sin filtros:
-            prestamos = prestamoRepository.findAll(); // Cuidado: Este findAll no filtra por Lab/Cat
+            prestamos = prestamoRepository.findByFechaPrestamoBetween(fechaInicio, fechaFin);
+        } else if (fechaInicio != null) {
+            prestamos = prestamoRepository.findByFechaPrestamoGreaterThanEqual(fechaInicio);
+        } else if (fechaFin != null) {
+            prestamos = prestamoRepository.findByFechaPrestamoLessThanEqual(fechaFin);
         }
+        else {
+            // Si no hay fechas, y los métodos de repo no filtran por Lab/Cat, obtendrá todos.
+            prestamos = prestamoRepository.findAll();
+        }
+
 
         List<Map<String, Object>> datos = new ArrayList<>();
         for (Prestamo prestamo : prestamos) {
             Map<String, Object> prestamoData = new HashMap<>();
+            // Asegurarse de que las relaciones no sean nulas antes de acceder a propiedades
             prestamoData.put("idPrestamo", prestamo.getIdPrestamo());
             prestamoData.put("usuario", prestamo.getUsuario() != null ? prestamo.getUsuario().getNombre() + " " + prestamo.getUsuario().getApellido() : "N/A");
             prestamoData.put("fechaPrestamo", prestamo.getFechaPrestamo());
             prestamoData.put("horaPrestamo", prestamo.getHoraPrestamo());
-            prestamoData.put("administrador", prestamo.getAdministrador() != null ? prestamo.getAdministrador().getNombre() : "N/A"); // Asumiendo Prestamo.getAdministrador() y Administrador.getNombre()
-            // Opcional: Añadir Lab/Cat del equipo prestado si es relevante
-            // prestamoData.put("laboratorioEquipo", ...);
-            // prestamoData.put("categoriaEquipo", ...);
+            prestamoData.put("administrador", prestamo.getAdministrador() != null ? prestamo.getAdministrador().getUsuario() : "N/A"); // Mostrar usuario del admin
+            prestamoData.put("estado", prestamo.getEstado()); // Añadir estado
+            prestamoData.put("fechaDevolucionEstimada", prestamo.getFechaDevolucionEstimada()); // Asumiendo Prestamo.getFechaDevolucionEstimada()
+            // Opcional: Añadir Lab/Cat del equipo prestado (requiere unir con DetallePrestamo y Equipo)
+            // Esto es complejo ya que un préstamo puede tener varios equipos de diferentes labs/cats.
+            // Si es relevante, deberías generar filas por detalle de préstamo en lugar de por préstamo.
             datos.add(prestamoData);
         }
         Map<String, Object> reporte = new HashMap<>();
         reporte.put("titulo", "Préstamos por Rango de Fechas");
         reporte.put("tipo", "tabla");
         // Asegúrate de que esta cabecera coincida con las claves que pones en 'datos'
-        reporte.put("cabecera", Arrays.asList("ID Préstamo", "Usuario", "Fecha de Préstamo","Hora de Préstamo", "Administrador"));
-        // Si añadiste columnas opcionales, agrégalas aquí
+        reporte.put("cabecera", Arrays.asList("ID Préstamo", "Usuario", "Fecha Préstamo","Hora Préstamo", "Administrador", "Estado", "Fecha Devolución Estimada"));
         reporte.put("datos", datos);
         return reporte;
     }
 
-    // --- Método para "Administradores que Prestaron" ---
-    // Ya acepta filtros, añadir extracción de Lab/Cat (aunque no se usen en el repo actual)
+    // Implementación del método de administradores que prestaron
     private Map<String, Object> generarReporteAdministradoresPrestamo(Map<String, Object> filtros) {
         Date fechaInicio = null;
         Date fechaFin = null;
-        Integer laboratorioId = null; // Añadir extracción de Lab/Cat para consistencia
-        Integer categoriaId = null;   // Añadir extracción de Lab/Cat para consistencia
+        Integer laboratorioId = null;
+        Integer categoriaId = null;
 
-        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) {
+        // --- Extraer y Parsear Filtros Globales ---
+        // Asegúrate de que las claves aquí ("laboratorio", "categoria", "fechaInicio", "fechaFin")
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
+        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") instanceof String && !((String)filtros.get("fechaInicio")).isEmpty()) {
             try {
-                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicio").toString());
+                fechaInicio = java.sql.Date.valueOf((String)filtros.get("fechaInicio"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de inicio global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Inicio global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) {
+        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") instanceof String && !((String)filtros.get("fechaFin")).isEmpty()) {
             try {
-                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFin").toString());
+                fechaFin = java.sql.Date.valueOf((String)filtros.get("fechaFin"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de fin global incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de Fecha Fin global incorrecto. UseYYYY-MM-DD.");
             }
         }
-        // Extraer y parsear filtro de Laboratorio
         if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
             try {
-                laboratorioId = Integer.parseInt(filtros.get("laboratorio").toString());
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Laboratorio global incorrecto.");
             }
         }
-        // Extraer y parsear filtro de Categoría
         if (filtros.containsKey("categoria") && filtros.get("categoria") != null && !filtros.get("categoria").toString().isEmpty()) {
             try {
-                categoriaId = Integer.parseInt(filtros.get("categoria").toString());
+                Object catFilter = filtros.get("categoria");
+                if (catFilter instanceof Integer) {
+                    categoriaId = (Integer) catFilter;
+                } else if (catFilter instanceof String) {
+                    String catIdStr = (String) catFilter;
+                    if (!catIdStr.isEmpty()){
+                        categoriaId = Integer.parseInt(catIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de categoría.");
+                }
             } catch (NumberFormatException e) {
                 throw new RuntimeException("Formato de ID de Categoría global incorrecto.");
             }
         }
+        // --- Fin de Extraer y Parsear Filtros Globales ---
 
+
+        // Este reporte probablemente quiere AGREGAR préstamos por administrador, no listar todos.
+        // Necesitarías una consulta nativa o JPQL que agrupe por administrador y cuente préstamos.
+        // Ejemplo:
+        // List<Object[]> resultados = prestamoRepository.countPrestamosByAdministrador(fechaInicio, fechaFin, laboratorioId, categoriaId);
+
+        // Si tu reporte es solo una lista de *préstamos* mostrando qué administrador los hizo (como sugiere tu código actual):
         List<Prestamo> prestamos;
-        // *** NOTA: Aquí necesitas modificar el método del repositorio si quieres filtrar por Lab/Cat ***
-        // Los métodos findByFechaPrestamoBetween, findAll en PrestamoRepository
-        // actualmente NO aceptan filtros de Laboratorio o Categoría.
-        // Si quieres que esos filtros funcionen para este reporte, necesitas añadir nuevos métodos
-        // en PrestamoRepository con @Query JPQL que se unan a DetallePrestamo, Equipo, Laboratorio, CategoriaEquipo
-        // y usen los parámetros fechaInicio, fechaFin, laboratorioId, categoriaId (además de filtrar por administrador si es el caso).
+        // Similar a otros reportes, necesitas métodos filtrados en PrestamoRepository
         if (fechaInicio != null && fechaFin != null) {
-            // Llama a un método que acepte todos los filtros si existe:
-            // prestamos = prestamoRepository.findFilteredByRangeAndLabCatAndAdmin(fechaInicio, fechaFin, laboratorioId, categoriaId);
-            // Sino, llama al método existente solo con fechas:
-            prestamos = prestamoRepository.findByFechaPrestamoBetween(fechaInicio, fechaFin); // Implementa este método si no existe
+            prestamos = prestamoRepository.findByFechaPrestamoBetween(fechaInicio, fechaFin); // No filtra por admin por defecto
         } else {
-            // Llama a un método que acepte todos los filtros si existe (sin rango de fechas pero con Lab/Cat/Admin):
-            // prestamos = prestamoRepository.findFilteredByLabCatAndAdmin(laboratorioId, categoriaId);
-            // Sino, llama al método existente sin filtros:
-            prestamos = prestamoRepository.findAll(); // Cuidado: Este findAll no filtra por Lab/Cat/Admin
+            prestamos = prestamoRepository.findAll(); // Tampoco filtra por admin por defecto
         }
 
 
@@ -591,43 +704,35 @@ public class ReporteController {
         for (Prestamo prestamo : prestamos) {
             Map<String, Object> prestamoData = new HashMap<>();
             // Asegurarse de que las relaciones no sean nulas
-            prestamoData.put("administrador", prestamo.getAdministrador() != null ? prestamo.getAdministrador().getNombre() : "N/A");
+            // Asumiendo que Administrador tiene getUsuario() que es el nombre de login (o getNombre() si aplica)
+            prestamoData.put("administrador", prestamo.getAdministrador() != null ? prestamo.getAdministrador().getUsuario() : "N/A"); // Mostrar usuario del admin
             prestamoData.put("fechaPrestamo", prestamo.getFechaPrestamo());
             prestamoData.put("horaPrestamo", prestamo.getHoraPrestamo());
             prestamoData.put("usuario", prestamo.getUsuario() != null ? prestamo.getUsuario().getNombre() +" "+ prestamo.getUsuario().getApellido() : "N/A");
-            // Opcional: Añadir Lab/Cat del equipo prestado si es relevante
-            // prestamoData.put("laboratorioEquipo", ...);
-            // prestamoData.put("categoriaEquipo", ...);
+            // Opcional: Añadir Lab/Cat del equipo prestado
             datos.add(prestamoData);
         }
         Map<String, Object> reporte = new HashMap<>();
-        reporte.put("titulo", "Administradores que Prestaron");
+        // El título debería reflejar si es un conteo o una lista
+        reporte.put("titulo", "Préstamos Realizados por Administrador"); // Ajusta el título
+
         reporte.put("tipo", "tabla");
         // Asegúrate de que esta cabecera coincida con las claves que pones en 'datos'
-        reporte.put("cabecera", Arrays.asList("Administrador", "Fecha de Préstamo","Hora de Préstamo", "Usuario"));
-        // Si añadiste columnas opcionales, agrégalas aquí
+        reporte.put("cabecera", Arrays.asList("Administrador", "Fecha Préstamo","Hora Préstamo", "Usuario"));
         reporte.put("datos", datos);
         return reporte;
     }
 
-    // --- Método para "Sanciones Activas/Inactivas" ---
-    // Modificado: Acepta filtros (aunque no se usen), retorna tabla detallada
-    private Map<String, Object> generarReporteSancionesActivasInactivas(Map<String, Object> filtros) { // Ahora acepta filtros
-        // Lógica para obtener las sanciones activas e inactivas
-        // No hay filtros lógicos (Fecha, Lab, Cat) para este reporte de resumen/lista de sanciones,
-        // pero aceptamos el mapa de filtros por consistencia si se pasan.
+    // Implementación del método de sanciones activas/inactivas
+    private Map<String, Object> generarReporteSancionesActivasInactivas(Map<String, Object> filtros) {
+        // Este reporte probablemente solo lista, pero si quisieras filtrar por fecha, lab, cat
+        // deberías añadir lógica de extracción de filtros aquí y modificar el repositorio.
 
-        // Obtener TODAS las sanciones activas e inactivas para listarlas
-        List<Sancion> sancionesActivas = sancionRepository.findByEstado("activa"); // Asume este método existe
-        List<Sancion> sancionesInactivas = sancionRepository.findByEstado("inactiva"); // Asume este método existe
-
-        List<Sancion> todasLasSanciones = new ArrayList<>();
-        todasLasSanciones.addAll(sancionesActivas);
-        todasLasSanciones.addAll(sancionesInactivas);
+        // Acepta filtros, pero no se usan lógicamente para este reporte de listado general de todas las sanciones
+        List<Sancion> todasLasSanciones = sancionRepository.findAll(); // Obtener todas las sanciones
 
         List<Map<String, Object>> datos = new ArrayList<>();
 
-        // Recorrer todas las sanciones y añadirlas a la lista de datos
         for (Sancion sancion : todasLasSanciones) {
             Map<String, Object> sancionData = new HashMap<>();
             sancionData.put("idSancion", sancion.getIdSancion());
@@ -641,79 +746,82 @@ public class ReporteController {
 
         Map<String, Object> reporte = new HashMap<>();
         reporte.put("titulo", "Detalle de Sanciones por Estado"); // Título más descriptivo
-        reporte.put("tipo", "tabla"); // <--- ¡Cambiamos el tipo a tabla!
-        // Definir cabeceras para la tabla que lista sanciones
-        // Asegúrate de que esta cabecera coincida con las claves que pones en 'datos'
+        reporte.put("tipo", "tabla");
         reporte.put("cabecera", Arrays.asList("ID Sanción", "Usuario", "Motivo de Sanción", "Fecha de Sanción", "Estado"));
-        reporte.put("datos", datos); // Enviar la lista de mapas de datos
+        reporte.put("datos", datos);
 
-        // Opcional: Si también quieres el conteo en el mismo reporte (quizás en el título o como texto adicional)
-        // String conteoTexto = "Total Activas: " + sancionesActivas.size() + ", Total Inactivas: " + sancionesInactivas.size();
-        // reporte.put("conteoResumen", conteoTexto); // Añadir como campo extra si es necesario en el frontend
+        // Opcional: Si quieres añadir el conteo resumen como parte de este reporte
+        // long activas = todasLasSanciones.stream().filter(s -> "activa".equals(s.getEstado())).count();
+        // long inactivas = todasLasSanciones.stream().filter(s -> "inactiva".equals(s.getEstado())).count();
+        // reporte.put("conteoResumen", "Total Activas: " + activas + ", Total Inactivas: " + inactivas);
+
 
         return reporte;
     }
 
-    // --- Métodos para reportes de Usuario (ya manejan filtros específicos de usuario) ---
+    // Implementación de métodos para reportes de Usuario (Historial, Sanciones, Info)
 
     private Map<String, Object> generarReporteHistorialPrestamosUsuario(int ru, Map<String, Object> filtros) {
-        // Lógica para obtener el historial de préstamos de un usuario
         Usuario usuario = usuarioRepository.findByRu(ru).orElse(null);
         if (usuario == null) {
             throw new RuntimeException("Usuario no encontrado con RU: " + ru);
         }
         Date fechaInicio = null;
         Date fechaFin = null;
-        String estado = (String) filtros.get("estadoPrestamo"); // Filtro específico de usuario
+        String estado = null; // Variable para el estado del préstamo
 
+        // --- Extraer y Parsear Filtros (específicos de usuario) ---
+        // Asegúrate de que las claves aquí ("estadoPrestamoUsuario", "fechaInicioPrestamosUsuario", etc.)
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
+        if (filtros.containsKey("estadoPrestamoUsuario") && filtros.get("estadoPrestamoUsuario") instanceof String && !((String) filtros.get("estadoPrestamoUsuario")).isEmpty()) {
+            estado = (String) filtros.get("estadoPrestamoUsuario");
+        }
 
-        if (filtros.containsKey("fechaInicioPrestamos") && filtros.get("fechaInicioPrestamos") != null && !filtros.get("fechaInicioPrestamos").toString().isEmpty()) {
+        if (filtros.containsKey("fechaInicioPrestamosUsuario") && filtros.get("fechaInicioPrestamosUsuario") instanceof String && !((String)filtros.get("fechaInicioPrestamosUsuario")).isEmpty()) {
             try {
-                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicioPrestamos").toString());
+                fechaInicio = java.sql.Date.valueOf((String)filtros.get("fechaInicioPrestamosUsuario"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de inicio del historial de préstamos incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de fecha de inicio del historial de préstamos incorrecto. UseYYYY-MM-DD.");
             }
         }
-        if (filtros.containsKey("fechaFinPrestamos") && filtros.get("fechaFinPrestamos") != null && !filtros.get("fechaFinPrestamos").toString().isEmpty()) {
+        if (filtros.containsKey("fechaFinPrestamosUsuario") && filtros.get("fechaFinPrestamosUsuario") instanceof String && !((String)filtros.get("fechaFinPrestamosUsuario")).isEmpty()) {
             try {
-                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFinPrestamos").toString());
+                fechaFin = java.sql.Date.valueOf((String)filtros.get("fechaFinPrestamosUsuario"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de fin del historial de préstamos incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de fecha de fin del historial de préstamos incorrecto. UseYYYY-MM-DD.");
             }
         }
+        // --- Fin de Extraer y Parsear Filtros ---
 
         // Lógica para llamar a diferentes métodos del repositorio según los filtros combinados
         List<Prestamo> prestamos;
-        if (fechaInicio != null && fechaFin != null && estado != null && !estado.isEmpty()) {
-            // Asegúrate de que este método exista en PrestamoRepository
+        // Necesitas métodos en PrestamoRepository que combinen buscar por Usuario Y los filtros de fecha/estado.
+        // Implementación actual (llamando a métodos que probablemente no filtran por todas las combinaciones):
+        if (fechaInicio != null && fechaFin != null && estado != null) {
+            // ASUME: findByUsuarioAndFechaPrestamoBetweenAndEstado existe y filtra por los 4 parámetros
             prestamos = prestamoRepository.findByUsuarioAndFechaPrestamoBetweenAndEstado(usuario, fechaInicio, fechaFin, estado);
-        }
-        else if (fechaInicio != null && fechaFin != null){
-            // Asegúrate de que este método exista en PrestamoRepository
+        } else if (fechaInicio != null && fechaFin != null){
+            // ASUME: findByUsuarioAndFechaPrestamoBetween existe y filtra por Usuario y fechas
             prestamos = prestamoRepository.findByUsuarioAndFechaPrestamoBetween(usuario, fechaInicio, fechaFin);
-        }
-        else if (fechaInicio != null && estado != null && !estado.isEmpty()){
-            // Asegúrate de que este método exista en PrestamoRepository
+        } else if (fechaInicio != null && estado != null){
+            // ASUME: findByUsuarioAndFechaPrestamoGreaterThanEqualAndEstado existe y filtra por Usuario, fecha inicio y estado
             prestamos = prestamoRepository.findByUsuarioAndFechaPrestamoGreaterThanEqualAndEstado(usuario, fechaInicio, estado);
-        }
-        else if (fechaFin != null && estado != null && !estado.isEmpty()){
-            // Asegúrate de que este método exista en PrestamoRepository
+        } else if (fechaFin != null && estado != null){
+            // ASUME: findByUsuarioAndFechaPrestamoLessThanEqualAndEstado existe y filtra por Usuario, fecha fin y estado
             prestamos = prestamoRepository.findByUsuarioAndFechaPrestamoLessThanEqualAndEstado(usuario, fechaFin, estado);
-        }
-        else if (fechaInicio != null) {
-            // Asegúrate de que este método exista en PrestamoRepository
+        } else if (fechaInicio != null) {
+            // ASUME: findByUsuarioAndFechaPrestamoGreaterThanEqual existe y filtra por Usuario y fecha inicio
             prestamos = prestamoRepository.findByUsuarioAndFechaPrestamoGreaterThanEqual(usuario, fechaInicio);
         } else if (fechaFin != null) {
-            // Asegúrate de que este método exista en PrestamoRepository
+            // ASUME: findByUsuarioAndFechaPrestamoLessThanEqual existe y filtra por Usuario y fecha fin
             prestamos = prestamoRepository.findByUsuarioAndFechaPrestamoLessThanEqual(usuario, fechaFin);
-        }
-        else if (estado != null && !estado.isEmpty()){
-            // Asegúrate de que este método exista en PrestamoRepository
+        } else if (estado != null){
+            // ASUME: findByUsuarioAndEstado existe y filtra por Usuario y estado
             prestamos = prestamoRepository.findByUsuarioAndEstado(usuario, estado);
         }
         else {
-            // Asegúrate de que este método exista en PrestamoRepository
-            prestamos = prestamoRepository.findByUsuario(usuario);
+            // ASUME: findByUsuario existe y filtra solo por Usuario
+            prestamos = prestamoRepository.findByUsuario(usuario); // Método base solo por usuario
         }
 
 
@@ -725,19 +833,18 @@ public class ReporteController {
             prestamoData.put("horaPrestamo", prestamo.getHoraPrestamo());
             prestamoData.put("estado", prestamo.getEstado());
             prestamoData.put("fechaDevolucionEstimada", prestamo.getFechaDevolucionEstimada()); // Asumiendo Prestamo.getFechaDevolucionEstimada()
+            // Opcional: Añadir detalles de equipo del préstamo si es necesario (requiere unir con DetallePrestamo)
             datos.add(prestamoData);
         }
         Map<String, Object> reporte = new HashMap<>();
         reporte.put("titulo", "Historial de Préstamos del Usuario " + (usuario != null ? usuario.getNombre() + " " + usuario.getApellido() : ""));
         reporte.put("tipo", "tabla");
-        // Asegúrate de que esta cabecera coincida con las claves que pones en 'datos'
-        reporte.put("cabecera", Arrays.asList("ID Préstamo", "Fecha de Préstamo", "Hora de Préstamo","Estado", "Fecha de Devolución Estimada"));
+        reporte.put("cabecera", Arrays.asList("ID Préstamo", "Fecha Préstamo", "Hora Préstamo","Estado", "Fecha Devolución Estimada"));
         reporte.put("datos", datos);
         return reporte;
     }
 
     private Map<String, Object> generarReporteSancionesUsuario(int ru, Map<String, Object> filtros) {
-        // Lógica para obtener las sanciones de un usuario
         Usuario usuario = usuarioRepository.findByRu(ru).orElse(null);
         if (usuario == null) {
             throw new RuntimeException("Usuario no encontrado con RU: " + ru);
@@ -745,56 +852,60 @@ public class ReporteController {
 
         Date fechaInicio = null;
         Date fechaFin = null;
-        String estado = (String) filtros.get("estadoSancion"); // Filtro específico de usuario
+        String estado = null; // Variable para el estado de la sanción
 
+        // --- Extraer y Parsear Filtros (específicos de usuario) ---
+        // Asegúrate de que las claves aquí ("estadoSancionUsuario", "fechaInicioSancionesUsuario", etc.)
+        // coincidan con las claves que envías desde el frontend en el objeto 'filtros'.
+        if (filtros.containsKey("estadoSancionUsuario") && filtros.get("estadoSancionUsuario") instanceof String && !((String) filtros.get("estadoSancionUsuario")).isEmpty()) {
+            estado = (String) filtros.get("estadoSancionUsuario");
+        }
 
-        if (filtros.containsKey("fechaInicioSanciones") && filtros.get("fechaInicioSanciones") != null && !filtros.get("fechaInicioSanciones").toString().isEmpty()) {
+        if (filtros.containsKey("fechaInicioSancionesUsuario") && filtros.get("fechaInicioSancionesUsuario") instanceof String && !((String)filtros.get("fechaInicioSancionesUsuario")).isEmpty()) {
             try {
-                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicioSanciones").toString());
+                fechaInicio = java.sql.Date.valueOf((String)filtros.get("fechaInicioSancionesUsuario"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de inicio de sanciones incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de fecha de inicio de sanciones incorrecto. UseYYYY-MM-DD.");
             }
         }
-        if (filtros.containsKey("fechaFinSanciones") && filtros.get("fechaFinSanciones") != null && !filtros.get("fechaFinSanciones").toString().isEmpty()) {
+        if (filtros.containsKey("fechaFinSancionesUsuario") && filtros.get("fechaFinSancionesUsuario") instanceof String && !((String)filtros.get("fechaFinSancionesUsuario")).isEmpty()) {
             try {
-                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFinSanciones").toString());
+                fechaFin = java.sql.Date.valueOf((String)filtros.get("fechaFinSancionesUsuario"));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Formato de fecha de fin de sanciones incorrecto. Use YYYY-MM-DD.");
+                throw new RuntimeException("Formato de fecha de fin de sanciones incorrecto. UseYYYY-MM-DD.");
             }
         }
+        // --- Fin de Extraer y Parsear Filtros ---
 
         // Lógica para llamar a diferentes métodos del repositorio según los filtros combinados
         List<Sancion> sanciones;
-        if (fechaInicio != null && fechaFin != null && estado != null && !estado.isEmpty()) {
-            // Asegúrate de que este método exista en SancionRepository
+        // Necesitas métodos en SancionRepository que combinen buscar por Usuario Y los filtros de fecha/estado.
+        // Implementación actual (llamando a métodos que probablemente no filtran por todas las combinaciones):
+        if (fechaInicio != null && fechaFin != null && estado != null) {
+            // ASUME: findByUsuarioAndFechaSancionBetweenAndEstado existe y filtra por los 4 parámetros
             sanciones = sancionRepository.findByUsuarioAndFechaSancionBetweenAndEstado(usuario, fechaInicio, fechaFin, estado);
-        }
-        else if (fechaInicio != null && fechaFin != null){
-            // Asegúrate de que este método exista en SancionRepository
+        } else if (fechaInicio != null && fechaFin != null){
+            // ASUME: findByUsuarioAndFechaSancionBetween existe y filtra por Usuario y fechas
             sanciones = sancionRepository.findByUsuarioAndFechaSancionBetween(usuario, fechaInicio, fechaFin);
-        }
-        else if (fechaInicio != null && estado != null && !estado.isEmpty()){
-            // Asegúrate de que este método exista en SancionRepository
+        } else if (fechaInicio != null && estado != null){
+            // ASUME: findByUsuarioAndFechaSancionGreaterThanEqualAndEstado existe y filtra por Usuario, fecha inicio y estado
             sanciones = sancionRepository.findByUsuarioAndFechaSancionGreaterThanEqualAndEstado(usuario, fechaInicio, estado);
-        }
-        else if (fechaFin != null && estado != null && !estado.isEmpty()){
-            // Asegúrate de que este método exista en SancionRepository
+        } else if (fechaFin != null && estado != null){
+            // ASUME: findByUsuarioAndFechaSancionLessThanEqualAndEstado existe y filtra por Usuario, fecha fin y estado
             sanciones = sancionRepository.findByUsuarioAndFechaSancionLessThanEqualAndEstado(usuario, fechaFin, estado);
-        }
-        else if (fechaInicio != null) {
-            // Asegúrate de que este método exista en SancionRepository
+        } else if (fechaInicio != null) {
+            // ASUME: findByUsuarioAndFechaSancionGreaterThanEqual existe y filtra por Usuario y fecha inicio
             sanciones = sancionRepository.findByUsuarioAndFechaSancionGreaterThanEqual(usuario, fechaInicio);
         } else if (fechaFin != null) {
-            // Asegúrate de que este método exista en SancionRepository
+            // ASUME: findByUsuarioAndFechaSancionLessThanEqual existe y filtra por Usuario y fecha fin
             sanciones = sancionRepository.findByUsuarioAndFechaSancionLessThanEqual(usuario, fechaFin);
-        }
-        else if (estado != null && !estado.isEmpty()){
-            // Asegúrate de que este método exista en SancionRepository
+        } else if (estado != null){
+            // ASUME: findByUsuarioAndEstado existe y filtra por Usuario y estado
             sanciones = sancionRepository.findByUsuarioAndEstado(usuario, estado);
         }
         else {
-            // Asegúrate de que este método exista en SancionRepository
-            sanciones = sancionRepository.findByUsuario(usuario);
+            // ASUME: findByUsuario existe y filtra solo por Usuario
+            sanciones = sancionRepository.findByUsuario(usuario); // Método base solo por usuario
         }
         List<Map<String, Object>> datos = new ArrayList<>();
         for (Sancion sancion : sanciones) {
@@ -808,37 +919,33 @@ public class ReporteController {
         Map<String, Object> reporte = new HashMap<>();
         reporte.put("titulo", "Sanciones del Usuario " + (usuario != null ? usuario.getNombre() + " " + usuario.getApellido() : ""));
         reporte.put("tipo", "tabla");
-        // Asegúrate de que esta cabecera coincida con las claves que pones en 'datos'
         reporte.put("cabecera", Arrays.asList("ID Sanción", "Motivo de Sanción", "Fecha de Sanción", "Estado"));
         reporte.put("datos", datos);
         return reporte;
     }
 
     private Map<String, Object> generarReporteInfoUsuario(int ru) {
-        // Lógica para obtener la información de un usuario
         Usuario usuario = usuarioRepository.findByRu(ru).orElse(null);
         if (usuario == null) {
-            // Mantener el lanzamiento de RuntimeException para que el catch general lo maneje
             throw new RuntimeException("Usuario no encontrado con RU: " + ru);
         }
         Map<String, Object> reporte = new HashMap<>();
         reporte.put("titulo", "Información del Usuario");
-        reporte.put("tipo", "texto");
-        // Construye el string con más datos personales
+        reporte.put("tipo", "texto"); // Tipo "texto" para este reporte
+
         StringBuilder datosUsuario = new StringBuilder();
         datosUsuario.append("Nombre: ").append(usuario.getNombre()).append("\n");
         datosUsuario.append("Apellido: ").append(usuario.getApellido()).append("\n");
         datosUsuario.append("RU: ").append(usuario.getRu()).append("\n");
         datosUsuario.append("CI: ").append(usuario.getCi()).append("\n");
         datosUsuario.append("Email: ").append(usuario.getCorreo()).append("\n");
-        // Añadir los nuevos campos, verificando si no son nulos para evitar "null" en el reporte
+
         if (usuario.getCarrera() != null && !usuario.getCarrera().isEmpty()) {
             datosUsuario.append("Carrera: ").append(usuario.getCarrera()).append("\n");
         }
-        if (usuario.getTelefono() != null && usuario.getTelefono().trim().length() > 0) { // Verificar también que no sea solo espacios
+        if (usuario.getTelefono() != null && usuario.getTelefono().trim().length() > 0) {
             datosUsuario.append("Teléfono: ").append(usuario.getTelefono()).append("\n");
         }
-        // Nota: materia, paralelo, semestre pueden ser nulos, verifica antes de añadirlos
         if (usuario.getMateria() != null && usuario.getMateria().trim().length() > 0) {
             datosUsuario.append("Materia: ").append(usuario.getMateria()).append("\n");
         }
@@ -848,8 +955,100 @@ public class ReporteController {
         if (usuario.getSemestre() != null && usuario.getSemestre().trim().length() > 0) {
             datosUsuario.append("Semestre: ").append(usuario.getSemestre()).append("\n");
         }
-        reporte.put("datos", datosUsuario.toString()); // Usa el StringBuilder
+        reporte.put("datos", datosUsuario.toString());
+
         return reporte;
     }
+
+    // --- MÉTODO PRIVADO: Para generar el reporte de horario de laboratorio (MODIFICADO para filtro de días) ---
+    // Este método va aquí, junto con los otros métodos privados después del método público generarReporte().
+    private Map<String, Object> generarReporteHorarioLaboratorio(Map<String, Object> filtros) {
+        Integer laboratorioId = null;
+        List<String> diasSemanaStr = null; // Variable para los días como strings recibidos del frontend
+        List<DiaSemana> diasSemanaEnum = null; // Variable para los días como ENUMs para el repositorio
+
+        // Extraer y parsear el filtro de Laboratorio
+        if (filtros.containsKey("laboratorio") && filtros.get("laboratorio") != null && !filtros.get("laboratorio").toString().isEmpty()) {
+            try {
+                Object labFilter = filtros.get("laboratorio");
+                if (labFilter instanceof Integer) {
+                    laboratorioId = (Integer) labFilter;
+                } else if (labFilter instanceof String) {
+                    String labIdStr = (String) labFilter;
+                    if (!labIdStr.isEmpty()){
+                        laboratorioId = Integer.parseInt(labIdStr);
+                    }
+                } else {
+                    throw new RuntimeException("Tipo de dato inesperado o formato incorrecto para filtro de laboratorio.");
+                }
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("Formato de ID de Laboratorio global incorrecto para reporte de horario.");
+            }
+        }
+
+        // Validar que se proporcionó un ID de laboratorio (es obligatorio para este reporte)
+        if (laboratorioId == null) {
+            throw new RuntimeException("Se debe seleccionar un Laboratorio para generar el Reporte de Horario.");
+        }
+
+        // Opcional: Verificar si el laboratorio con este ID realmente existe
+        Optional<Laboratorio> laboratorioOpt = laboratorioRepository.findById(laboratorioId);
+        if (!laboratorioOpt.isPresent()) {
+            throw new RuntimeException("Laboratorio con ID " + laboratorioId + " no encontrado para reporte de horario.");
+        }
+        Laboratorio laboratorio = laboratorioOpt.get();
+
+
+        // --- NUEVO: Extraer y procesar filtro de Días de la Semana ---
+        // La clave 'diasSemana' debe coincidir con la clave usada en el frontend para este filtro.
+        if (filtros.containsKey("diasSemana") && filtros.get("diasSemana") instanceof List) {
+            diasSemanaStr = (List<String>) filtros.get("diasSemana");
+            // Convertir la lista de strings a una lista de ENUMs DiaSemana
+            if (diasSemanaStr != null && !diasSemanaStr.isEmpty()) {
+                try {
+                    diasSemanaEnum = diasSemanaStr.stream()
+                            .map(String::toUpperCase) // Asegurarse de que estén en mayúsculas para coincidir con el ENUM
+                            .map(DiaSemana::valueOf) // Convertir String a ENUM
+                            .collect(Collectors.toList());
+                } catch (IllegalArgumentException e) {
+                    // Esto ocurrirá si un string de día no coincide con un valor del ENUM DiaSemana
+                    throw new RuntimeException("Valor de día de la semana no válido encontrado en los filtros: " + e.getMessage());
+                }
+            }
+        }
+        // --- FIN NUEVO ---
+
+
+        // Consultar el repositorio, usando el nuevo método si hay días seleccionados
+        List<HorarioLaboratorio> horarioList;
+        if (diasSemanaEnum != null && !diasSemanaEnum.isEmpty()) {
+            // Usar el método que filtra por laboratorio Y días
+            horarioList = horarioLaboratorioRepository.findByLaboratorioIdLaboratorioAndDiaSemanaInOrderByDiaSemanaAscHoraInicioAsc(laboratorioId, diasSemanaEnum);
+        } else {
+            // Si no se seleccionaron días, usar el método existente que filtra solo por laboratorio
+            horarioList = horarioLaboratorioRepository.findByLaboratorioIdLaboratorioOrderByDiaSemanaAscHoraInicioAsc(laboratorioId);
+        }
+
+
+        // Preparar los datos en el formato esperado por el frontend (lista de mapas)
+        List<Map<String, Object>> datos = new ArrayList<>();
+        for (HorarioLaboratorio horario : horarioList) {
+            Map<String, Object> horarioData = new HashMap<>();
+            horarioData.put("diaSemana", horario.getDiaSemana() != null ? horario.getDiaSemana().toString() : "N/A"); // Convertir Enum a String
+            horarioData.put("horaInicio", horario.getHoraInicio());
+            horarioData.put("horaFin", horario.getHoraFin());
+            horarioData.put("ocupado", horario.isOcupado());
+            datos.add(horarioData);
+        }
+
+        Map<String, Object> reporte = new HashMap<>();
+        reporte.put("titulo", "Horario Agendado de: " + laboratorio.getNombre());
+        reporte.put("tipo", "tabla");
+        reporte.put("cabecera", Arrays.asList("Día", "Hora Inicio", "Hora Fin", "Estado"));
+        reporte.put("datos", datos);
+
+        return reporte;
+    }
+    // --- FIN MÉTODO MODIFICADO ---
 
 }

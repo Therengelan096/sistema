@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS Laboratorios;
 CREATE DATABASE Laboratorios;
 USE Laboratorios;
 CREATE TABLE Tipos_Usuarios (
@@ -109,7 +110,6 @@ CREATE TABLE Mantenimiento (
     FOREIGN KEY(id_equipo) REFERENCES Equipos(id_equipo)
 );
 
-
 CREATE TABLE Detalle_Mantenimiento(
     id_detalle_mant INT PRIMARY KEY AUTO_INCREMENT,
     id_mantenimiento INT NOT NULL,
@@ -131,5 +131,5 @@ CREATE TABLE Horario_Laboratorio (
     hora_fin TIME NOT NULL,
     ocupado BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_laboratorio) REFERENCES LaboratoriosE(id_laboratorio) ON DELETE CASCADE, -- Se borra el horario si se borra el laboratorio
-    UNIQUE KEY (id_laboratorio, dia_semana, hora_inicio) -- Para evitar duplicados
+    UNIQUE KEY (id_laboratorio, dia_semana, hora_inicio) -- Para evitar duplicados
 );

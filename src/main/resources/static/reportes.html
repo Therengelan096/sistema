@@ -105,6 +105,10 @@
                 <input type="checkbox" id="sanciones-activas-inactivas" name="reportesGlobales" value="sanciones-activas-inactivas" class="mr-2">
                 <label for="sanciones-activas-inactivas" class="text-gray-600 font-medium">Sanciones Activas/Inactivas</label>
             </div>
+            <div class="reporte-opcion">
+                <input type="checkbox" id="horario-laboratorio" name="reportesGlobales" value="horario-laboratorio" class="mr-2">
+                <label for="horario-laboratorio" class="text-gray-600 font-medium">Horario de Laboratorios</label>
+            </div>
         </div>
     </div>
 
@@ -154,6 +158,18 @@
                 <select id="categoria-global" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     <option value="">Todas las Categorías</option>
                 </select>
+            </div>
+            <div>
+                <label for="dias-semana-horario" class="block text-gray-700 text-sm font-bold mb-2">Días de la Semana (Horario):</label>
+                <select id="dias-semana-horario" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"> {/* Ajusta la altura (h-32) según necesites */}
+                    {/* Los valores de las opciones deben coincidir con los nombres del ENUM DiaSemana en tu backend (LUNES, MARTES, etc.) */}
+                    <option value="LUNES">Lunes</option>
+                    <option value="MARTES">Martes</option>
+                    <option value="MIERCOLES">Miércoles</option>
+                    <option value="JUEVES">Jueves</option>
+                    <option value="VIERNES">Viernes</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Mantén Ctrl para seleccionar varios días.</p>
             </div>
         </div>
     </div>

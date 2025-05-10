@@ -18,7 +18,7 @@
 
     .sidebar {
       width: 280px;
-      background-color: #191970;
+      background-color: #191970; /* Azul oscuro */
       padding-top: 20px;
       display: flex;
       flex-direction: column;
@@ -28,6 +28,7 @@
       left: 0;
       transition: width 0.3s ease;
       overflow: hidden;
+      z-index: 100; /* Asegura que esté sobre el contenido */
     }
 
     .sidebar.collapsed {
@@ -48,15 +49,15 @@
 
     .sidebar a:hover,
     .sidebar a.active {
-      background-color: #34495E;
-      border-left-color: #ff69b4;
+      background-color: #34495E; /* Gris azulado */
+      border-left-color: #ff69b4; /* Rosa neón */
     }
 
     .sidebar a i {
       font-size: 1.2rem;
     }
 
-    /* Aquí ocultamos el texto cuando está colapsado */
+    /* Ocultamos el texto cuando está colapsado */
     .sidebar a span {
       margin-left: 10px;
       white-space: nowrap;
@@ -85,45 +86,38 @@
       border-top: 1px solid #34495E;
     }
 
-    .toggle-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-      z-index: 1000;
-    }
-
     .content {
       flex-grow: 1;
       padding: 20px;
-      background-color: #283747;
+      background-color: #283747; /* Azul grisáceo */
       position: relative;
-      margin-left: 280px;
+      margin-left: 280px; /* Espacio para la sidebar */
       transition: margin-left 0.3s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: calc(100% - 280px); /* Ocupa el resto del ancho */
+      overflow-y: auto; /* Permite scroll si el contenido es largo */
     }
 
     .content.sidebar-collapsed {
-      margin-left: 60px;
+      margin-left: 60px; /* Espacio para la sidebar colapsada */
+      width: calc(100% - 60px);
     }
 
     .header-content {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between; /* Alinea elementos a los lados */
       align-items: center;
       margin-bottom: 20px;
-      width: 100%;
+      width: 95%; /* Ajusta al ancho del contenedor */
+      max-width: 1000px; /* Limita el ancho máximo */
     }
 
     .header-content h1 {
-      margin-bottom: 10px;
-      text-align: center;
+      margin: 0; /* Elimina margen por defecto */
+      text-align: left; /* Alinea a la izquierda en el header */
+      flex-grow: 1; /* Permite que el título ocupe espacio */
     }
 
     .form-container {
@@ -135,7 +129,8 @@
       margin-bottom: 15px;
     }
 
-    input[type="text"] {
+    /* Estilos para inputs dentro del content o modales */
+    input[type="text"], .form-control {
       width: 100%;
       padding: 10px;
       border: 1px solid #444;
@@ -145,78 +140,61 @@
     }
 
     .table-container {
-        width: 95%;
-        max-width: 1000px;
-        margin: 20px auto;
-        overflow-x: auto;
-     }
-
-     table {
-         width: 100%;
-         background-color: #1e2a38;
-         border-radius: 8px;
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-         border-collapse: separate;
-         border-spacing: 0;
-         overflow: hidden;
-     }
-
-     th, td {
-         border-bottom: 1px solid #34495E;
-         padding: 12px 15px;
-         text-align: left;
-         vertical-align: middle;
-     }
-     td {
-        color: #e0e0e0;
-     }
-
-     th {
-         background-color: #34495E;
-         color: #ff69b4;
-         font-weight: 600;
-     }
-
-     tr:last-child td {
-        border-bottom: none;
-     }
-
-     tr:hover {
-        background-color: #2c3e50;
-     }
-
-    .top-right-user {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      text-align: right;
-    }
-    .user-info {
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      text-align: right;
+      width: 95%; /* Ajusta al ancho del contenedor */
+      max-width: 1000px; /* Limita el ancho máximo */
+      margin: 0 auto; /* Centra la tabla */
+      overflow-x: auto; /* Añade scroll horizontal si la tabla es muy ancha */
     }
 
-    .user-info .username {
-      font-weight: bold;
+    table {
+      width: 100%;
+      background-color: #1e2a38; /* Azul oscuro sutil */
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      border-collapse: separate; /* Permite border-spacing */
+      border-spacing: 0;
+      overflow: hidden; /* Oculta los bordes redondeados del thead/tbody */
     }
 
-    .user-info .status {
-      font-size: 0.9rem;
-      color: #00FF00;
+    th, td {
+      border-bottom: 1px solid #34495E; /* Borde de fila */
+      padding: 12px 15px;
+      text-align: left;
+      vertical-align: middle;
     }
+    td {
+      color: #e0e0e0; /* Color de texto claro */
+    }
+
+    th {
+      background-color: #34495E; /* Fondo para el encabezado */
+      color: #ff69b4; /* Color rosa para el texto del encabezado */
+      font-weight: 600;
+    }
+
+    tr:last-child td {
+      border-bottom: none; /* Elimina el borde de la última fila */
+    }
+
+    tr:hover {
+      background-color: #2c3e50; /* Fondo al pasar el ratón */
+    }
+
+    /* Info de usuario en la esquina superior derecha (ahora eliminada, pero el estilo podría quedar si quieres) */
+    /* .user-info { ... } */
 
     .footer {
-      position: fixed;
+      position: fixed; /* Fijo en la ventana */
       bottom: 10px;
       right: 20px;
       font-size: 0.9rem;
       text-align: right;
+      color: white; /* Asegura que el color sea blanco */
+      z-index: 100; /* Asegura que esté sobre el contenido principal */
     }
 
     .footer a {
-      color: #00BFFF;
+      color: #00BFFF; /* Azul claro */
       text-decoration: none;
     }
 
@@ -224,15 +202,15 @@
       text-decoration: underline;
     }
 
-    /* Estilos para la ventana modal (Agregar/Editar Categoría) */
+    /* Estilos para la ventana modal */
     .modal-content {
-      background-color: black !important;
+      background-color: #1e2a38 !important; /* Fondo oscuro del modal */
       color: white !important;
-      border: 1px solid #333 !important;
+      border: 1px solid #34495E !important;
     }
 
     .modal-header {
-      border-bottom: 1px solid #555 !important;
+      border-bottom: 1px solid #34495E !important;
     }
 
     .modal-title {
@@ -240,25 +218,19 @@
     }
 
     .modal-body {
-      background-color: black !important;
+      background-color: #1e2a38 !important;
       color: white !important;
     }
 
     .modal-footer {
-      border-top: 1px solid #555 !important;
+      border-top: 1px solid #34495E !important;
     }
 
-    .modal-content .form-control {
-      background-color: #333 !important;
-      color: white !important;
-      border: 1px solid #555 !important;
+    /* Estilos específicos para checkboxes en el modal */
+    .form-check-label {
+      color: #e0e0e0 !important; /* Color claro para el texto del label */
     }
 
-    .modal-content .form-control:focus {
-      background-color: #444 !important;
-      border-color: #ff69b4 !important;
-      box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25) !important;
-    }
 
     .modal-content .btn-primary {
       background-color: #007bff !important;
@@ -271,13 +243,28 @@
       border-color: #0056b3 !important;
     }
     .modal-header .btn-close {
-      color: #ffffff;
+      /* Estilo para el botón de cerrar (la X) */
+      filter: invert(1) grayscale(100%) brightness(200%); /* Lo hace blanco */
+      opacity: 0.8;
+    }
+    .modal-header .btn-close:hover {
       opacity: 1;
+    }
+    .btn-warning {
+      /* Ajusta los colores del botón Editar si es necesario */
+      background-color: #ffc107;
+      border-color: #ffc107;
+      color: #212529; /* Color de texto oscuro para contraste */
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
     }
 
   </style>
 </head>
 <body>
+
 <div class="sidebar" id="sidebar">
   <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
   <hr>
@@ -299,8 +286,9 @@
   <hr>
   <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
   <hr>
-  <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
-  <a href="/logout" class="logout-btn">
+  <a href="/categorias_equipos.html" class="active"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+  <hr>
+  <a href="#" class="logout-btn">
     <i class="bi bi-power"></i><span>Cerrar Sesión</span>
   </a>
 </div>
@@ -308,7 +296,7 @@
 <div class="content" id="content">
   <div class="header-content">
     <h1>Categoría de Equipos</h1>
-    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoriaModal">Agregar Categoría</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoriaModal">Agregar Categoría</button>
   </div>
 
   <div class="table-container mt-4">
@@ -326,6 +314,10 @@
   </div>
 </div>
 
+<div class="footer">
+  © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
+</div>
+
 <div class="modal fade" id="addCategoriaModal" tabindex="-1" aria-labelledby="addCategoriaModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -336,34 +328,250 @@
       <div class="modal-body">
         <form id="categoria-form">
           <input type="hidden" id="categoria-id">
+
           <div class="form-group">
             <label for="nombreCategoria">Nombre de Categoría:</label>
             <input type="text" id="nombreCategoria" name="nombreCategoria" class="form-control" required>
           </div>
-          <button type="submit" class="btn btn-primary" id="submit-button">Agregar Categoría</button>
+
+          <div class="form-group mt-3">
+            <label>Seleccionar Laboratorios:</label>
+            <div id="laboratorios-checkboxes-container">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary mt-3" id="submit-button">Guardar Categoría</button>
         </form>
       </div>
     </div>
   </div>
 </div>
-<div class="footer">
-  © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
-</div>
-<script src="/js/usuario.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // --- Variables del DOM ---
+    // Sidebar y contenido principal
     const toggleBtn = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
     const content = document.getElementById('content');
+
+    // Elementos de la tabla principal
+    const categoriasBody = document.getElementById('categorias-body');
+
+    // Elementos de la ÚNICA Modal (Agregar/Editar Categoría con Labs)
     const addCategoriaModalElement = document.getElementById('addCategoriaModal');
     const addCategoriaModal = new bootstrap.Modal(addCategoriaModalElement);
     const categoriaForm = document.getElementById('categoria-form');
     const categoriaIdInput = document.getElementById('categoria-id');
     const nombreCategoriaInput = document.getElementById('nombreCategoria');
     const submitButton = document.getElementById('submit-button');
-    const topRightUser = document.querySelector('.top-right-user');
+    // Contenedor para los checkboxes de laboratorios DENTRO de esta modal
+    const laboratoriosCheckboxesContainer = document.getElementById('laboratorios-checkboxes-container');
 
+    // Variable para almacenar la lista completa de laboratorios disponibles
+    let allLaboratorios = []; // Se cargará al inicio de la página
+
+    // --- Funciones de Carga de Datos ---
+
+    // Carga la lista completa de categorías y las muestra en la tabla
+    function cargarCategorias() {
+      fetch('http://localhost:8083/categorias')
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Error al cargar categorías');
+                }
+                return response.json();
+              })
+              .then(data => {
+                categoriasBody.innerHTML = ''; // Limpiar tabla antes de añadir datos
+                data.forEach(categoria => {
+                  const row = `
+              <tr>
+                <td>${categoria.idCategoria}</td>
+                <td>${categoria.nombreCategoria}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning" onclick="editarCategoria(${categoria.idCategoria})">Editar</button>
+                  </td>
+              </tr>
+            `;
+                  categoriasBody.innerHTML += row;
+                });
+              })
+              .catch(error => console.error('Error al cargar categorías:', error));
+    }
+
+    // Carga la lista completa de laboratorios disponibles (para los checkboxes)
+    function cargarTodosLaboratorios() {
+      fetch('http://localhost:8083/categorias/laboratorios') // Endpoint para obtener todos los laboratorios
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Error al cargar la lista de laboratorios');
+                }
+                return response.json();
+              })
+              .then(data => {
+                allLaboratorios = data; // Guarda la lista de laboratorios
+                console.log('Laboratorios cargados:', allLaboratorios); // Para depuración
+              })
+              .catch(error => {
+                console.error('Error al cargar laboratorios:', error);
+                // Opcional: Mostrar un mensaje de error al usuario
+              });
+    }
+
+    // --- Funciones de Visualización y Lógica de Modal ---
+
+    // Genera y muestra los checkboxes de laboratorios en la ÚNICA modal
+    // 'laboratoriosAsociadosIds' es una lista de IDs de laboratorios que ya están asociados
+    function displayLaboratorioCheckboxes(laboratoriosAsociadosIds) {
+      laboratoriosCheckboxesContainer.innerHTML = ''; // Limpiar contenido anterior
+      if (allLaboratorios.length === 0) {
+        laboratoriosCheckboxesContainer.innerHTML = '<p>No hay laboratorios disponibles para vincular.</p>';
+        return;
+      }
+
+      allLaboratorios.forEach(lab => {
+        // Determinar si este laboratorio ya está asociado a la categoría actual
+        const isAssociated = laboratoriosAsociadosIds.includes(lab.idLaboratorio);
+
+        const checkboxDiv = document.createElement('div');
+        checkboxDiv.classList.add('form-check');
+
+        const checkboxInput = document.createElement('input');
+        checkboxInput.classList.add('form-check-input');
+        checkboxInput.type = 'checkbox';
+        checkboxInput.value = lab.idLaboratorio; // El valor será el ID del laboratorio
+        checkboxInput.id = `lab-${lab.idLaboratorio}`; // ID único para el checkbox
+        checkboxInput.checked = isAssociated; // Marca el checkbox si ya está asociado
+
+        const checkboxLabel = document.createElement('label');
+        checkboxLabel.classList.add('form-check-label');
+        checkboxLabel.htmlFor = `lab-${lab.idLaboratorio}`; // Enlaza el label al input
+        checkboxLabel.textContent = `${lab.nombre} (${lab.ubicacion})`; // Muestra nombre y ubicación
+
+        checkboxDiv.appendChild(checkboxInput);
+        checkboxDiv.appendChild(checkboxLabel);
+        laboratoriosCheckboxesContainer.appendChild(checkboxDiv); // Añade el checkbox al contenedor
+      });
+    }
+
+
+    // Prepara la ÚNICA modal para editar una categoría
+    // Carga la categoría completa para obtener los labs asociados
+    window.editarCategoria = function(id) { // Solo necesitamos el ID
+      // Cargar los datos de la categoría a editar, incluyendo sus laboratorios asociados
+      fetch(`http://localhost:8083/categorias/${id}`) // Usar el endpoint para obtener una categoría por ID
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Error al obtener datos de la categoría para editar');
+                }
+                return response.json();
+              })
+              .then(categoria => {
+                // Llena los campos de la modal
+                categoriaIdInput.value = categoria.idCategoria;
+                nombreCategoriaInput.value = categoria.nombreCategoria;
+
+                // Obtener los IDs de los laboratorios asociados a esta categoría
+                const laboratoriosAsociadosIds = categoria.laboratorios ? categoria.laboratorios.map(lab => lab.idLaboratorio) : [];
+
+                // Muestra los checkboxes en la modal, marcando los asociados
+                displayLaboratorioCheckboxes(laboratoriosAsociadosIds);
+
+                // Cambia el texto del botón y el título de la modal
+                submitButton.textContent = 'Actualizar Categoría';
+                document.getElementById('addCategoriaModalLabel').textContent = 'Editar Categoría';
+
+                // Abre la ÚNICA modal
+                addCategoriaModal.show();
+              })
+              .catch(error => {
+                console.error('Error cargando datos de la categoría para editar:', error);
+                // Opcional: Mostrar un mensaje de error
+              });
+    };
+
+
+    // --- Manejo de Eventos de Formulario de la ÚNICA Modal ---
+
+    categoriaForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // Previene el envío por defecto del formulario
+
+      const id = categoriaIdInput.value; // ID si estamos editando, vacío si estamos agregando
+      const nombreCategoria = nombreCategoriaInput.value;
+
+      // Recolectar los IDs de laboratorios seleccionados DENTRO de esta modal
+      const selectedLaboratorioIds = [];
+      laboratoriosCheckboxesContainer.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedLaboratorioIds.push(parseInt(checkbox.value, 10)); // Convierte el valor a entero
+      });
+
+      const method = id ? 'PUT' : 'POST'; // Determina si es POST (agregar) o PUT (editar)
+      const url = id ? `http://localhost:8083/categorias/${id}` : 'http://localhost:8083/categorias';
+
+      // Prepara el cuerpo de la petición con NOMBRE Y laboratorios seleccionados (usando el DTO CategoriaRequest en backend)
+      const body = JSON.stringify({
+        nombreCategoria: nombreCategoria,
+        laboratorioIds: selectedLaboratorioIds // Envía la lista de IDs seleccionados
+      });
+
+      console.log('Enviando datos:', body); // Para depuración
+
+      // Realiza la petición fetch al backend
+      fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json' // Indica que enviamos JSON
+        },
+        body: body // Envía el cuerpo JSON con nombre y IDs de labs
+      })
+              .then(response => {
+                if (response.ok) {
+                  // Si la respuesta es exitosa (status 2xx)
+                  console.log('Categoría guardada/actualizada con laboratorios.'); // Para depuración
+                  addCategoriaModal.hide(); // Oculta la ÚNICA modal
+                  cargarCategorias(); // Recargar la tabla principal para ver los cambios
+
+                  // Opcional: Mostrar un mensaje de éxito
+                  // return response.json(); // Si necesitas los datos de la respuesta, pársala
+                } else {
+                  // Si hay un error en la respuesta HTTP
+                  console.error('Error en la respuesta HTTP al guardar/actualizar categoría:', response.status, response.statusText);
+                  // Si el backend devuelve un body con detalles del error, puedes leerlo:
+                  // response.json().then(errorBody => console.error('Detalles del error:', errorBody));
+                  throw new Error('Error al guardar/actualizar categoría'); // Lanza un error para el .catch()
+                }
+              })
+              .catch(error => {
+                // Este bloque se ejecuta si hay un error en la petición fetch, parsing del JSON, o un error lanzado
+                console.error('Error durante el proceso de guardar/actualizar categoría:', error);
+                // Opcional: Mostrar un mensaje de error más amigable al usuario en la UI
+              });
+    });
+
+
+    // --- Manejo de Evento de Cierre de la ÚNICA Modal ---
+
+    // Limpia el formulario y el estado de la ÚNICA modal cuando se oculta
+    addCategoriaModalElement.addEventListener('hidden.bs.modal', function () {
+      categoriaForm.reset(); // Limpia los campos del formulario
+      categoriaIdInput.value = ''; // Asegura que el campo ID oculto esté vacío
+      submitButton.textContent = 'Agregar Categoría'; // Restaura el texto del botón
+      document.getElementById('addCategoriaModalLabel').textContent = 'Agregar Categoría'; // Restaura el título
+      displayLaboratorioCheckboxes([]); // Limpia y quita la selección de laboratorios mostrados
+    });
+
+
+    // --- Lógica de Inicialización al Cargar la Página ---
+
+    // Carga las categorías y los laboratorios disponibles al cargar la página
+    cargarCategorias();
+    cargarTodosLaboratorios(); // Necesario para poblar los checkboxes en la modal
+    // REMOVIDO: Eliminada la llamada a cargarInfoUsuario();
+
+
+    // --- Lógica de Sidebar ---
     toggleBtn.addEventListener('click', function (e) {
       e.preventDefault();
       sidebar.classList.toggle('collapsed');
@@ -374,81 +582,14 @@
       content.classList.add('sidebar-collapsed');
     }
 
-    function cargarCategorias() {
-      fetch('http://localhost:8083/categorias')
-        .then(response => response.json())
-        .then(data => {
-          const categoriasBody = document.getElementById('categorias-body');
-          categoriasBody.innerHTML = '';
-          data.forEach(categoria => {
-            const row = `
-              <tr>
-                <td>${categoria.idCategoria}</td>
-                <td>${categoria.nombreCategoria}</td>
-                <td>
-                  <button class="btn btn-sm btn-warning" onclick="editarCategoria(${categoria.idCategoria}, '${categoria.nombreCategoria}')">Editar</button>
-                </td>
-              </tr>
-            `;
-            categoriasBody.innerHTML += row;
-          });
-        })
-        .catch(error => console.error('Error al cargar categorías:', error));
-    }
-
-    cargarCategorias();
-
-    categoriaForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const id = categoriaIdInput.value;
-      const nombreCategoria = nombreCategoriaInput.value;
-
-      const method = id ? 'PUT' : 'POST';
-      const url = id ? `http://localhost:8083/categorias/${id}` : 'http://localhost:8083/categorias';
-      const body = JSON.stringify({ nombreCategoria: nombreCategoria });
-
-      fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: body
-      })
-      .then(response => {
-        if (response.ok) {
-          cargarCategorias();
-          addCategoriaModal.hide();
-          categoriaForm.reset();
-          categoriaIdInput.value = '';
-          submitButton.textContent = 'Agregar Categoría';
-          document.getElementById('addCategoriaModalLabel').textContent = 'Agregar Categoría';
-        } else {
-          console.error('Error al guardar/actualizar categoría:', response);
-        }
-      })
-      .catch(error => console.error('Error en la petición:', error));
-    });
-
-    window.editarCategoria = function(id, nombre) {
-      categoriaIdInput.value = id;
-      nombreCategoriaInput.value = nombre;
-      submitButton.textContent = 'Actualizar Categoría';
-      document.getElementById('addCategoriaModalLabel').textContent = 'Editar Categoría';
-      addCategoriaModal.show();
-    };
-
-    addCategoriaModalElement.addEventListener('hidden.bs.modal', function () {
-      categoriaForm.reset();
-      categoriaIdInput.value = '';
-      submitButton.textContent = 'Agregar Categoría';
-      document.getElementById('addCategoriaModalLabel').textContent = 'Agregar Categoría';
-    });
-  });
-
     document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault();
-        window.location.href = '/login.html';
+      e.preventDefault();
+      console.log("Intento de cerrar sesión. Implementar petición al backend.");
+      window.location.href = '/login.html'; // Redirección temporal
     });
+
+  }); // Fin DOMContentLoaded
 </script>
+
 </body>
 </html>

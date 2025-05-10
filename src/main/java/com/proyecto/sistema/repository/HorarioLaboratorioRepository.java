@@ -15,5 +15,7 @@ public interface HorarioLaboratorioRepository extends JpaRepository<HorarioLabor
     List<HorarioLaboratorio> findByLaboratorio(Laboratorio laboratorio);
     Optional<HorarioLaboratorio> findByLaboratorioAndDiaSemanaAndHoraInicio(Laboratorio laboratorio, DiaSemana diaSemana, LocalTime horaInicio);
     List<HorarioLaboratorio> findByLaboratorioIdLaboratorioOrderByDiaSemanaAscHoraInicioAsc(int idLaboratorio);
+    // --- NUEVO MÉTODO: Buscar por laboratorio Y una lista de días ---
+    List<HorarioLaboratorio> findByLaboratorioIdLaboratorioAndDiaSemanaInOrderByDiaSemanaAscHoraInicioAsc(Integer laboratorioId, List<DiaSemana> diaSemana);
 }
 

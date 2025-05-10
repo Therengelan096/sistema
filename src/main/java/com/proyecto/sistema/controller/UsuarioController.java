@@ -8,9 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -52,15 +53,20 @@ public class UsuarioController {
     public ResponseEntity<?> obtenerUsuarioActual(HttpSession session) {
         Integer idUsuario = (Integer) session.getAttribute("idUsuario");
         if (idUsuario != null) {
-            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
-            if (usuario != null) {
-                return ResponseEntity.ok(Map.of(
-                        "nombre", usuario.getNombre(),
-                        "apellido", usuario.getApellido(),
-                        "materia", usuario.getMateria(),
-                        "paralelo", usuario.getParalelo(),
-                        "semestre", usuario.getSemestre()
-                ));
+            Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
+            if (usuarioOptional.isPresent()) {
+                Usuario usuario = usuarioOptional.get();
+                Map<String, Object> userData = new HashMap<>();
+
+                userData.put("nombre", usuario.getNombre() != null ? usuario.getNombre() : "");
+                userData.put("apellido", usuario.getApellido() != null ? usuario.getApellido() : "");
+                userData.put("materia", usuario.getMateria() != null ? usuario.getMateria() : "");
+                userData.put("paralelo", usuario.getParalelo() != null ? usuario.getParalelo() : "");
+                userData.put("semestre", usuario.getSemestre() != null ? usuario.getSemestre() : "");
+
+                return ResponseEntity.ok(userData);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
@@ -68,8 +74,9 @@ public class UsuarioController {
 
     @GetMapping("/buscarPorRu/{ru}")
     public ResponseEntity<?> buscarPorRu(@PathVariable int ru) {
-        Usuario usuario = usuarioRepository.findByRu(ru).orElse(null);
-        if (usuario != null) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByRu(ru);
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
             return ResponseEntity.ok(usuario);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
