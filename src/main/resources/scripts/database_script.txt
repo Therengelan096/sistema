@@ -1,4 +1,3 @@
-DROP DATABASE IF EXISTS Laboratorios;
 CREATE DATABASE Laboratorios;
 USE Laboratorios;
 CREATE TABLE Tipos_Usuarios (
@@ -92,13 +91,45 @@ CREATE TABLE Sanciones (
     estado ENUM('activa', 'inactiva') DEFAULT 'activa',
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 );
+
+CREATE TABLE instancias_equipo (
+    id_instancia INT AUTO_INCREMENT PRIMARY KEY,
+    id_equipo INT NOT NULL,
+    codigo_activo VARCHAR(100) UNIQUE NOT NULL,
+    estado_individual ENUM('disponible', 'prestado', 'en mantenimiento') NOT NULL DEFAULT 'disponible',
+   fecha_adquisicion DATE,
+    FOREIGN KEY (id_equipo) REFERENCES equipos(id_equipo)
+);
+
 CREATE TABLE Mantenimiento (
     id_mantenimiento INT PRIMARY KEY AUTO_INCREMENT,
     id_equipo INT NOT NULL,
     fecha_mantenimiento DATE NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    FOREIGN KEY(id_equipo) REFERENCES Equipos(id_equipo)
+);
+
+
+CREATE TABLE Detalle_Mantenimiento(
+    id_detalle_mant INT PRIMARY KEY AUTO_INCREMENT,
+    id_mantenimiento INT NOT NULL,
+    id_instancia INT NOT NULL,
     estado_inicial ENUM('bueno', 'regular', 'dañado') NOT NULL,
     estado_final ENUM('bueno', 'regular', 'dañado') NOT NULL,
     descripcion_problema TEXT,
     solucion_aplicada TEXT,
-    FOREIGN KEY (id_equipo) REFERENCES Equipos(id_equipo)
+    fase ENUM('mantenimiento','reparado') DEFAULT 'mantenimiento',
+    FOREIGN KEY (id_instancia) REFERENCES instancias_equipo(id_instancia),
+    FOREIGN KEY (id_mantenimiento) REFERENCES Mantenimiento(id_mantenimiento)
+);
+
+CREATE TABLE Horario_Laboratorio (
+    id_horario INT PRIMARY KEY AUTO_INCREMENT,
+    id_laboratorio INT NOT NULL,
+    dia_semana ENUM('LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO') NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    ocupado BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_laboratorio) REFERENCES LaboratoriosE(id_laboratorio) ON DELETE CASCADE, -- Se borra el horario si se borra el laboratorio
+    UNIQUE KEY (id_laboratorio, dia_semana, hora_inicio) -- Para evitar duplicados
 );

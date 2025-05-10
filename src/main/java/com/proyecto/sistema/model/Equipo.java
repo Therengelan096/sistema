@@ -12,19 +12,17 @@ public class Equipo {
     @Column(nullable = false)
     private String nombre;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categoria", nullable = false)
     private CategoriaEquipo categoria;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_laboratorio", nullable = false)
     private Laboratorio laboratorio;
 
     @Column
     private String descripcion;
 
-    @Column(nullable = false)
-    private String estado;
 
     @Column(nullable = false)
     private int cantidad;
@@ -71,14 +69,6 @@ public class Equipo {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
     }
 
     public int getCantidad() {

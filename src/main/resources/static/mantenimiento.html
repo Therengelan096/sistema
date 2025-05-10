@@ -6,201 +6,13 @@
   <title>Mantenimiento</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css">
-  <style>
-    body {
-       display: flex;
-       min-height: 100vh;
-       margin: 0;
-       padding: 0;
-       background-color: #121212;
-       color: white;
-     }
-
-     .sidebar {
-       width: 280px;
-       background-color: #191970;
-       padding-top: 20px;
-       display: flex;
-       flex-direction: column;
-       height: 100vh;
-       position: fixed;
-       top: 0;
-       left: 0;
-       transition: width 0.3s ease;
-       overflow: hidden;
-     }
-
-     .sidebar.collapsed {
-       width: 60px;
-     }
-
-     .sidebar a {
-       padding: 12px 15px;
-       color: white;
-       text-decoration: none;
-       transition: background-color 0.3s ease;
-       border-left: 5px solid transparent;
-       font-size: 0.9rem;
-       display: flex;
-       align-items: center;
-       white-space: nowrap;
-     }
-
-     .sidebar a:hover,
-     .sidebar a.active {
-       background-color: #34495E;
-       border-left-color: #ff69b4;
-     }
-
-     .sidebar a i {
-       font-size: 1.2rem;
-     }
-
-     .sidebar a span {
-       margin-left: 10px;
-       white-space: nowrap;
-       overflow: hidden;
-       transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
-     }
-
-     .sidebar.collapsed a span {
-       opacity: 0;
-       width: 0;
-       margin: 0;
-       pointer-events: none;
-     }
-
-     .sidebar.collapsed a {
-       justify-content: center;
-     }
-
-     .sidebar hr {
-       border-color: #34495E;
-       margin: 5px 0;
-     }
-
-     .sidebar .logout-btn {
-       margin-top: auto;
-       border-top: 1px solid #34495E;
-     }
-
-     .toggle-btn {
-       background: none;
-       border: none;
-       color: white;
-       font-size: 1.5rem;
-       cursor: pointer;
-       z-index: 1000;
-     }
-
-     /* === CONTENIDO PRINCIPAL === */
-     .content {
-       flex-grow: 1;
-       padding: 20px;
-       background-color: #283747;
-       position: relative;
-       margin-left: 280px;
-       transition: margin-left 0.3s ease;
-     }
-
-     .content.sidebar-collapsed {
-       margin-left: 60px;
-     }
-
-     .form-container {
-       width: 95%; /* Más ancho en pantallas pequeñas */
-       max-width: 800px; /* Ancho máximo del formulario */
-       margin: 20px auto 30px auto; /* Centrado y con márgenes */
-       background-color: #1e2a38; /* Fondo ligeramente diferente para el form */
-       padding: 25px;
-       border-radius: 10px;
-       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-       text-align: left; /* Alinear texto a la izquierda dentro del form */
-     }
-
-     .form-group label {
-        margin-bottom: 5px;
-        display: block;
-        color: #ccc; /* Color más claro para etiquetas */
-     }
-
-     h1 {
-       color: #ff69b4;
-       text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
-       margin-bottom: 20px;
-       text-align: center;
-     }
-
-     /* === TABLA === */
-     .table-container {
-        width: 95%; /* Ancho de la tabla */
-        max-width: 1000px; /* Ancho máximo */
-        margin: 20px auto; /* Centrado */
-        overflow-x: auto; /* Scroll horizontal si es necesario */
-     }
-
-     table {
-         width: 100%; /* Tabla ocupa todo el contenedor */
-         background-color: #1e2a38; /* Fondo de la tabla */
-         border-radius: 8px; /* Bordes redondeados */
-         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-         border-collapse: separate; /* Permite border-radius en celdas */
-         border-spacing: 0;
-         overflow: hidden; /* Para que el radius funcione bien */
-     }
-
-     th, td {
-         border-bottom: 1px solid #34495E; /* Línea separadora horizontal */
-         padding: 12px 15px; /* Espaciado interno */
-         text-align: left;
-         vertical-align: middle; /* Alineación vertical */
-     }
-     td {
-        color: #e0e0e0; /* Color de texto en celdas */
-     }
-
-     th {
-         background-color: #34495E; /* Fondo para cabeceras */
-         color: #ff69b4; /* Color rosa para texto de cabecera */
-         font-weight: 600;
-     }
-
-     tr:last-child td {
-        border-bottom: none; /* Sin borde en la última fila */
-     }
-
-     tr:hover {
-        background-color: #2c3e50; /* Color al pasar el mouse sobre una fila */
-     }
-
-     /* === BOTÓN PERSONALIZADO === */
-     .btn-pink {
-       background-color: #ff69b4;
-       border: none;
-       color: white;
-       padding: 10px 15px;
-       border-radius: 5px;
-       cursor: pointer;
-       transition: opacity 0.2s ease;
-     }
-
-     .btn-pink:hover {
-       opacity: 0.9;
-     }
-
-     .btn-sm {
-        padding: 0.25rem 0.5rem; /* Botones un poco más pequeños */
-        font-size: 0.8rem;
-      }
-  </style>
-
+  <link rel="stylesheet" href="/css/mantenimiento.css">
 </head>
 <body>
-
 <div class="sidebar" id="sidebar">
   <a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
   <hr>
-  <a href="/laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+  <a href="/horarios_laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
   <hr>
   <a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
   <hr>
@@ -223,170 +35,180 @@
     <i class="bi bi-power"></i><span>Cerrar Sesión</span>
   </a>
 </div>
-<div class="content" id="content">
 
+<div class="content" id="content">
   <h1>Mantenimiento</h1>
-  <div class="form-container" >
-    <h4> Formulario de Mantenimiento</h4>
-    <form id="mantenimiento-form">
-      <input type="hidden" id="idMantenimiento">
-      <div class="mb-2 form-group">
-        <label for="equipo">ID Equipo:</label>
-        <input type="number" class="form-control" id="equipo" required>
-      </div>
-      <div class=" mb-2 form-group">
-        <label for="fechaMantenimiento">Fecha:</label>
-        <input type="date" class="form-control" id="fechaMantenimiento" required>
-      </div>
-      <div class=" mb-2 form-group">
-        <label for="estadoInicial">Estado Inicial:</label>
-        <input type="text" class="form-control" id="estadoInicial" required>
-      </div>
-      <div class = "mb-2 form-group">
-        <label for="estadoFinal">Estado Final:</label>
-        <input type="text" class="form-control" id="estadoFinal" required>
-      </div>
-      <div class = "mb-2 form-group">
-        <label for="descripcionProblema">Problema:</label>
-        <input type="text" class="form-control" id="descripcionProblema" required>
-      </div>
-      <div class = "mb-2 form-group">
-      <label for="solucion">Solución:</label>
-      <input type="text" class="form-control" id="solucion" required>
-      </div>
-      <button type="submit" class="btn btn-pink mt-2" >Guardar</button>
-    </form>
+
+  <!-- Botón para abrir el formulario flotante -->
+  <div class="button-container">
+    <button class="btn btn-pink mb-4" id="btnNuevoMantenimiento" data-bs-toggle="modal" data-bs-target="#mantenimientoModal">
+      <i class="bi bi-plus-circle"></i> Nuevo Mantenimiento
+    </button>
   </div>
 
-  <div class="table-container mt-4">
-    <table>
+  <!-- Formulario Flotante -->
+  <div class="modal fade" id="mantenimientoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title">Registro de Mantenimiento</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="mantenimientoForm">
+            <!-- Selectores en cascada -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="laboratorio" class="form-label">Laboratorio</label>
+                <select class="form-select" id="laboratorio" required>
+                  <option value="">Seleccione laboratorio</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="categoria" class="form-label">Categoría</label>
+                <select class="form-select" id="categoria" required>
+                  <option value="">Seleccione categoría</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="equipo" class="form-label">Equipo</label>
+                <select class="form-select" id="equipo" required>
+                  <option value="">Seleccione equipo</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="fechaMantenimiento" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="fechaMantenimiento" required>
+              </div>
+            </div>
+
+            <!-- Instancias seleccionadas -->
+            <div id="instanciasContainer" class="mb-3">
+              <div id="lista-instancias"></div>
+            </div>
+              <!--contenedor de confirmacion  -->
+              <div id="confirmarInstanciasContainer" style="display: none;">
+                <div class="alert alert-info">
+                  <h6>Confirmar Instancias Seleccionadas</h6>
+                  <div id="listaInstanciasSeleccionadas"></div>
+                  <div class="mt-3">
+                    <button type="button" class="btn btn-secondary" id="btnVolverSeleccion">
+                      Volver
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarInstancias">
+                      Confirmar y Continuar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+
+              <!-- Detalles de instancia -->
+            <div class="detalles-instancia" style="display: none;">
+              <h6>Registro de Detalles de Mantenimiento</h6>
+              <div id="detallesInstanciasContainer"></div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" form="mantenimientoForm" class="btn btn-pink">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal para Editar Detalle -->
+  <div class="modal fade" id="editarDetalleModal" tabindex="-1" aria-labelledby="editarDetalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content form-container">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarDetalleModalLabel">Editar Detalle de Mantenimiento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editarDetalleForm">
+            <input type="hidden" id="editDetalleId">
+            <div class="form-group mb-3">
+              <label for="editEstadoInicial" class="form-label">Estado Inicial</label>
+              <input type="text" class="form-control" id="editEstadoInicial" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="editEstadoFinal" class="form-label">Estado Final</label>
+              <input type="text" class="form-control" id="editEstadoFinal" required>
+            </div>
+            <div class="form-group mb-3">
+              <label for="editProblema" class="form-label">Problema</label>
+              <textarea class="form-control" id="editProblema" rows="3" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+              <label for="editSolucion" class="form-label">Solución</label>
+              <textarea class="form-control" id="editSolucion" rows="3" required></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn-pink">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Mantenimientos -->
+  <div class="table-container">
+    <h4>Lista de Mantenimientos</h4>
+    <table class="table table-dark">
       <thead>
       <tr>
         <th>ID</th>
-        <th>ID Equipo</th>
+        <th>Equipo</th>
         <th>Fecha</th>
-        <th>Estado Inicial</th>
-        <th>Estado Final</th>
-        <th>Problema</th>
-        <th>Solución</th>
+        <th>Cantidad</th>
         <th>Acciones</th>
       </tr>
       </thead>
-      <tbody id="mantenimiento-body"></tbody>
+      <tbody id="mantenimientoTableBody"></tbody>
     </table>
   </div>
+
+  <!-- Modal para Detalles de Mantenimiento -->
+  <div class="modal fade" id="detallesModal" tabindex="-1" data-mantenimiento-id="">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content bg-dark">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles del Mantenimiento</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-dark">
+            <thead>
+            <tr>
+              <th>ID Detalle</th>
+              <th>Instancia</th>
+              <th>Estado Inicial</th>
+              <th>Estado Final</th>
+              <th>Problema</th>
+              <th>Solución</th>
+              <th>Fase</th>
+              <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody id="detallesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<script>
-  const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('content');
-    const toggleSidebarBtn = document.getElementById('toggleSidebar');
 
-    toggleSidebarBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      content.classList.toggle('sidebar-collapsed');
-    });
-
-  let mantenimientoData = [];
-
-  function cargarMantenimientos() {
-      fetch('http://localhost:8083/mantenimiento')
-          .then(response => response.json())
-          .then(data => {
-              mantenimientoData = data;
-              const tableBody = document.getElementById('mantenimiento-body');
-              tableBody.innerHTML = '';
-              data.forEach(item => {
-                  tableBody.innerHTML += `
-                      <tr>
-                          <td>${item.idMantenimiento}</td>
-                          <td>${item.equipo.idEquipo}</td>
-                          <td>${item.fechaMantenimiento}</td>
-                          <td>${item.estadoInicial}</td>
-                          <td>${item.estadoFinal}</td>
-                          <td>${item.descripcionProblema}</td>
-                          <td>${item.solucionAplicada}</td>
-                          <td>
-                              <button class="boton-celeste" onclick="editarMantenimiento(${item.idMantenimiento})">Editar</button>
-                          </td>
-                      </tr>
-                  `;
-              });
-          })
-          .catch(error => console.error('Error:', error));
-  }
-
-  cargarMantenimientos();
-
-  function mostrarFormulario(tipo, id) {
-      document.getElementById('mantenimiento-form').style.display = 'block';
-      if (tipo === 'editar' && id) {
-          const mantenimiento = mantenimientoData.find(item => item.idMantenimiento === id);
-          if (mantenimiento) {
-              document.getElementById('idMantenimiento').value = mantenimiento.idMantenimiento;
-              document.getElementById('equipo').value = mantenimiento.equipo.idEquipo;
-              document.getElementById('fechaMantenimiento').value = mantenimiento.fechaMantenimiento;
-              document.getElementById('estadoInicial').value = mantenimiento.estadoInicial;
-              document.getElementById('estadoFinal').value = mantenimiento.estadoFinal;
-              document.getElementById('descripcionProblema').value = mantenimiento.descripcionProblema;
-              document.getElementById('solucionAplicada').value = mantenimiento.solucionAplicada;
-          }
-      } else {
-          document.getElementById('mantenimiento-form-data').reset();
-          document.getElementById('idMantenimiento').value = '';
-      }
-  }
-
-  function ocultarFormulario() {
-      document.getElementById('mantenimiento-form').style.display = 'none';
-  }
-
-  function guardarMantenimiento() {
-      const idMantenimiento = document.getElementById('idMantenimiento').value;
-      const equipo = { idEquipo: parseInt(document.getElementById('equipo').value) };
-      const fechaMantenimiento = document.getElementById('fechaMantenimiento').value;
-      const estadoInicial = document.getElementById('estadoInicial').value;
-      const estadoFinal = document.getElementById('estadoFinal').value;
-      const descripcionProblema = document.getElementById('descripcionProblema').value;
-      const solucionAplicada = document.getElementById('solucionAplicada').value;
-
-      const mantenimiento = {
-          equipo: equipo,
-          fechaMantenimiento: fechaMantenimiento,
-          estadoInicial: estadoInicial,
-          estadoFinal: estadoFinal,
-          descripcionProblema: descripcionProblema,
-          solucionAplicada: solucionAplicada
-      };
-
-      const url = idMantenimiento ? `http://localhost:8083/mantenimiento/${idMantenimiento}` : 'http://localhost:8083/mantenimiento';
-      const method = idMantenimiento ? 'PUT' : 'POST';
-
-      fetch(url, {
-          method: method,
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(mantenimiento)
-      })
-          .then(response => {
-              if (response.ok) {
-                  cargarMantenimientos();
-                  ocultarFormulario();
-              } else {
-                  console.error('Error al guardar mantenimiento');
-              }
-          })
-          .catch(error => console.error('Error:', error));
-  }
-
-  function editarMantenimiento(id) {
-      mostrarFormulario('editar', id);
-  }
-  // Redirige a login.html después de cerrar sesión
-    document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
-        window.location.href = '/login.html'; // Redirige a login.html
-    });
-</script>
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/mantenimiento.js"></script>
 </body>
 </html>

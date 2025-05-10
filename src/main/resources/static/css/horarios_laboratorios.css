@@ -1,0 +1,207 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #121212; /* Fondo oscuro general */
+    color: white;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #191970; /* Azul medianoche oscuro */
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+.sidebar a {
+    padding: 12px 15px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border-left: 5px solid transparent;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #34495E; /* Gris pizarra */
+    border-left-color: #ff69b4; /* Rosa */
+}
+
+.sidebar a i {
+    font-size: 1.2rem;
+}
+
+.sidebar a span {
+    margin-left: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
+}
+
+.sidebar.collapsed a span {
+    opacity: 0;
+    width: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+.sidebar.collapsed a {
+    justify-content: center;
+}
+
+.sidebar hr {
+    border-color: #34495E;
+    margin: 5px 0;
+}
+
+.sidebar .logout-btn {
+    margin-top: auto;
+    border-top: 1px solid #34495E;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #283747; /* Azul acero oscuro */
+    position: relative;
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+}
+
+.content.sidebar-collapsed {
+    margin-left: 60px;
+}
+
+.form-container, .table-container {
+    width: 95%; /* Más ancho para aprovechar el espacio */
+    max-width: 1000px; /* Un poco más de ancho máximo */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input[type="text"], input[type="number"], select { /* Estilos para otros inputs si los añades */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    background-color: #222;
+    color: white;
+    border-radius: 5px;
+}
+
+table {
+    width: 100%;
+    background-color: #2c3e50; /* Color de fondo más oscuro para la tabla */
+    border-radius: 8px; /* Bordes redondeados más suaves */
+    border-collapse: separate; /* Permite border-spacing */
+    border-spacing: 0;
+    color: #ecf0f1; /* Color de texto más claro */
+    margin-top: 20px;
+    overflow: hidden; /* Asegura que los bordes redondeados se vean bien */
+}
+
+th, td {
+    border: 1px solid #34495e; /* Bordes más sutiles */
+    padding: 12px 15px; /* Más padding */
+    text-align: left;
+}
+
+th {
+    background-color: #ff69b4; /* Rosa para encabezados */
+    color: #1a1a2e; /* Texto oscuro para contraste en encabezados */
+    font-weight: bold;
+}
+
+/* Estilos para la tabla de horarios */
+.horario-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #1f2b38; /* Fondo ligeramente diferente para el contenedor del horario */
+    border-radius: 8px;
+    /* display: none; /* Oculto por defecto, controlado por JS */
+}
+
+.horario-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.horario-tabla th, .horario-tabla td {
+    border: 1px solid #34495e;
+    padding: 8px;
+    text-align: center;
+    min-width: 70px; /* Ancho mínimo */
+}
+
+.horario-tabla th {
+    background-color: #007bff; /* Un azul diferente para el encabezado del horario */
+    color: white;
+}
+
+.horario-celda {
+    height: 35px;
+    cursor: pointer;
+    background-color: #4a627a; /* Celda disponible más oscura */
+    transition: background-color 0.3s ease;
+    color: #e0e0e0;
+}
+
+.horario-celda.ocupado {
+    background-color: #28a745; /* Verde para ocupado */
+    color: white;
+}
+.horario-celda:hover:not(.ocupado) {
+    background-color: #5f7a93; /* Hover para celdas disponibles */
+}
+
+.horario-tabla td:first-child { /* Celda de la hora */
+    background-color: #3b5065;
+    font-weight: bold;
+    color: #f0f0f0;
+}
+/* Botones de acción más estilizados */
+.btn-accion {
+    margin-right: 5px;
+}
+.btn-sm {
+    padding: .25rem .5rem;
+    font-size: .875rem;
+}
+
+.user-info, .footer {
+    position: fixed;
+    right: 20px;
+    text-align: right;
+    z-index: 1000; /* Para asegurar que estén sobre el contenido */
+}
+.user-info { top: 10px; }
+.user-info .username { font-weight: bold; }
+.user-info .status { font-size: 0.9rem; color: #00FF00; }
+.footer { bottom: 10px; font-size: 0.9rem; }
+.footer a { color: #00BFFF; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* Ajuste para el contenido cuando el sidebar está colapsado */
+.content.sidebar-collapsed {
+    margin-left: 60px;
+}
