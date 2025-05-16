@@ -111,6 +111,17 @@ public class ReporteController {
                     case "sanciones-activas-inactivas":
                         reportesData.put("sancionesActivasInactivas", generarReporteSancionesActivasInactivas(filtros));
                         break;
+                    // Casos para reportes ESTADÍSTICOS (Gráficos)
+                    // *** ESTOS DEBEN COINCIDIR CON LOS 'value' de tus checkboxes ESTADÍSTICOS en HTML (¡en camelCase!) ***
+                    case "equiposMasPrestados": // Debe coincidir con el 'value' del checkbox estadístico en HTML
+                        // *** CORRECCIÓN: Llama al método generador y PONE EL RESULTADO DIRECTO en el mapa 'reportesData' ***
+                        reportesData.put("equiposMasPrestados", generarReporteEquiposMasPrestados(filtros));
+                        break;
+
+                    case "usuariosMasPrestaron": // Debe coincidir con el 'value' del checkbox estadístico en HTML
+                        // *** CORRECCIÓN: Llama al método generador y PONE EL RESULTADO DIRECTO en el mapa 'reportesData' ***
+                        reportesData.put("usuariosMasPrestaron", generarReportarUsuariosMasPrestaron(filtros));
+                        break;
                     // --- Casos para reportes de Usuario ---
                     case "historial-prestamos-usuario":
                         if (usuarioRu != null) {
@@ -186,6 +197,8 @@ public class ReporteController {
     private Map<String, Object> generarReporteEquiposMasPrestados(Map<String, Object> filtros) {
         Integer laboratorioId = null;
         Integer categoriaId = null;
+        java.sql.Date fechaInicio = null; // Usar java.sql.Date si tu repositorio lo espera
+        java.sql.Date fechaFin = null;
         // Date fechaInicio = null; // Si tu consulta nativa soporta fechas de préstamo
         // Date fechaFin = null;   // Si tu consulta nativa soporta fechas de préstamo
 
@@ -227,15 +240,35 @@ public class ReporteController {
             }
         }
         // Nota: Si este reporte soporta filtros de fecha, debes extraerlos aquí también.
+        // --- NUEVA LÓGICA para extraer y parsear fechas ---
+        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) {
+            try {
+                // Asume que la fecha llega como String "YYYY-MM-DD"
+                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicio").toString());
+            } catch (IllegalArgumentException e) {
+                // Manejar error si el formato de fecha es incorrecto
+                throw new RuntimeException("Formato de Fecha de Inicio global incorrecto: " + filtros.get("fechaInicio").toString());
+            }
+        }
+        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) {
+            try {
+                // Asume que la fecha llega como String "YYYY-MM-DD"
+                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFin").toString());
+            } catch (IllegalArgumentException e) {
+                // Manejar error si el formato de fecha es incorrecto
+                throw new RuntimeException("Formato de Fecha de Fin global incorrecto: " + filtros.get("fechaFin").toString());
+            }
+        }
+        // --- FIN NUEVA LÓGICA ---
 
 
         // *** Llamar al método del repositorio con los filtros ***
         // ASUME: El método obtenerEquiposMasPrestados en PrestamoRepository
         // ha sido modificado (con @Query nativeQuery=true) para aceptar Integer laboratorioId, Integer categoriaId
         // y que la consulta nativa usa esos parámetros para filtrar los resultados.
-        List<Object[]> resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId);
+        //List<Object[]> resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId);
         // Si tu consulta nativa soporta fechas, pásalos aquí también:
-        // List<Object[]> resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId, fechaInicio, fechaFin);
+        List<Object[]> resultados = prestamoRepository.obtenerEquiposMasPrestados(laboratorioId, categoriaId, fechaInicio, fechaFin);
 
 
         List<Map<String, Object>> datos = new ArrayList<>();
@@ -262,6 +295,8 @@ public class ReporteController {
     private Map<String, Object> generarReportarUsuariosMasPrestaron(Map<String, Object> filtros) { // Corregido nombre si es necesario
         Integer laboratorioId = null;
         Integer categoriaId = null;
+        java.sql.Date fechaInicio = null; // Usar java.sql.Date si tu repositorio lo espera
+        java.sql.Date fechaFin = null;
         // Date fechaInicio = null; // Si tu consulta nativa soporta fechas de préstamo
         // Date fechaFin = null;   // Si tu consulta nativa soporta fechas de préstamo
 
@@ -303,14 +338,34 @@ public class ReporteController {
             }
         }
         // Nota: Si este reporte soporta filtros de fecha, debes extraerlos aquí también.
+        // --- NUEVA LÓGICA para extraer y parsear fechas ---
+        if (filtros.containsKey("fechaInicio") && filtros.get("fechaInicio") != null && !filtros.get("fechaInicio").toString().isEmpty()) {
+            try {
+                // Asume que la fecha llega como String "YYYY-MM-DD"
+                fechaInicio = java.sql.Date.valueOf(filtros.get("fechaInicio").toString());
+            } catch (IllegalArgumentException e) {
+                // Manejar error si el formato de fecha es incorrecto
+                throw new RuntimeException("Formato de Fecha de Inicio global incorrecto: " + filtros.get("fechaInicio").toString());
+            }
+        }
+        if (filtros.containsKey("fechaFin") && filtros.get("fechaFin") != null && !filtros.get("fechaFin").toString().isEmpty()) {
+            try {
+                // Asume que la fecha llega como String "YYYY-MM-DD"
+                fechaFin = java.sql.Date.valueOf(filtros.get("fechaFin").toString());
+            } catch (IllegalArgumentException e) {
+                // Manejar error si el formato de fecha es incorrecto
+                throw new RuntimeException("Formato de Fecha de Fin global incorrecto: " + filtros.get("fechaFin").toString());
+            }
+        }
+        // --- FIN NUEVA LÓGICA ---
 
         // *** Llamar al método del repositorio con los filtros ***
         // ASUME: El método obtenerUsuariosMasPrestaron en PrestamoRepository
         // ha sido modificado (con @Query nativeQuery=true) para aceptar Integer laboratorioId, Integer categoriaId
         // y que la consulta nativa usa esos parámetros para filtrar los resultados.
-        List<Object[]> resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId);
+        //List<Object[]> resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId);
         // Si tu consulta nativa soporta fechas, pásalos aquí también:
-        // List<Object[]> resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId, fechaInicio, fechaFin);
+        List<Object[]> resultados = prestamoRepository.obtenerUsuariosMasPrestaron(laboratorioId, categoriaId, fechaInicio, fechaFin);
 
 
         List<Map<String, Object>> datos = new ArrayList<>();

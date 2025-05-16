@@ -101,6 +101,12 @@ select:focus {
 .btn-reporte:hover {
     background-color: #2563eb; /* hover:bg-blue-700 */
 }
+.tipo-reporte-btn[data-tipo="estadistico"] {
+    background-color: #9333ea; /* bg-purple-600 */
+}
+.tipo-reporte-btn[data-tipo="estadistico"]:hover {
+    background-color: #7e22ce; /* hover:bg-purple-800 */
+}
 
 .tipo-reporte-btn {
     padding: 0.75rem 1rem;

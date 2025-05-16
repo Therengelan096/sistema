@@ -47,18 +47,18 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
             "WHERE (:laboratorioId IS NULL OR l.id_laboratorio = :laboratorioId) " + // Filtro opcional por Laboratorio
             "AND (:categoriaId IS NULL OR c.id_categoria = :categoriaId) " +     // Filtro opcional por Categoría
             // Opcional: Si quieres filtrar por fecha de PRÉSTAMO, necesitarías JOIN a la tabla Prestamos y añadir filtro de fecha
-            // "JOIN Prestamos p ON dp.id_prestamo = p.id_prestamo " +
-            // "AND (:fechaInicio IS NULL OR p.fecha_prestamo >= :fechaInicio) " +
-            // "AND (:fechaFin IS NULL OR p.fecha_prestamo <= :fechaFin) " +
+            "JOIN Prestamos p ON dp.id_prestamo = p.id_prestamo " +
+            "AND (:fechaInicio IS NULL OR p.fecha_prestamo >= :fechaInicio) " +
+            "AND (:fechaFin IS NULL OR p.fecha_prestamo <= :fechaFin) " +
             "GROUP BY e.id_equipo, e.nombre " + // Agrupar también por nombre del equipo
             "ORDER BY cantidad_prestada DESC",
             nativeQuery = true)
     List<Object[]> obtenerEquiposMasPrestados(
             @Param("laboratorioId") Integer laboratorioId,
-            @Param("categoriaId") Integer categoriaId
+            @Param("categoriaId") Integer categoriaId,
             // Si añadiste filtros de fecha en la consulta, añádelos aquí
-            // , @Param("fechaInicio") Date fechaInicio
-            // , @Param("fechaFin") Date fechaFin
+            @Param("fechaInicio") Date fechaInicio,
+            @Param("fechaFin") Date fechaFin
     );
     // --- Modificar consulta nativa para "Usuarios que más prestaron" con filtros de Laboratorio y Categoría ---
     // El método probablemente se llama algo como obtenerUsuariosMasPrestaron
@@ -73,6 +73,9 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
             "WHERE (:laboratorioId IS NULL OR l.id_laboratorio = :laboratorioId) " + // Filtro opcional por Laboratorio
             "AND (:categoriaId IS NULL OR c.id_categoria = :categoriaId) " +     // Filtro opcional por Categoría
             // Si añadiste filtros de fecha en la consulta, asegúrate de que estén aquí
+            "JOIN Prestamos p ON dp.id_prestamo = p.id_prestamo " +
+            "AND (:fechaInicio IS NULL OR p.fecha_prestamo >= :fechaInicio) " +
+            "AND (:fechaFin IS NULL OR p.fecha_prestamo <= :fechaFin) " +
             "GROUP BY u.id_usuario, u.nombre, u.apellido " +
             "ORDER BY cantidad_prestamos DESC",
             nativeQuery = true)
@@ -80,7 +83,7 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
             @Param("laboratorioId") Integer laboratorioId,
             @Param("categoriaId") Integer categoriaId
             // Si añadiste filtros de fecha, ponlos aquí
-            // , @Param("fechaInicio") Date fechaInicio
-            // , @Param("fechaFin") Date fechaFin
+            , @Param("fechaInicio") Date fechaInicio
+            , @Param("fechaFin") Date fechaFin
     );
 }
