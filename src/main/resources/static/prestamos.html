@@ -71,10 +71,16 @@
         <div class="modal-body">
           <form id="nuevo-prestamo-form">
             <input type="hidden" id="prestamo-id">
+
             <div class="mb-3">
-              <label for="usuario" class="form-label">Usuario:</label>
-              <select class="form-select" id="usuario" name="usuario.idUsuario" required></select>
+              <label for="ruUsuarioInput" class="form-label">RU del Usuario:</label>
+              <div class="input-group">
+                <input type="number" class="form-control" id="ruUsuarioInput" placeholder="Ingresa el RU" required>
+                <button type="button" class="btn btn-outline-secondary" id="btnBuscarUsuario">Buscar</button>
+              </div>
+              <small id="infoUsuarioEncontrado" class="form-text text-muted"></small>
             </div>
+            <input type="hidden" id="usuarioIdOculto" name="usuarioId">
             <div class="mb-3">
               <label for="administrador" class="form-label">Administrador:</label>
               <select class="form-select" id="administrador" name="administrador.idAdministrador" required></select>
@@ -112,6 +118,7 @@
               <input type="datetime-local" class="form-control" id="fechaDevolucionEstimada" name="fechaDevolucionEstimada" required>
             </div>
             <input type="hidden" name="detallesPrestamo" id="detalle-prestamo-input">
+
             <button type="submit" class="btn btn-primary" id="guardar-prestamo-btn">Guardar Préstamo</button>
           </form>
         </div>
@@ -155,7 +162,8 @@
       </div>
     </div>
   </div>
-</div> <div class="footer">
+</div>
+<div class="footer">
   © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
 </div>
 
