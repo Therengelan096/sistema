@@ -1,4 +1,3 @@
-
 body {
     display: flex;
     min-height: 100vh;
@@ -100,14 +99,14 @@ body {
 }
 
 .form-container {
-    width: 95%; /* Más ancho en pantallas pequeñas */
-    max-width: 800px; /* Ancho máximo del formulario */
-    margin: 20px auto 30px auto; /* Centrado y con márgenes */
-    background-color: #1e2a38; /* Fondo ligeramente diferente para el form */
+    width: 95%;
+    max-width: 800px;
+    margin: 20px auto 30px auto;
+    background-color: #1e2a38;
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    text-align: left; /* Alinear texto a la izquierda dentro del form */
+    text-align: left;
 }
 
 .form-group label {
@@ -115,12 +114,86 @@ body {
     display: block;
     color: #ccc; /* Color más claro para etiquetas */
 }
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    background-color: #344960;
+    color: white;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+textarea {
+    resize: none;
+}
+
+.modal-title {
+    color: #ff69b4;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004080;
+}
+
+.form-select:focus {
+    background-color: #1e2a38;
+    color: white;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.button-group .btn {
+    margin-right: 10px;
+}
+
+.btn-secondary {
+    background-color: #f5082b;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-secondary:hover {
+    background-color: #f8044c;
+    border-color: #a20432;
+}
 
 h1 {
     color: #ffffff;
     margin-bottom: 20px;
     text-align: center;
 }
+
+
 
 /* === TABLA === */
 .table-container {
@@ -163,6 +236,60 @@ tr:last-child td {
 tr:hover {
     background-color: #2c3e50; /* Color al pasar el mouse sobre una fila */
 }
+
+/* === DETALLES SECTION === */
+#detalles-section {
+    width: 98%; /* Similar al table-container */
+    max-width: 1200px; /* Similar al table-container */
+    margin: 0 auto; /* Centrado horizontal */
+    margin-top: 80px; /* AÑADIDO: Espacio superior para empujar hacia abajo */
+    /* Puedes ajustar 80px o usar una unidad relativa como vh, por ejemplo: */
+    /* margin-top: 10vh; */ /* 10% del alto de la ventana */
+}
+
+#detalles-section h2 {
+    color: #ffffff; /* Color del título de detalles */
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#detalles-section table {
+
+    width: 100%;
+    background-color: #1e2a38;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+}
+
+#detalles-section th,
+#detalles-section td {
+
+    border-bottom: 1px solid #34495E;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+#detalles-section td {
+    color: #e0e0e0;
+}
+
+#detalles-section th {
+    background-color: #34495E;
+    color: #ff69b4;
+    font-weight: 600;
+}
+
+#detalles-section tr:last-child td {
+    border-bottom: none;
+}
+
+#detalles-section tr:hover {
+    background-color: #2c3e50;
+}
+
 
 /* === BOTÓN PERSONALIZADO === */
 .btn-pink {
@@ -247,106 +374,39 @@ tr:hover {
     padding: 20px 0;
 }
 
-/* Estilos para el modal de edición */
-#editarDetalleModal .modal-content {
-    background-color: #1e2a38;
-    color: white;
-    border: 1px solid #34495E;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+/* Estilos para el modal de edición (reparación) */
+/* Nota: Los estilos de #reparacion-form-container también deberían ir aquí o fusionarse */
+.form-container#reparacion-form-container {
+    position: fixed; /* O absolute, dependiendo de cómo quieras que se posicione */
+    top: 50%; /* Mueve el borde superior al 50% del contenedor padre */
+    left: 50%; /* Mueve el borde izquierdo al 50% del contenedor padre */
+    transform: translate(-50%, -50%); /* Centra el elemento en ese punto */
+    z-index: 1050; /* Para asegurar que esté por encima del contenido */
+    background-color: #1e2a38; /* Ya está definido, pero lo confirmo */
+    padding: 25px; /* Ya está definido */
+    border-radius: 10px; /* Ya está definido */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Sombra un poco más fuerte para pop-up */
+    max-width: 500px; /* Define un ancho máximo para el formulario flotante */
+    width: 90%; /* Ocupa el 90% del ancho disponible (dentro del max-width) */
+    text-align: left; /* Ya está definido */
 }
 
-#editarDetalleModal .modal-header {
-    background-color: #34495E;
-    border-bottom: 1px solid #ff69b4;
-    padding: 15px;
+#reparacion-form-container h5 {
+    color: #ff69b4; /* Color para el título del formulario flotante */
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-#editarDetalleModal .modal-title {
-    color: #ff69b4;
-    font-weight: 600;
-}
 
-#editarDetalleModal .btn-close {
-    color: white;
-    opacity: 0.8;
-    filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-#editarDetalleModal .modal-body {
-    background-color: #283747;
-    padding: 20px;
-}
-
-#editarDetalleModal .form-label {
-    color: #ccc;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-}
-
-#editarDetalleModal .form-control {
-    background-color: #1e2a38;
-    border: 1px solid #34495E;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-#editarDetalleModal .form-control:focus {
-    background-color: #1e2a38;
-    border-color: #ff69b4;
-    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
-    color: white;
-}
-
-#editarDetalleModal textarea.form-control {
-    resize: vertical;
-    min-height: 100px;
-}
-
-#editarDetalleModal .modal-footer {
-    background-color: #34495E;
-    border-top: 1px solid #34495E;
-    padding: 15px;
-}
-
-/* Botones del modal */
-#editarDetalleModal .btn-secondary {
-    background-color: #495057;
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: opacity 0.2s ease;
-}
-
-#editarDetalleModal .btn-secondary:hover {
-    background-color: #6c757d;
-}
-
-#editarDetalleModal .btn-primary {
-    background-color: #ff69b4;
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: opacity 0.2s ease;
-}
-
-#editarDetalleModal .btn-primary:hover {
-    opacity: 0.9;
-}
 
 /* Estilos para mensajes de validación */
-#editarDetalleModal .invalid-feedback {
+.invalid-feedback { /* Aplicar a todos los invalid-feedback */
     color: #ff6b6b;
     font-size: 0.85rem;
     margin-top: 5px;
 }
 
-/* Estilos para campos requeridos */
-#editarDetalleModal .form-control:required {
-    border-left: 3px solid #ff69b4;
-}
+
 
 /* Animación del modal */
 .modal.fade .modal-dialog {
@@ -358,16 +418,56 @@ tr:hover {
 }
 
 /* Estilos responsivos */
-@media (max-width: 576px) {
-    #editarDetalleModal .modal-dialog {
-        margin: 0.5rem;
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
     }
 
-    #editarDetalleModal .modal-body {
-        padding: 15px;
+    .content {
+        margin-left: 60px; /* Ajusta el margen del contenido */
     }
 
-    #editarDetalleModal .form-control {
-        font-size: 0.9rem;
+    .sidebar a span {
+        opacity: 0;
+        width: 0;
+        margin: 0;
+        pointer-events: none;
     }
+
+    .sidebar a {
+        justify-content: center;
+    }
+
+    .table-container,
+    #detalles-section {
+        width: 98%; /* Usa más ancho en pantallas pequeñas */
+    }
+    .form-container#reparacion-form-container {
+        position: fixed; /* Para que se posicione respecto al viewport */
+        top: 50%; /* Posición inicial en el centro vertical */
+        left: 50%; /* Posición inicial en el centro horizontal */
+        transform: translate(-50%, -70px); /* Centra horizontalmente (-50%) y lo sube 70px (-70px) */
+        opacity: 0; /* Inicialmente invisible */
+        visibility: hidden; /* Oculto y no interactuable, pero transicionable */
+        transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Transición para opacidad y transformación */
+        z-index: 1050; /* Asegura que esté por encima de otros elementos */
+        background-color: #1e2a38; /* Ya definido */
+        padding: 25px; /* Ya definido */
+        border-radius: 10px; /* Ya definido */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Ya definido */
+        max-width: 500px; /* Ya definido */
+        width: 90%; /* Ya definido */
+        text-align: left; /* Ya definido */
+    }
+
+    /* Estado visible del formulario de reparación flotante (cuando se aplica la clase 'show') */
+    .form-container#reparacion-form-container.show {
+        opacity: 1; /* Completamente visible */
+        visibility: visible; /* Visible */
+        transform: translate(-50%, 0); /* Se desliza hacia abajo a su posición centrada original */
+    }
+}
+
+.hidden {
+    display: none ;
 }

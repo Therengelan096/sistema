@@ -21,7 +21,7 @@ public class DetalleMantenimiento {
     @Column(name = "estado_inicial", nullable = false)
     private String estadoInicial;
 
-    @Column(name = "estado_final", nullable = false)
+    @Column(name = "estado_final")
     private String estadoFinal;
 
     @Column(name = "descripcion_problema", columnDefinition = "TEXT")

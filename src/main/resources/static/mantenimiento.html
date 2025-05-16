@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="/css/mantenimiento.css">
+
 </head>
 <body>
 <div class="sidebar" id="sidebar">
@@ -37,16 +38,14 @@
 </div>
 
 <div class="content" id="content">
-  <h1>Mantenimiento</h1>
+  <h1 id="mantenimiento-list-title">Mantenimiento</h1>
 
-  <!-- Botón para abrir el formulario flotante -->
-  <div class="button-container">
+  <div class="button-container" id="nuevo-mantenimiento-btn-container">
     <button class="btn btn-pink mb-4" id="btnNuevoMantenimiento" data-bs-toggle="modal" data-bs-target="#mantenimientoModal">
       <i class="bi bi-plus-circle"></i> Nuevo Mantenimiento
     </button>
   </div>
 
-  <!-- Formulario Flotante -->
   <div class="modal fade" id="mantenimientoModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content bg-dark">
@@ -56,7 +55,6 @@
         </div>
         <div class="modal-body">
           <form id="mantenimientoForm">
-            <!-- Selectores en cascada -->
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="laboratorio" class="form-label">Laboratorio</label>
@@ -84,28 +82,25 @@
               </div>
             </div>
 
-            <!-- Instancias seleccionadas -->
             <div id="instanciasContainer" class="mb-3">
               <div id="lista-instancias"></div>
             </div>
-              <!--contenedor de confirmacion  -->
-              <div id="confirmarInstanciasContainer" style="display: none;">
-                <div class="alert alert-info">
-                  <h6>Confirmar Instancias Seleccionadas</h6>
-                  <div id="listaInstanciasSeleccionadas"></div>
-                  <div class="mt-3">
-                    <button type="button" class="btn btn-secondary" id="btnVolverSeleccion">
-                      Volver
-                    </button>
-                    <button type="button" class="btn btn-primary" id="btnConfirmarInstancias">
-                      Confirmar y Continuar
-                    </button>
-                  </div>
+            <div id="confirmarInstanciasContainer" style="display: none;">
+              <div class="alert alert-info">
+                <h6>Confirmar Instancias Seleccionadas</h6>
+                <div id="listaInstanciasSeleccionadas"></div>
+                <div class="mt-3">
+                  <button type="button" class="btn btn-secondary" id="btnVolverSeleccion">
+                    Volver
+                  </button>
+                  <button type="button" class="btn btn-primary" id="btnConfirmarInstancias">
+                    Confirmar y Continuar
+                  </button>
                 </div>
               </div>
+            </div>
 
 
-              <!-- Detalles de instancia -->
             <div class="detalles-instancia" style="display: none;">
               <h6>Registro de Detalles de Mantenimiento</h6>
               <div id="detallesInstanciasContainer"></div>
@@ -115,52 +110,13 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" form="mantenimientoForm" class="btn btn-pink">Guardar</button>
+          <button type="submit" form="mantenimientoForm" class="btn-primary">Guardar</button>
         </div>
       </div>
     </div>
   </div>
 
-
-  <!-- Modal para Editar Detalle -->
-  <div class="modal fade" id="editarDetalleModal" tabindex="-1" aria-labelledby="editarDetalleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content form-container">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editarDetalleModalLabel">Editar Detalle de Mantenimiento</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editarDetalleForm">
-            <input type="hidden" id="editDetalleId">
-            <div class="form-group mb-3">
-              <label for="editEstadoInicial" class="form-label">Estado Inicial</label>
-              <input type="text" class="form-control" id="editEstadoInicial" required>
-            </div>
-            <div class="form-group mb-3">
-              <label for="editEstadoFinal" class="form-label">Estado Final</label>
-              <input type="text" class="form-control" id="editEstadoFinal" required>
-            </div>
-            <div class="form-group mb-3">
-              <label for="editProblema" class="form-label">Problema</label>
-              <textarea class="form-control" id="editProblema" rows="3" required></textarea>
-            </div>
-            <div class="form-group mb-3">
-              <label for="editSolucion" class="form-label">Solución</label>
-              <textarea class="form-control" id="editSolucion" rows="3" required></textarea>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-              <button type="submit" class="btn-pink">Guardar Cambios</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabla de Mantenimientos -->
-  <div class="table-container">
+  <div class="table-container" id="mantenimiento-table-container">
     <h4>Lista de Mantenimientos</h4>
     <table class="table table-dark">
       <thead>
@@ -176,37 +132,50 @@
     </table>
   </div>
 
-  <!-- Modal para Detalles de Mantenimiento -->
-  <div class="modal fade" id="detallesModal" tabindex="-1" data-mantenimiento-id="">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content bg-dark">
-        <div class="modal-header">
-          <h5 class="modal-title">Detalles del Mantenimiento</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <table class="table table-dark">
-            <thead>
-            <tr>
-              <th>ID Detalle</th>
-              <th>Instancia</th>
-              <th>Estado Inicial</th>
-              <th>Estado Final</th>
-              <th>Problema</th>
-              <th>Solución</th>
-              <th>Fase</th>
-              <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody id="detallesTableBody"></tbody>
-          </table>
-        </div>
+  <div id="detalles-section" class="hidden">
+    <h2>Detalles del Mantenimiento <span id="detalles-section-title"></span></h2>
+    <table id="detalles-table" class="table table-dark">
+      <thead>
+      <tr>
+        <th>ID Detalle</th>
+        <th>Instancia</th>
+        <th>Estado Inicial</th>
+        <th>Estado Final</th>
+        <th>Problema</th>
+        <th>Solución</th>
+        <th>Fase</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="detalles-body"></tbody>
+    </table>
+    <button id="back-to-mantenimientos-btn" class="btn-primary">Volver a Mantenimientos</button>
+  </div>
+
+  <div class="form-container" id="reparacion-form-container" style="display: none;">
+    <h5 class="modal-title">Detalle de Reparación</h5>
+    <form id="reparacion-form">
+      <div class="form-group">
+        <label for="estado-final-reparacion">Estado Final</label>
+        <select class="form-select" id="estado-final-reparacion" required>
+          <option value="">Seleccione un estado</option>
+          <option value="Bueno">Bueno</option>
+          <option value="Regular">Regular</option>
+          <option value="Dañado">Dañado</option>
+        </select>
       </div>
-    </div>
+      <div class="form-group">
+        <label for="solucion-reparacion">Solución</label>
+        <textarea class="form-control" id="solucion-reparacion" rows="3"></textarea>
+      </div>
+      <div class="button-group d-flex">
+        <button type="submit" class="btn btn-primary me-2" id="guardarReparacionBtn">Guardar Reparación</button>
+        <button type="button" class="btn-secondary" id="cancelar-reparacion">Cancelar</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/mantenimiento.js"></script>

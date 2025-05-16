@@ -1,121 +1,101 @@
 window.selectedInstancias = [];
 let mantenimientosData = [];
+let currentMantenimientoId = null;
+let detalleIdActual = null;
+const detallesSection = document.getElementById('detalles-section');
+const detallesSectionTitle = document.getElementById('detalles-section-title');
+const currentMantenimientoNombre = document.getElementById('current-mantenimiento-nombre');
+const detallesTbody = document.getElementById('detalles-body');
+const mantenimientoListTitle = document.getElementById('mantenimiento-list-title');
+const nuevoMantenimientoBtnContainer = document.getElementById('nuevo-mantenimiento-btn-container');
 
-// Función para editar detalle
-window.editarDetalle = async function(idDetalle) {
-    try {
-        const response = await fetch(`/mantenimiento/detalleMantenimiento/${idDetalle}`);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const detalle = await response.json();
-
-        // Llenar el formulario
-        document.getElementById('editDetalleId').value = detalle.idDetalleMant;
-        document.getElementById('editEstadoInicial').value = detalle.estadoInicial || '';
-        document.getElementById('editEstadoFinal').value = detalle.estadoFinal || '';
-        document.getElementById('editProblema').value = detalle.problema || '';
-        document.getElementById('editSolucion').value = detalle.solucion || '';
-
-        const editarModal = new bootstrap.Modal(document.getElementById('editarDetalleModal'));
-        editarModal.show();
-    } catch (error) {
-        console.error('Error al obtener el detalle:', error);
-        alert('Error al cargar los datos del detalle');
+function mostrarVistaMantenimientos() {
+    const mantenimientoTableContainer = document.getElementById('mantenimiento-table-container');
+    if (mantenimientoListTitle) {
+        mantenimientoListTitle.classList.remove('hidden');
     }
-};
-
-// Evento submit del formulario
-document.getElementById('editarDetalleForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const idDetalle = document.getElementById('editDetalleId').value;
-
-    const detalleActualizado = {
-        estadoInicial: document.getElementById('editEstadoInicial').value.trim(),
-        estadoFinal: document.getElementById('editEstadoFinal').value.trim(),
-        problema: document.getElementById('editProblema').value.trim(),
-        solucion: document.getElementById('editSolucion').value.trim()
-    };
-
-    try {
-        const response = await fetch(`/mantenimiento/detalleMantenimiento/${idDetalle}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(detalleActualizado)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        // Cerrar el modal
-        const editarModal = bootstrap.Modal.getInstance(document.getElementById('editarDetalleModal'));
-        editarModal.hide();
-
-        // Recargar la lista de detalles
-        if (result.idMantenimiento) {
-            await verDetalles(result.idMantenimiento);
-        }
-
-        alert('Detalle actualizado exitosamente');
-    } catch (error) {
-        console.error('Error al actualizar:', error);
-        alert('Error al actualizar el detalle');
+    if (nuevoMantenimientoBtnContainer) {
+        nuevoMantenimientoBtnContainer.classList.remove('hidden');
     }
-});
 
-
-// Agregar el evento submit para el formulario de edición
-document.getElementById('editarDetalleForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const idDetalle = document.getElementById('editDetalleId').value;
-    const detalleActualizado = {
-        estadoInicial: document.getElementById('editEstadoInicial').value,
-        estadoFinal: document.getElementById('editEstadoFinal').value,
-        problema: document.getElementById('editProblema').value,
-        solucion: document.getElementById('editSolucion').value
-    };
-
-    try {
-        const response = await fetch(`http://localhost:8083/mantenimiento/detalleMantenimiento/${idDetalle}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(detalleActualizado)
-        });
-
-        if (!response.ok) {
-            throw new Error('Error al actualizar el detalle');
-        }
-
-        const result = await response.json();
-
-        // Cerrar el modal
-        const editarModal = bootstrap.Modal.getInstance(document.getElementById('editarDetalleModal'));
-        editarModal.hide();
-
-        // Recargar los detalles del mantenimiento
-        if (result.idMantenimiento) {
-            await window.verDetalles(result.idMantenimiento);
-        }
-
-        alert('Detalle actualizado exitosamente');
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al actualizar el detalle');
+    // Mostrar tabla principal
+    if (mantenimientoTableContainer) {
+        mantenimientoTableContainer.classList.remove('hidden');
     }
-});
 
+    // Ocultar sección de detalles
+    if (detallesSection) {
+        detallesSection.classList.add('hidden');
+    }
+}
+function mostrarVistaDetalles() {
+    const mantenimientoTableContainer = document.getElementById('mantenimiento-table-container');
 
+    if (mantenimientoListTitle) {
+        mantenimientoListTitle.classList.add('hidden');
+    }
+    if (nuevoMantenimientoBtnContainer) {
+        nuevoMantenimientoBtnContainer.classList.add('hidden');
+    }
+    if (mantenimientoTableContainer) {
+        mantenimientoTableContainer.classList.add('hidden');
+    }
+
+    if (detallesSection) {
+        detallesSection.classList.remove('hidden');
+    }
+}
+
+// --- Funciones para Cargar y Mostrar Detalles de Mantenimiento ---
+function mostrarDetallesMantenimiento(detalles) {
+    if (!detallesTbody) {
+        console.error('No se encontró el tbody para los detalles de mantenimiento');
+        return;
+    }
+    detallesTbody.innerHTML = '';
+
+    if (!detalles || detalles.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="8" class="text-center">No hay detalles de mantenimiento disponibles</td>`;
+        detallesTbody.appendChild(tr);
+        return;
+    }
+
+    detalles.forEach(detalle => {
+        const tr = document.createElement('tr');
+        // Construye el HTML de la fila paso a paso
+        let rowHtml = `
+            <td>${detalle.idDetalleMant || ''}</td>
+            <td>${detalle.instanciaEquipo ? detalle.instanciaEquipo.codigoActivo : 'N/A'}</td>
+            <td>${detalle.estadoInicial || ''}</td>
+            <td>${detalle.estadoFinal || ''}</td>
+            <td>${detalle.problema || ''}</td>
+            <td>${detalle.solucion || ''}</td>
+            <td>${detalle.fase || ''}</td>
+            <td>`;
+
+        if (detalle.fase === 'reparado') {
+
+            rowHtml += `<span class="badge bg-success">Reparado</span>`;
+
+        } else {
+
+            rowHtml += `
+                <button class="btn btn-warning btn-sm me-1" onclick="editarDetalle(${detalle.idDetalleMant})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-success btn-sm" onclick="mostrarFormularioReparacion(${detalle.idDetalleMant})">
+                    <i class="bi bi-check-circle"></i>
+                </button>`;
+        }
+        // *** Fin de la lógica CONDICIONAL ***
+
+        rowHtml += `</td>`; // Cierra la celda de acciones
+
+        tr.innerHTML = rowHtml; // Establece el HTML completo de la fila
+        detallesTbody.appendChild(tr);
+    });
+}
 
 window.mostrarDetallesEnModal = function (detalles) {
     const tbody = document.getElementById('detallesTableBody');
@@ -126,9 +106,7 @@ window.mostrarDetallesEnModal = function (detalles) {
                     <td>${d.idDetalleMant}</td>
                     <td>${d.instanciaEquipo ? d.instanciaEquipo.codigoActivo : 'N/A'}</td>
                     <td>${d.estadoInicial}</td>
-                    <td>${d.estadoFinal}</td>
                     <td>${d.problema}</td>
-                    <td>${d.solucion}</td>
                     <td>${d.fase}</td>
                     <td>
                         <button class="btn btn-success btn-sm" onclick="actualizarFase(${d.idDetalleMant})">
@@ -139,8 +117,6 @@ window.mostrarDetallesEnModal = function (detalles) {
             `;
     });
 }
-
-// Funciones auxiliares que deben estar disponibles globalmente (existentes, con modificaciones)
 window.mostrarOpcionesInstancias = function(instanciasDisponibles) {
     const container = document.getElementById('instanciasContainer');
     if (!container) {
@@ -229,75 +205,47 @@ window.confirmarSeleccion = function() {
     window.mostrarConfirmacionInstancias();
 };
 window.verDetalles = async function(idMantenimiento) {
+    currentMantenimientoId = idMantenimiento;
+    const mantenimientoTitleElement = document.querySelector('#detalles-section-title span');
+    if (mantenimientoTitleElement) {
+        mantenimientoTitleElement.textContent = `#${idMantenimiento}`;
+    }
+
     try {
-        window.currentMantenimientoId = idMantenimiento; // Guardar el ID del mantenimiento actual
         const response = await fetch(`http://localhost:8083/mantenimiento/${idMantenimiento}/detalles`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const detalles = await response.json();
-        const detallesTableBody = document.getElementById('detallesTableBody');
 
-        if (!detalles || detalles.length === 0) {
-            detallesTableBody.innerHTML = '<tr><td colspan="8" class="text-center">No hay detalles disponibles</td></tr>';
-            return;
+        const thead = document.querySelector('#detalles-table thead');
+        if (thead) {
+            thead.innerHTML = `
+                <tr>
+                    <th>ID Detalle</th>
+                    <th>Instancia</th>
+                    <th>Estado Inicial</th>
+                    <th>Estado Final</th>
+                    <th>Problema</th>
+                    <th>Solución</th>
+                    <th>Fase</th>
+                    <th>Acciones</th>
+                </tr>
+            `;
         }
 
-        detallesTableBody.innerHTML = detalles.map(detalle => `
-            <tr>
-                <td>${detalle.idDetalleMant || ''}</td>
-                <td>${detalle.instanciaEquipo ? detalle.instanciaEquipo.codigoActivo : 'N/A'}</td>
-                <td>${detalle.estadoInicial || ''}</td>
-                <td>${detalle.estadoFinal || ''}</td>
-                <td>${detalle.problema || ''}</td>
-                <td>${detalle.solucion || ''}</td>
-                <td>${detalle.fase || ''}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm me-1" onclick="editarDetalle(${detalle.idDetalleMant})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-success btn-sm" onclick="actualizarFase(${detalle.idDetalleMant})">
-                        <i class="bi bi-check-circle"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-
-        const detallesModal = new bootstrap.Modal(document.getElementById('detallesModal'));
-        detallesModal.show();
+        mostrarDetallesMantenimiento(detalles);
+        mostrarVistaDetalles();
     } catch (error) {
         console.error('Error al cargar los detalles:', error);
         alert('Error al cargar los detalles del mantenimiento');
+        // Opcionalmente, podrías mostrar un mensaje en la tabla de detalles
+        if (detallesTbody) {
+            detallesTbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error al cargar los detalles: ${error.message}</td></tr>`;
+        }
+        mostrarVistaDetalles();
     }
 };
-
-
-window.actualizarFase = async function(idDetalleMant) {
-    try {
-        const response = await fetch(`http://localhost:8083/detalleMantenimiento/${idDetalleMant}/reparar`, { //AUN NO EXISTE ESTE ENDPOINT
-            method: 'PUT',
-        });
-        if (!response.ok) {
-            throw new Error('Error al actualizar la fase del detalle');
-        }
-        const data = await response.json();
-        alert(data.mensaje); // Mostrar mensaje de éxito
-        // Recargar los detalles del mantenimiento para reflejar los cambios
-        //const mantenimientoId = document.querySelector('#detallesModal h5').textContent.split(' ')[3]; //EXTRAER EL ID DE MANTENIMIENTO
-        const mantenimientoId = data.idMantenimiento; // El backend debe devolver el ID del mantenimiento
-        if (mantenimientoId) {
-            window.verDetalles(mantenimientoId);
-        } else {
-            window.cargarMantenimientos();
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al marcar como reparado');
-    }
-
-}
-
 window.mostrarFormularioDetalles = function () {
     const detallesContainer = document.querySelector('.detalles-instancia');
     const detallesContent = document.getElementById('detallesInstanciasContainer');
@@ -318,29 +266,26 @@ window.mostrarFormularioDetalles = function () {
         detalleDiv.className = 'mb-4 p-3 border rounded';
         detalleDiv.innerHTML = `
             <h6>Instancia: ${instancia.codigoActivo}</h6>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">Estado Inicial</label>
-                    <input type="text" class="form-control" id="estado-inicial-${instancia.idInstancia}" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Estado Final</label>
-                    <input type="text" class="form-control" id="estado-final-${instancia.idInstancia}" required>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Estado Inicial</label>
+                <select class="form-select" id="estado-inicial-${instancia.idInstancia}" required>
+                    <option value="">Seleccione un estado</option>
+                    <option value="Bueno">bueno</option>
+                    <option value="Regular">regular</option>
+                    <option value="Dañado">dañado</option>
+                </select>      
             </div>
             <div class="mb-3">
                 <label class="form-label">Problema</label>
                 <textarea class="form-control" id="problema-${instancia.idInstancia}" required rows="2"></textarea>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Solución</label>
-                <textarea class="form-control" id="solucion-${instancia.idInstancia}" rows="2"></textarea>
-            </div>
+            </div>           
+             <input type="hidden" id="estado-final-${instancia.idInstancia}" value="">
+            <input type="hidden" id="solucion-${instancia.idInstancia}" value="">
+
         `;
         detallesContent.appendChild(detalleDiv);
     });
 }
-
 window.mostrarConfirmacionInstancias = function () {
     const confirmarContainer = document.getElementById('confirmarInstanciasContainer');
     const instanciasContainer = document.getElementById('instanciasContainer');
@@ -382,8 +327,6 @@ window.mostrarConfirmacionInstancias = function () {
             </ul>
         </div>
     `;
-
-    // Configurar botones
     const btnVolverSeleccion = document.getElementById('btnVolverSeleccion');
     const btnConfirmarInstancias = document.getElementById('btnConfirmarInstancias');
 
@@ -410,8 +353,6 @@ window.mostrarConfirmacionInstancias = function () {
         selectedInstancias: window.selectedInstancias.length
     });
 };
-
-
 // Función para cargar laboratorios
 window.cargarLaboratorios = async function () {
     try {
@@ -550,40 +491,72 @@ window.cargarMantenimientos = async function () {
         tablaBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error al cargar los datos</td></tr>';
     }
 };
+window.cargarMantenimientos();
+mostrarVistaMantenimientos();
 
+function mostrarFormularioReparacion(idDetalleMant) {
+    detalleIdActual = idDetalleMant; // Guarda el ID del detalle
+    const formularioFlotante = document.getElementById('reparacion-form-container');
+    if (formularioFlotante) {
+        formularioFlotante.style.display = 'block'; // Mostrar el formulario
+    }
+}
 
+function cerrarFormularioReparacion() {
+    const formulario = document.getElementById('reparacion-form-container');
+    if (formulario) {
+        formulario.style.display = 'none'; // Ocultar el formulario
+    }
+    detalleIdActual = null; // Limpia el ID global
+}
 
-window.actualizarTablaMantenimientos = function (mantenimientos) {
-    const tbody = document.getElementById('mantenimientoTableBody');
-    if (!tbody) {
-        console.error('No se encontró el elemento mantenimientoTableBody');
+async function guardarReparacion() {
+    if (detalleIdActual === null) {
+        console.error('No hay un ID de detalle para reparar.');
+        alert('No se puede guardar la reparación. Intente de nuevo.');
         return;
     }
 
-    tbody.innerHTML = '';
+    const estadoFinal = document.getElementById('estado-final-reparacion').value;
+    const solucion = document.getElementById('solucion-reparacion').value;
 
-    if (!mantenimientos || mantenimientos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay mantenimientos registrados</td></tr>';
+    if (!estadoFinal) {
+        alert('Por favor, seleccione el estado final.');
         return;
     }
 
-    mantenimientos.forEach(m => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${m.idMantenimiento}</td>
-                <td>${m.equipo ? m.equipo.nombre : 'N/A'}</td>
-                <td>${new Date(m.fechaMantenimiento).toLocaleDateString()}</td>
-                <td>${m.cantidad}</td>
-                <td>
-                    <button class="btn btn-info btn-sm" onclick="verDetalles(${m.idMantenimiento})">
-                        Ver Detalles
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-};
+    const data = {
+        estadoFinal: estadoFinal,
+        solucion: solucion
+    };
+    console.log('detalleIdActual:', detalleIdActual);
+    console.log('Datos a enviar:', data);
 
+    try {
+        const response = await fetch(`http://localhost:8083/mantenimiento/detalleMantenimiento/${detalleIdActual}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error al guardar la reparación: ${errorText}`);
+        }
+
+        const detalleActualizado = await response.json();
+        console.log('Detalle actualizado:', detalleActualizado);
+        cerrarFormularioReparacion();
+        await verDetalles(currentMantenimientoId);
+        alert('Reparación guardada exitosamente.');
+
+    } catch (error) {
+        console.error('Error al guardar la reparación:', error);
+        alert(error.message);
+    }
+}
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -596,14 +569,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoriaSelect = document.getElementById('categoria');
     const equipoSelect = document.getElementById('equipo');
     const instanciasContainer = document.getElementById('instanciasContainer');
-    const detallesModalElement = document.getElementById('detallesModal');
     const confirmarContainer = document.getElementById('confirmarInstanciasContainer');
     const listaInstancias = document.getElementById('listaInstanciasSeleccionadas');
     const listaInstanciasOriginal = document.getElementById('lista-instancias');
 
     // Inicializar Modals de Bootstrap (existentes)
     const mantenimientoModal = new bootstrap.Modal(mantenimientoModalElement);
-    const detallesModal = new bootstrap.Modal(detallesModalElement);
 
     // Log inicial de elementos críticos
     console.log('Estado inicial de elementos:', {
@@ -617,50 +588,25 @@ document.addEventListener('DOMContentLoaded', function() {
         mantenimientoModal.show();
     });
 
+    const backToMantenimientosBtn = document.getElementById('back-to-mantenimientos-btn');
+    if (backToMantenimientosBtn) {
+        backToMantenimientosBtn.addEventListener('click', mostrarVistaMantenimientos);
+    } else {
+        console.error('No se encontró el botón "Volver a Mantenimientos"');
+    }
+    const cancelarReparacionBtn = document.getElementById('cancelar-reparacion');
+    const guardarReparacionBtn = document.getElementById('guardarReparacionBtn');
 
-    const editarDetalleForm = document.getElementById('editarDetalleForm');
+    if (guardarReparacionBtn) {
+        guardarReparacionBtn.addEventListener('click', function(event) { // Añadido event
+            event.preventDefault(); // Evita que el formulario se envíe y recargue la página
+            guardarReparacion();
+        });
+    }
 
-    editarDetalleForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const idDetalle = document.getElementById('editDetalleId').value;
-        const detalleActualizado = {
-            estadoInicial: document.getElementById('editEstadoInicial').value,
-            estadoFinal: document.getElementById('editEstadoFinal').value,
-            problema: document.getElementById('editProblema').value,
-            solucion: document.getElementById('editSolucion').value
-        };
-
-        try {
-            const response = await fetch(`http://localhost:8083/detalleMantenimiento/${idDetalle}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(detalleActualizado)
-            });
-
-            if (!response.ok) {
-                throw new Error('Error al actualizar el detalle');
-            }
-
-            // Cerrar el modal de edición
-            const editarModal = bootstrap.Modal.getInstance(document.getElementById('editarDetalleModal'));
-            editarModal.hide();
-
-            // Recargar los detalles
-            const idMantenimiento = window.currentMantenimientoId; // Necesitas mantener esta variable
-            if (idMantenimiento) {
-                window.verDetalles(idMantenimiento);
-            }
-
-            alert('Detalle actualizado exitosamente');
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al actualizar el detalle');
-        }
-    });
-
+    if (cancelarReparacionBtn) {
+        cancelarReparacionBtn.addEventListener('click', cerrarFormularioReparacion);
+    }
 
 
 // Función para cargar instancias de un equipo
@@ -675,9 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error al cargar instancias del equipo');
         }
     }
-
-
-// Modificar la función resetearFormulario
     function resetearFormulario() {
         if (!mantenimientoForm) {
             console.error('No se encontró el formulario');
@@ -716,23 +659,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const detalles = window.selectedInstancias.map(instancia => {
                 const idInstancia = instancia.idInstancia;
                 const estadoInicial = document.getElementById(`estado-inicial-${idInstancia}`).value.trim();
-                const estadoFinal = document.getElementById(`estado-final-${idInstancia}`).value.trim();
                 const problema = document.getElementById(`problema-${idInstancia}`).value.trim();
-                const solucion = document.getElementById(`solucion-${idInstancia}`).value.trim();
 
                 // Validar campos requeridos
-                if (!estadoInicial || !estadoFinal || !problema || !solucion) {
+                if (!estadoInicial  || !problema ) {
                     throw new Error('Todos los campos son requeridos para cada instancia');
                 }
-
                 return {
                     instanciaEquipo: {
                         id: idInstancia
                     },
                     estadoInicial: estadoInicial,
-                    estadoFinal: estadoFinal,
+                    estadoFinal: null,
                     problema: problema,
-                    solucion: solucion,
+                    solucion: null,
                     fase: "mantenimiento"
                 };
             });
@@ -746,10 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 detalles: detalles
             };
 
-            // *** AGREGAR ESTE LOG ***
             console.log('Datos a enviar al servidor:', JSON.stringify(mantenimientoData, null, 2));
-
-            // Realizar la petición POST
             const response = await fetch('http://localhost:8083/mantenimiento', {
                 method: 'POST',
                 headers: {
@@ -777,8 +714,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(`Error al guardar el mantenimiento: ${error.message}`);
         }
     }
-
-
     // Event listeners para selectores en cascada y formulario (existentes, con ajustes)
     mantenimientoForm.addEventListener('submit', guardarMantenimiento);
     laboratorioSelect.addEventListener('change', function () {
@@ -804,21 +739,17 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedInstancias = [];
         }
     });
-    // Llamar a la inicialización
-    cargarLaboratorios(); // Cargar laboratorios al inicio
-    cargarMantenimientos();
-    // Mantener el código del sidebar (existente)
+
+    cargarLaboratorios();
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
     toggleSidebarBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
         content.classList.toggle('sidebar-collapsed');
     });
-    // Redirección al cerrar sesión (existente)
     document.querySelector('.logout-btn').addEventListener('click', function (e) {
         e.preventDefault();
         window.location.href = '/login.html';
     });
-
 });
 
 
