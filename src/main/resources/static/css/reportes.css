@@ -107,6 +107,72 @@ select:focus {
 .tipo-reporte-btn[data-tipo="estadistico"]:hover {
     background-color: #7e22ce; /* hover:bg-purple-800 */
 }
+@media print {
+    /* Reglas para elementos que NO quieres imprimir (botones, filtros, etc.) */
+    .no-print {
+        display: none !important;
+    }
+
+    /* Ocultar el canvas para impresión (si no vas a convertirlo a imagen) */
+    canvas {
+        display: none !important;
+    }
+
+    /* Asegurar que el contenedor principal de la vista previa se muestre */
+    #vista-previa {
+        display: block !important; /* O tu display normal, como grid o flex */
+        visibility: visible !important;
+        /* Puedes añadir padding o ajustar márgenes si necesitas espacio alrededor */
+        padding: 0 !important; /* Eliminar padding si el padding normal te da problemas en impresión */
+        margin: 0 !important; /* Eliminar márgenes si los márgenes normales te dan problemas en impresión */
+        width: 100% !important; /* Usar todo el ancho disponible */
+        box-sizing: border-box; /* Asegurar que padding/border se incluyan en el ancho */
+    }
+
+    /* Asegurar que el contenido dentro de la vista previa se muestre */
+    #reporte-contenido {
+        display: block !important; /* O tu display normal */
+        visibility: visible !important;
+        /* Ajustes adicionales si es necesario */
+    }
+
+    /* Asegurar que las tablas dentro de reporte-contenido se muestren */
+    #reporte-contenido table {
+        display: table !important;
+        width: 100% !important; /* Asegurar que la tabla use el ancho completo */
+        border-collapse: collapse !important; /* Evitar espacios entre celdas */
+    }
+
+    /* Asegurar que las filas y celdas de la tabla se muestren */
+    #reporte-contenido table tr {
+        display: table-row !important;
+    }
+
+    #reporte-contenido table th,
+    #reporte-contenido table td {
+        display: table-cell !important;
+        /* Ajustar padding, bordes, etc. para impresión si es necesario */
+        padding: 8px !important;
+        border: 1px solid #000 !important;
+    }
+
+    /* Asegurar que las líneas separadoras (hr) se muestren si las quieres ver */
+    #reporte-contenido hr {
+        display: block !important;
+    }
+
+    /* Ajustes para títulos en impresión para evitar cortes raros */
+    #reporte-contenido h3 {
+        page-break-after: avoid !important; /* Evita que la página corte justo después de un título */
+        page-break-before: auto !important;
+    }
+
+    /* Si usas el div.chart-container y quieres que aparezca el mensaje de "No hay datos" en impresión */
+    .chart-container {
+        display: block !important; /* Asegurar que el contenedor del gráfico se muestre */
+        /* Ajustar tamaños o quitar flex/grid si causan problemas en impresión */
+    }
+}
 
 .tipo-reporte-btn {
     padding: 0.75rem 1rem;
