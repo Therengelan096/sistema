@@ -3,24 +3,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const tipoReporteSeleccion = document.getElementById('tipo-reporte-seleccion');
     const reporteGlobalSeleccion = document.getElementById('reporte-global-seleccion');
     const reporteUsuarioSeleccion = document.getElementById('reporte-usuario-seleccion');
-    const reporteEstadisticoSeleccion = document.getElementById('reporte-estadistico-seleccion'); // Referencia NUEVA
-    const filtrosGlobales = document.getElementById('filtros-globales');
+    const reporteEstadisticoSeleccion = document.getElementById('reporte-estadistico-seleccion');
+    const filtrosGlobales = document.getElementById('filtros-globales'); // Este div ahora solo se usará para reportes globales
     const filtrosUsuario = document.getElementById('filtros-usuario');
     const vistaPrevia = document.getElementById('vista-previa');
     const reporteContenido = document.getElementById('reporte-contenido');
     const generarReporteBtn = document.getElementById('generar-reporte');
     const cancelarReporteBtn = document.getElementById('cancelar-reporte');
-    const imprimirReporteBtn = document.getElementById('imprimir-reporte');
-    const tipoReporteBtns = document.querySelectorAll('.tipo-reporte-btn'); // Actualizado para incluir el nuevo botón
+    const imprimirReporteBtn = document.getElementById('imprimir-reporte'); // Variable CORRECTA
+    const tipoReporteBtns = document.querySelectorAll('.tipo-reporte-btn');
     const ruUsuarioInput = document.getElementById('ru-usuario');
     const usuarioInfoDiv = document.getElementById('usuario-info');
     const reportesUsuarioCheckboxes = document.querySelectorAll('input[name="reportesUsuario"]');
     const reportesGlobalesCheckboxes = document.querySelectorAll('input[name="reportesGlobales"]');
-    const reportesEstadisticosCheckboxes = document.querySelectorAll('input[name="reportesEstadisticos"]'); // Referencia NUEVA
+    const reportesEstadisticosCheckboxes = document.querySelectorAll('input[name="reportesEstadisticos"]');
+
+    // Referencias a los NUEVOS divs de filtros específicos para reportes estadísticos
+    const filtrosEquiposEstadisticoDiv = document.getElementById('filtros-equipos-mas-prestados-grafico');
+    const filtrosUsuariosEstadisticoDiv = document.getElementById('filtros-usuarios-mas-prestaron-grafico');
+
+
+    // Referencias a los campos de filtro globales (ahora también usados en secciones específicas)
+    const fechaInicioGlobalInput = document.getElementById('fecha-inicio-global');
+    const fechaFinGlobalInput = document.getElementById('fecha-fin-global');
     const laboratorioGlobalSelect = document.getElementById('laboratorio-global');
     const categoriaGlobalSelect = document.getElementById('categoria-global');
     const diasSemanaHorarioSelect = document.getElementById('dias-semana-horario');
 
+    // Referencias a los campos de filtro específicos de reportes de usuario
     const filtrosHistorialPrestamosDiv = document.getElementById('filtros-historial-prestamos');
     const filtrosSancionesDiv = document.getElementById('filtros-sanciones');
     const historialPrestamosUsuarioCheckbox = document.getElementById('historial-prestamos-usuario');
@@ -41,24 +51,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Función para preparar los gráficos para impresión (convertir canvas a imagen)
     function prepararParaImpresion() {
-        printImages = {}; // Limpiar imágenes de impresiones anteriores
-
+        printImages = {};
         if (tipoReporteSeleccionado === 'estadistico') {
             for (const reporteKey in activeCharts) {
                 const chart = activeCharts[reporteKey];
                 if (chart && chart.canvas) {
                     try {
-                        const imageUrl = chart.canvas.toDataURL('image/png'); // Obtener la URL de la imagen del canvas
-                        const imgElement = document.createElement('img'); // Crear elemento de imagen
+                        const imageUrl = chart.canvas.toDataURL('image/png');
+                        const imgElement = document.createElement('img');
                         imgElement.src = imageUrl;
                         imgElement.alt = reporteKey + " Chart";
-                        imgElement.classList.add('print-chart-image'); // Clase para controlar visibilidad en CSS
+                        imgElement.classList.add('print-chart-image');
 
-                        // Ajustar estilos de la imagen para impresión
                         imgElement.style.maxWidth = '100%';
                         imgElement.style.height = 'auto';
 
-                        printImages[reporteKey] = { img: imgElement, canvas: chart.canvas }; // Guardar imagen y referencia al canvas
+                        printImages[reporteKey] = { img: imgElement, canvas: chart.canvas };
                     } catch (e) { console.error("Error al convertir canvas a imagen para impresión:", reporteKey, e); }
                 }
             }
@@ -72,10 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (item.img && item.canvas) {
                 const canvasParent = item.canvas.parentElement;
                 if (canvasParent) {
-                    // Reemplazar temporalmente el canvas por la imagen en el DOM
-                    // Nota: Esto asume que la imagen se va a insertar en el mismo lugar que el canvas.
-                    // Asegurarse de que el canvas esté oculto en la impresión CSS (@media print { canvas { display: none !important; } })
-                    canvasParent.appendChild(item.img); // Agregar la imagen al padre del canvas
+                    canvasParent.appendChild(item.img);
                 }
             }
         }
@@ -87,22 +92,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = printImages[reporteKey];
             if (item.img && item.canvas) {
                 if (item.img.parentElement) {
-                    item.img.parentElement.removeChild(item.img); // Remover la imagen
+                    item.img.parentElement.removeChild(item.img);
                 }
-                // Asegurarse de que el canvas vuelva a su estado normal si fue modificado (no necesario si solo usas @media print)
             }
         }
-        printImages = {}; // Limpiar las imágenes generadas
+        printImages = {};
     }
 
 
     // Ocultar todos los formularios y secciones relevantes
     function ocultarFormularios() {
+        // Es crucial que todos estos elementos existan en el HTML con los IDs correctos
         reporteGlobalSeleccion.classList.add('hidden');
         reporteUsuarioSeleccion.classList.add('hidden');
         reporteEstadisticoSeleccion.classList.add('hidden');
-        filtrosGlobales.classList.add('hidden');
-        filtrosUsuario.classList.add('hidden');
+        filtrosGlobales.classList.add('hidden'); // Ocultar filtros globales generales
+        filtrosUsuario.classList.add('hidden'); // Ocultar filtros de usuario generales
+        // Ocultar también las nuevas secciones de filtros específicos estadísticos
+        filtrosEquiposEstadisticoDiv.classList.add('hidden');
+        filtrosUsuariosEstadisticoDiv.classList.add('hidden');
+
         vistaPrevia.classList.add('hidden');
         filtrosHistorialPrestamosDiv.classList.add('hidden');
         filtrosSancionesDiv.classList.add('hidden');
@@ -111,12 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para mostrar un mensaje flotante (éxito o error)
     function mostrarMensaje(mensaje, tipo = 'error') {
         const mensajesExistentes = document.querySelectorAll('.mensaje-flotante');
-        mensajesExistentes.forEach(msg => msg.remove()); // Eliminar mensajes existentes
+        mensajesExistentes.forEach(msg => msg.remove());
         const mensajeDiv = document.createElement('div');
         mensajeDiv.className = `mensaje-flotante fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-md z-50 ${tipo === 'error' ? 'bg-red-100 text-red-700 border border-red-400' : 'bg-green-100 text-green-700 border border-green-400'}`;
         mensajeDiv.textContent = mensaje;
         document.body.appendChild(mensajeDiv);
-        setTimeout(() => mensajeDiv.remove(), 4000); // Eliminar mensaje después de 4 segundos
+        setTimeout(() => mensajeDiv.remove(), 4000);
     }
 
     // Función para habilitar/deshabilitar los checkboxes de reportesUsuario
@@ -133,22 +142,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para habilitar/deshabilitar los checkboxes de reportesEstadisticos
     function toggleReportesEstadisticosCheckboxes(disabled) {
         reportesEstadisticosCheckboxes.forEach(checkbox => { checkbox.disabled = disabled; if (disabled) { checkbox.checked = false; } });
+        // Al deshabilitar, también ocultamos sus secciones de filtro específicas y limpiamos valores
+        if(disabled) {
+            filtrosEquiposEstadisticoDiv.classList.add('hidden');
+            filtrosUsuariosEstadisticoDiv.classList.add('hidden');
+            // Limpiar campos en los nuevos divs de filtros específicos estadísticos
+            filtrosEquiposEstadisticoDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } });
+            filtrosUsuariosEstadisticoDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } });
+        }
     }
 
-    // Función para cargar los laboratorios en el select global
+    // Función para cargar los laboratorios en los selects relevantes
     function cargarLaboratorios() {
         fetch('/reportes/laboratorios')
             .then(response => {
                 if (!response.ok) { return response.text().then(text => { let errorMsg = `Error al cargar laboratorios (${response.status}): `; try { const errorJson = JSON.parse(text); errorMsg += errorJson.message || errorJson.error || text; } catch(e) { errorMsg += text; } throw new Error(errorMsg); }); }
                 return response.json(); })
             .then(data => {
-                laboratorioGlobalSelect.innerHTML = '<option value="">Todos los Laboratorios</option>';
-                if (Array.isArray(data)) { data.forEach(laboratorio => { const option = document.createElement('option'); option.value = laboratorio.idLaboratorio; option.textContent = laboratorio.nombre; laboratorioGlobalSelect.appendChild(option); }); }
-                else { console.error("Datos de laboratorios recibidos no es un array:", data); mostrarMensaje("Error: Formato de datos de laboratorios incorrecto.", 'error'); laboratorioGlobalSelect.innerHTML = '<option value="">Error al cargar laboratorios</option>'; } })
-            .catch(error => { console.error('Error al cargar laboratorios:', error); mostrarMensaje('Error al cargar laboratorios. ' + error.message, 'error'); laboratorioGlobalSelect.innerHTML = '<option value="">Error al cargar</option>'; laboratorioGlobalSelect.disabled = true; });
+                // Seleccionar TODOS los selects de laboratorio que necesiten ser poblados
+                const laboratorioSelects = document.querySelectorAll('#laboratorio-global, #laboratorio-equipos-est, #laboratorio-usuarios-est');
+                laboratorioSelects.forEach(selectElement => {
+                    selectElement.innerHTML = '<option value="">Todos los Laboratorios</option>';
+                    if (Array.isArray(data)) { data.forEach(laboratorio => { const option = document.createElement('option'); option.value = laboratorio.idLaboratorio; option.textContent = laboratorio.nombre; selectElement.appendChild(option); }); }
+                    else { console.error("Datos de laboratorios recibidos no es un array:", data); mostrarMensaje("Error: Formato de datos de laboratorios incorrecto.", 'error'); selectElement.innerHTML = '<option value="">Error al cargar laboratorios</option>'; }
+                    selectElement.disabled = false; // Habilitar después de cargar (o si hubo error, mostrar error)
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar laboratorios:', error); mostrarMensaje('Error al cargar laboratorios. ' + error.message, 'error');
+                const laboratorioSelects = document.querySelectorAll('#laboratorio-global, #laboratorio-equipos-est, #laboratorio-usuarios-est');
+                laboratorioSelects.forEach(selectElement => { selectElement.innerHTML = '<option value="">Error al cargar</option>'; selectElement.disabled = true; });
+            });
     }
 
-    // Función para cargar las categorías en el select global (o filtradas por laboratorio)
+    // Función para cargar las categorías en los selects relevantes (o filtradas por laboratorio)
     function cargarCategorias(laboratorioId = null) {
         const url = laboratorioId ? `/reportes/categorias?laboratorioId=${laboratorioId}` : '/reportes/categorias';
         fetch(url)
@@ -156,50 +183,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) { return response.text().then(text => { let errorMsg = `Error al cargar categorías (${response.status}): `; try { const errorJson = JSON.parse(text); errorMsg += errorJson.message || errorJson.error || text; } catch(e) { errorMsg += text; } throw new Error(errorMsg); }); }
                 return response.json(); })
             .then(data => {
-                categoriaGlobalSelect.innerHTML = '<option value="">Todas las Categorías</option>';
-                if (Array.isArray(data)) { data.forEach(categoria => { const option = document.createElement('option'); option.value = categoria.idCategoria; option.textContent = categoria.nombreCategoria; categoriaGlobalSelect.appendChild(option); }); }
-                else { console.error("Datos de categorías recibidos no es un array:", data); mostrarMensaje("Error: Formato de datos de categorías incorrecto.", 'error'); categoriaGlobalSelect.innerHTML = '<option value="">Error al cargar categorías</option>'; } })
-            .catch(error => { console.error('Error al cargar categorías:', error); mostrarMensaje('Error al cargar categorías. ' + error.message, 'error'); categoriaGlobalSelect.innerHTML = '<option value="">Error al cargar</option>'; categoriaGlobalSelect.disabled = true; })
-            .finally(() => { categoriaGlobalSelect.disabled = false; });
+                // Seleccionar TODOS los selects de categoría que necesiten ser poblados
+                const categoriaSelects = document.querySelectorAll('#categoria-global, #categoria-equipos-est, #categoria-usuarios-est');
+                categoriaSelects.forEach(selectElement => {
+                    selectElement.innerHTML = '<option value="">Todas las Categorías</option>';
+                    if (Array.isArray(data)) { data.forEach(categoria => { const option = document.createElement('option'); option.value = categoria.idCategoria; option.textContent = categoria.nombreCategoria; selectElement.appendChild(option); }); }
+                    else { console.error("Datos de categorías recibidos no es un array:", data); mostrarMensaje("Error: Formato de datos de categorías incorrecto.", 'error'); selectElement.innerHTML = '<option value="">Error al cargar categorías</option>'; }
+                    selectElement.disabled = false; // Habilitar
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar categorías:', error); mostrarMensaje('Error al cargar categorías. ' + error.message, 'error');
+                const categoriaSelects = document.querySelectorAll('#categoria-global, #categoria-equipos-est, #categoria-usuarios-est');
+                categoriaSelects.forEach(selectElement => { selectElement.innerHTML = '<option value="">Error al cargar</option>'; selectElement.disabled = true; });
+            });
     }
 
     // Función para destruir gráficos existentes
     function destroyCharts() {
-        for (const chartId in activeCharts) { if (activeCharts[chartId]) { activeCharts[chartId].destroy(); activeCharts[chartId] = null; } } activeCharts = {}; // Limpiar el objeto de gráficos activos
+        for (const chartId in activeCharts) { if (activeCharts[chartId]) { activeCharts[chartId].destroy(); activeCharts[chartId] = null; } } activeCharts = {};
     }
 
-    // Función para mostrar la vista previa en el HTML (MODIFICADA para manejar gráficos y tablas)
+    // Función para mostrar la vista previa en el HTML (maneja tablas y gráficos)
     function mostrarVistaPrevia(data) {
-        let html = ''; destroyCharts(); // Destruir gráficos anteriores
+        let html = ''; destroyCharts();
         const userReportOrder = ["infoUsuario", "historialPrestamosUsuario", "sancionesUsuario"];
         const globalReportOrder = ["equiposMasPrestados", "usuariosMasPrestaron", "prestamosPorFecha", "mantenimientos", "prestamosFechaFecha", "administradoresPrestamo", "sancionesActivasInactivas", "horario-laboratorio"];
-        const estadisticoReportOrder = ["equiposMasPrestados", "usuariosMasPrestaron"]; // Claves en el orden deseado para gráficos
+        const estadisticoReportOrder = ["equiposMasPrestados", "usuariosMasPrestaron"]; // Claves para gráficos
 
-        const reportKeysToRender = []; // Determinar el orden de renderizado según el tipo seleccionado
+        const reportKeysToRender = [];
         if (tipoReporteSeleccionado === 'usuario') { userReportOrder.forEach(key => { if (data.hasOwnProperty(key)) { reportKeysToRender.push(key); } }); }
         else if (tipoReporteSeleccionado === 'global') { globalReportOrder.forEach(key => { if (data.hasOwnProperty(key)) { reportKeysToRender.push(key); } }); }
         else if (tipoReporteSeleccionado === 'estadistico') { estadisticoReportOrder.forEach(key => { if (data.hasOwnProperty(key) && reportesSeleccionados.includes(key)) { reportKeysToRender.push(key); } }); }
 
-        // Mapeo de claves del reporte a las claves de los datos para renderizar tablas
         const reporteKeysHTML = {
             "sancionesUsuario": ["idSancion", "motivoSancion", "fechaSancion", "estado"],
             "historialPrestamosUsuario": ["idPrestamo", "fechaPrestamo", "horaPrestamo", "estado", "fechaDevolucionEstimada"],
-            "equiposMasPrestados": ["nombre", "cantidadPrestada"], // Estas claves deben coincidir con las del backend
-            "usuariosMasPrestaron": ["nombre", "apellido", "cantidadPrestamos"], // Estas claves deben coincidir con las del backend
+            "equiposMasPrestados": ["nombre", "cantidadPrestada"],
+            "usuariosMasPrestaron": ["nombre", "apellido", "cantidadPrestamos"],
             "prestamosPorFecha": ["idPrestamo", "usuario", "fechaPrestamo", "horaPrestamo", "estado"],
             "mantenimientos": ["idMantenimiento", "equipo", "fechaMantenimiento", "cantidad"],
             "prestamosFechaFecha": ["idPrestamo", "usuario", "fechaPrestamo", "horaPrestamo", "administrador", "estado", "fechaDevolucionEstimada"],
             "administradoresPrestamo": ["administrador", "fechaPrestamo", "horaPrestamo", "usuario"],
             "sancionesActivasInactivas": ["idSancion", "usuario", "motivoSancion", "fechaSancion", "estado"],
-            "infoUsuario": null, // Este no es una tabla, es texto/lista
+            "infoUsuario": null,
             "horario-laboratorio": ["diaSemana", "horaInicio", "horaFin", "ocupado"]
         };
 
 
-        // --- Iterar sobre las claves de los reportes en el orden definido y renderizar ---
         reportKeysToRender.forEach(reporteKey => {
             const reporte = data[reporteKey];
-
             if (reporte) {
                 html += `<h3 class="text-lg font-semibold text-gray-700 mb-2">${reporte.titulo}</h3>`;
                 console.log(`[DEBUG] Procesando reporteKey: ${reporteKey}, Tipo: ${reporte.tipo}`);
@@ -217,45 +250,37 @@ document.addEventListener('DOMContentLoaded', () => {
                         reporte.cabecera.forEach(headerText => { html += `<th class="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold uppercase tracking-wider">${headerText}</th>`; });
                         html += '</tr></thead><tbody class="bg-white">';
                         if (reporte.datos && Array.isArray(reporte.datos) && reporte.datos.length > 0) {
-                            reporte.datos.forEach(fila => { // fila es un Map/Objeto del backend
+                            reporte.datos.forEach(fila => {
                                 html += '<tr>';
                                 keys.forEach(key => {
                                     const dataValue = fila[key]; let displayValue = dataValue; let cellClasses = "px-5 py-5 border-b border-gray-200 text-sm";
-                                    // Lógica específica de visualización (ej. Horario Ocupado)
                                     if (reporteKey === "horario-laboratorio" && key === "ocupado") { displayValue = dataValue ? 'Ocupado' : 'Disponible'; cellClasses += dataValue ? ' text-red-500 font-bold' : ' text-green-500 font-bold'; }
-                                    // Manejo de formato de fecha/hora (verificar si el backend envía Date o String)
-                                    else if (dataValue instanceof Date) { // Si el backend envía objetos Date (menos común en JSON)
-                                        displayValue = dataValue.toLocaleString(); // O .toLocaleDateString(), .toLocaleTimeString()
-                                    }
-                                    else if (typeof dataValue === 'string') { // Si el backend envía fechas/horas como String (común)
-                                        // Intentar parsear si parece fecha/hora para formatear
-                                        if (dataValue.match(/^\d{4}-\d{2}-\d{2}(T.*)?$/)) { // YYYY-MM-DD o YYYY-MM-DDTHH:MM:SS
+                                    else if (dataValue instanceof Date) { displayValue = dataValue.toLocaleString(); }
+                                    else if (typeof dataValue === 'string') {
+                                        if (dataValue.match(/^\d{4}-\d{2}-\d{2}(T.*)?$/)) {
                                             try { const date = new Date(dataValue); if (!isNaN(date.getTime())) { displayValue = date.toLocaleDateString(); if(dataValue.includes('T')) displayValue += ' ' + date.toLocaleTimeString(); } else { displayValue = dataValue; } } catch (e) { displayValue = dataValue; console.error("Error parsing date string:", dataValue, e); }
-                                        } else if (dataValue.match(/^\d{2}:\d{2}(:\d{2})?$/)) { // HH:MM o HH:MM:SS
-                                            displayValue = dataValue; // Mantener formato de hora si es solo hora
-                                        } else { displayValue = dataValue; } // Otro tipo de string
+                                        } else if (dataValue.match(/^\d{2}:\d{2}(:\d{2})?$/)) { displayValue = dataValue; }
+                                        else { displayValue = dataValue; }
                                     }
-                                    else { displayValue = dataValue !== null && dataValue !== undefined ? dataValue : ''; } // Valores null/undefined
+                                    else { displayValue = dataValue !== null && dataValue !== undefined ? dataValue : ''; }
 
                                     html += `<td class="${cellClasses}">${displayValue}</td>`;
                                 });
                                 html += '</tr>';
                             });
-                        } else { // Tabla vacía
+                        } else {
                             const colSpan = reporte.cabecera ? reporte.cabecera.length : 1;
                             html += `<tr><td class="px-5 py-5 border-b border-gray-200 text-sm text-center italic" colspan="${colSpan}">No se encontraron datos para este reporte.</td></tr>`;
                         }
-                        html += '</tbody></table></div>'; // Cerrar tabla y div
+                        html += '</tbody></table></div>';
                     }
-                } else if (reporte.tipo === 'lista') { // Renderizado para tipo 'lista'
-                    if (reporte.datos && Array.isArray(reporte.datos) && reporte.datos.length > 0) {
-                        html += '<ul class="list-disc list-inside">'; reporte.datos.forEach(item => { html += `<li>${item}</li>`; }); html += '</ul>';
-                    } else { html += '<p class="text-gray-700 italic">No se encontraron datos para este reporte.</p>'; }
-                } else if (reporte.tipo === 'texto' || reporte.tipo === 'info-usuario') { // Renderizado para tipo 'texto' o 'info-usuario'
+                } else if (reporte.tipo === 'lista') {
+                    if (reporte.datos && Array.isArray(reporte.datos) && reporte.datos.length > 0) { html += '<ul class="list-disc list-inside">'; reporte.datos.forEach(item => { html += `<li>${item}</li>`; }); html += '</ul>'; }
+                    else { html += '<p class="text-gray-700 italic">No se encontraron datos para este reporte.</p>'; }
+                } else if (reporte.tipo === 'texto' || reporte.tipo === 'info-usuario') {
                     if (reporte.datos) {
-                        if (typeof reporte.datos === 'string' && reporte.datos.trim() !== '') {
-                            html += `<p class="text-gray-700 whitespace-pre-line">${reporte.datos}</p>`;
-                        } else if (typeof reporte.datos === 'object' && reporte.tipo === 'info-usuario') {
+                        if (typeof reporte.datos === 'string' && reporte.datos.trim() !== '') { html += `<p class="text-gray-700 whitespace-pre-line">${reporte.datos}</p>`; }
+                        else if (typeof reporte.datos === 'object' && reporte.tipo === 'info-usuario') {
                             let infoHtml = '<div class="grid grid-cols-1 md:grid-cols-1 gap-2 text-sm">';
                             const infoKeys = ["ru", "nombre", "apellido", "ci", "tipoUsuario", "carrera", "telefono", "correo", "materia", "paralelo", "semestre"];
                             infoKeys.forEach(key => { if(reporte.datos.hasOwnProperty(key) && reporte.datos[key] !== null){ let label = key.replace(/([A-Z])/g, ' $1').trim(); label = label.charAt(0).toUpperCase() + label.slice(1); infoHtml += `<div><span class="font-semibold">${label}:</span> ${reporte.datos[key]}</div>`; } });
@@ -263,18 +288,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else { html += '<p class="text-gray-700 italic">No se encontró información.</p>'; }
                     } else { html += '<p class="text-gray-700 italic">No se encontró información.</p>'; }
                 } else { console.warn(`Tipo de reporte desconocido o condición no cumplida para ${reporteKey}.`); }
-                if (reporteKey !== reportKeysToRender[reportKeysToRender.length - 1]) { html += '<hr class="my-4 border-gray-300">'; } // Separador entre reportes
+                if (reporteKey !== reportKeysToRender[reportKeysToRender.length - 1]) { html += '<hr class="my-4 border-gray-300">'; }
             } else { console.warn(`Reporte object es null/undefined para clave: ${reporteKey}`); }
-        }); // Fin del bucle forEach sobre reportKeysToRender
+        });
 
         if (html === '') { html = '<p class="text-gray-500 italic">No se seleccionaron reportes válidos o no hay datos.</p>'; }
-        reporteContenido.innerHTML = html; // Insertar el HTML generado
+        reporteContenido.innerHTML = html;
 
-        // --- Crear gráficos DESPUÉS de insertar el HTML ---
         if (tipoReporteSeleccionado === 'estadistico') {
             reportKeysToRender.forEach(reporteKey => {
                 const reporte = data[reporteKey];
-                // Solo intentar crear gráfico si es uno de los tipos estadísticos esperados
                 if (reporte && (reporteKey === 'equiposMasPrestados' || reporteKey === 'usuariosMasPrestaron')) {
                     const canvasId = `chart-${reporteKey}`; const ctx = document.getElementById(canvasId);
                     if (ctx) {
@@ -291,39 +314,83 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Funciones de Lógica de Reporte (obtenerReportesSeleccionadosYFiltros, validarYToggleGenerarBoton, generarVistaPrevia) ---
+    // --- Funciones de Lógica de Reporte ---
 
     // Función para obtener los reportes seleccionados y filtros
     function obtenerReportesSeleccionadosYFiltros() {
         reportesSeleccionados = []; filtros = {}; // Reiniciar
+
         if (tipoReporteSeleccionado === 'global') {
             reportesGlobalesCheckboxes.forEach(checkbox => { if (checkbox.checked) { reportesSeleccionados.push(checkbox.value); } });
+            // Recolectar filtros globales SOLO si la sección global está visible
             if (!filtrosGlobales.classList.contains('hidden')) {
                 filtros = {
-                    fechaInicio: document.getElementById('fecha-inicio-global').value || null, fechaFin: document.getElementById('fecha-fin-global').value || null,
-                    laboratorio: document.getElementById('laboratorio-global').value || null, categoria: document.getElementById('categoria-global').value || null
+                    fechaInicio: fechaInicioGlobalInput.value || null, fechaFin: fechaFinGlobalInput.value || null,
+                    laboratorio: laboratorioGlobalSelect.value || null, categoria: categoriaGlobalSelect.value || null
                 };
-                if (!diasSemanaHorarioSelect.parentElement.parentElement.classList.contains('hidden')) {
+                if (diasSemanaHorarioSelect && !diasSemanaHorarioSelect.parentElement.parentElement.classList.contains('hidden')) { // Agregada verificación diasSemanaHorarioSelect
                     const selectedDays = Array.from(diasSemanaHorarioSelect.selectedOptions).map(option => option.value);
                     if (selectedDays.length > 0) { filtros.diasSemana = selectedDays; }
                 }
             }
         } else if (tipoReporteSeleccionado === 'estadistico') {
             reportesEstadisticosCheckboxes.forEach(checkbox => { if (checkbox.checked) { reportesSeleccionados.push(checkbox.value); } });
-            if (!filtrosGlobales.classList.contains('hidden')) { // Los estadísticos usan filtros globales
-                filtros = {
-                    fechaInicio: document.getElementById('fecha-inicio-global').value || null, fechaFin: document.getElementById('fecha-fin-global').value || null,
-                    laboratorio: document.getElementById('laboratorio-global').value || null, categoria: document.getElementById('categoria-global').value || null
-                };
-            }
+            // Recolectar filtros de secciones ESPECÍFICAS para reportes estadísticos si están visibles
+            // Usaremos claves de filtro estándar (fechaInicio, fechaFin, etc.)
+            reportesSeleccionados.forEach(reporteKey => {
+                let filtroDiv = null;
+                let fechaInicioInput = null;
+                let fechaFinInput = null;
+                let laboratorioSelect = null;
+                let categoriaSelect = null;
+
+                if (reporteKey === 'equiposMasPrestados') {
+                    filtroDiv = filtrosEquiposEstadisticoDiv;
+                    fechaInicioInput = document.getElementById('fecha-inicio-equipos-est');
+                    fechaFinInput = document.getElementById('fecha-fin-equipos-est');
+                    laboratorioSelect = document.getElementById('laboratorio-equipos-est');
+                    categoriaSelect = document.getElementById('categoria-equipos-est');
+                } else if (reporteKey === 'usuariosMasPrestaron') {
+                    filtroDiv = filtrosUsuariosEstadisticoDiv;
+                    fechaInicioInput = document.getElementById('fecha-inicio-usuarios-est');
+                    fechaFinInput = document.getElementById('fecha-fin-usuarios-est');
+                    laboratorioSelect = document.getElementById('laboratorio-usuarios-est');
+                    categoriaSelect = document.getElementById('categoria-usuarios-est');
+                }
+
+                if (filtroDiv && !filtroDiv.classList.contains('hidden')) {
+                    // --- AÑADIR LOS FILTROS USANDO CLAVES ESTÁNDAR (SIN PREFIJO) ---
+                    // Nota: Estamos asumiendo que todos los filtros específicos estadísticos
+                    // usan las mismas claves (fechaInicio, fechaFin, laboratorio, categoria).
+                    // Si un reporte estadístico tuviera un filtro único (ej. "tipoGrafico"),
+                    // tendrías que añadir esa clave aquí también o manejarla de otra forma.
+                    if (fechaInicioInput) filtros['fechaInicio'] = fechaInicioInput.value || null;
+                    if (fechaFinInput) filtros['fechaFin'] = fechaFinInput.value || null;
+                    if (laboratorioSelect) filtros['laboratorio'] = laboratorioSelect.value || null;
+                    if (categoriaSelect) filtros['categoria'] = categoriaSelect.value || null;
+                    // -------------------------------------------------------------
+                }
+            });
+
+
         } else if (tipoReporteSeleccionado === 'usuario') {
             if (usuarioSeleccionado) {
                 reportesUsuarioCheckboxes.forEach(checkbox => { if (checkbox.checked) { reportesSeleccionados.push(checkbox.value); } });
-                if (!filtrosHistorialPrestamosDiv.classList.contains('hidden')) { filtros.estadoPrestamoUsuario = document.getElementById('estado-prestamo').value || null; filtros.fechaInicioPrestamosUsuario = document.getElementById('fecha-inicio-prestamos').value || null; filtros.fechaFinPrestamosUsuario = document.getElementById('fecha-fin-prestamos').value || null; }
-                if (!filtrosSancionesDiv.classList.contains('hidden')) { filtros.estadoSancionUsuario = document.getElementById('estado-sancion').value || null; filtros.fechaInicioSancionesUsuario = document.getElementById('fecha-inicio-sanciones').value || null; filtros.fechaFinSancionesUsuario = document.getElementById('fecha-fin-sanciones').value || null; }
+                // Asegurarse de que filtrosUsuario exista y no esté oculto si es necesario para recolectar filtros
+                if (filtrosUsuario && !filtrosUsuario.classList.contains('hidden')) { // Agregada verificación filtrosUsuario
+                    if (!filtrosHistorialPrestamosDiv.classList.contains('hidden')) { filtros.estadoPrestamoUsuario = document.getElementById('estado-prestamo').value || null; filtros.fechaInicioPrestamosUsuario = document.getElementById('fecha-inicio-prestamos').value || null; filtros.fechaFinPrestamosUsuario = document.getElementById('fecha-fin-prestamos').value || null; }
+                    if (!filtrosSancionesDiv.classList.contains('hidden')) { filtros.estadoSancionUsuario = document.getElementById('estado-sancion').value || null; filtros.fechaInicioSancionesUsuario = document.getElementById('fecha-inicio-sanciones').value || null; filtros.fechaFinSancionesUsuario = document.getElementById('fecha-fin-sanciones').value || null; }
+                }
             }
         }
-        for (const key in filtros) { if (Array.isArray(filtros[key]) && filtros[key].length === 0) { delete filtros[key]; } else if (!Array.isArray(filtros[key]) && (filtros[key] === null || filtros[key] === '')) { delete filtros[key]; } }
+
+        // Eliminar filtros con valor null o vacío
+        for (const key in filtros) {
+            if (filtros[key] === null || filtros[key] === '') {
+                delete filtros[key];
+            }
+        }
+
         console.log("Reportes seleccionados:", reportesSeleccionados); console.log("Filtros recolectados:", filtros);
     }
 
@@ -354,12 +421,12 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 console.log("Datos recibidos del backend:", data); reportesData = data; mostrarVistaPrevia(data);
                 mostrarMensaje('Vista previa generada correctamente.', 'success');
-                imprimirReporteBtn.disabled = false; imprimirReporteBtn.classList.remove('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.add('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer');
+                imprimirReporteBtn.disabled = false; imprimirReporteBtn.classList.remove('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.add('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer'); // CORRECTO: imprimirReporteBtn
             })
             .catch(error => {
                 console.error('Error al generar vista previa:', error); reporteContenido.innerHTML = `<p class="text-red-500">Error al generar reporte: ${error.message}</p>`;
                 mostrarMensaje('Error al generar el reporte. Por favor, inténtelo de nuevo.', 'error');
-                imprimirReporteBtn.disabled = true; imprimirReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.remove('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer');
+                imprimirReporteBtn.disabled = true; imprimirReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.remove('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer'); // CORRECTO: imprimirReporteBtn
             });
     }
 
@@ -367,51 +434,60 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Adjunción ÚNICA de Event Listeners al Cargar el DOM ---
 
     // Event listener para los botones de tipo de reporte (Global/Estadistico/Usuario)
-    // ESTE BUCLE DEBE ESTAR SOLO UNA VEZ
     tipoReporteBtns.forEach(button => {
         button.addEventListener('click', function() {
             tipoReporteSeleccionado = this.dataset.tipo;
             tipoReporteBtns.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            ocultarFormularios();
+            ocultarFormularios(); // Oculta TODAS las secciones de selección y filtro
             vistaPrevia.classList.add('hidden');
             reporteContenido.innerHTML = '';
             destroyCharts();
 
-            // Limpiar campos de filtro y checkboxes
+            // Limpiar campos de filtro (todos, incluyendo los nuevos específicos estadísticos) y checkboxes
             document.querySelectorAll('input[type="checkbox"][name^="reportes"]').forEach(checkbox => { checkbox.checked = false; });
-            document.querySelectorAll('#filtros-globales input, #filtros-globales select, #filtros-usuario input, #filtros-usuario select').forEach(input => {
+            document.querySelectorAll('#filtros-globales input, #filtros-globales select, #filtros-usuario input, #filtros-usuario select, #filtros-equipos-mas-prestados-grafico input, #filtros-equipos-mas-prestados-grafico select, #filtros-usuarios-mas-prestaron-grafico input, #filtros-usuarios-mas-prestaron-grafico select').forEach(input => {
                 if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; }
             });
-            Array.from(diasSemanaHorarioSelect.options).forEach(option => { option.selected = false; });
+            Array.from(diasSemanaHorarioSelect ? diasSemanaHorarioSelect.options : []).forEach(option => { option.selected = false; }); // Añadida verificación diasSemanaHorarioSelect
             usuarioSeleccionado = null; ruUsuarioInput.value = ''; usuarioInfoDiv.textContent = '';
 
-            // Mostrar sección relevante y filtros, cargar datos si aplica
+            // Mostrar sección relevante y sus filtros/elementos asociados
             if (tipoReporteSeleccionado === 'global') {
                 reporteGlobalSeleccion.classList.remove('hidden');
-                filtrosGlobales.classList.remove('hidden');
-                cargarLaboratorios();
-                cargarCategorias();
-                toggleReportesUsuarioCheckboxes(true);
-                toggleReportesEstadisticosCheckboxes(true);
-                diasSemanaHorarioSelect.parentElement.parentElement.classList.remove('hidden');
+                filtrosGlobales.classList.remove('hidden'); // Mostrar el div de filtros globales general
+                cargarLaboratorios(); // Cargar selects globales Y ESTADÍSTICOS
+                cargarCategorias();   // Cargar selects globales Y ESTADÍSTICOS
+                toggleReportesUsuarioCheckboxes(true); // Deshabilitar checkboxes de usuario
+                toggleReportesEstadisticosCheckboxes(true); // Deshabilitar checkboxes estadísticos
+                if (diasSemanaHorarioSelect && diasSemanaHorarioSelect.parentElement) { // Verificar que existe antes de intentar acceder al padre
+                    diasSemanaHorarioSelect.parentElement.parentElement.classList.remove('hidden'); // Mostrar filtro de días si existe
+                }
+
             } else if (tipoReporteSeleccionado === 'estadistico') {
-                reporteEstadisticoSeleccion.classList.remove('hidden');
-                filtrosGlobales.classList.remove('hidden'); // Asegura que el contenedor principal de filtros globales esté visible
-                cargarLaboratorios();
-                cargarCategorias();
-                toggleReportesUsuarioCheckboxes(true);
-                toggleReportesEstadisticosCheckboxes(false); // Habilitar solo los estadísticos
-                diasSemanaHorarioSelect.parentElement.parentElement.classList.add('hidden'); // Ocultar filtro de días
-                // NO es necesario ocultar explícitamente los divs de fecha, lab, cat aquí
-                // Si no se ven, es un problema de CSS que los afecta *dentro* del grid cuando el tipo es estadístico.
+                reporteEstadisticoSeleccion.classList.remove('hidden'); // Mostrar sección de selección estadística
+                filtrosGlobales.classList.add('hidden'); // OCULTAR el div de filtros globales general
+                cargarLaboratorios(); // Cargar selects globales Y ESTADÍSTICOS
+                cargarCategorias();   // Cargar selects globales Y ESTADÍSTICOS
+                toggleReportesUsuarioCheckboxes(true); // Deshabilitar checkboxes de usuario
+                toggleReportesEstadisticosCheckboxes(false); // Habilitar checkboxes estadísticos
+
+                // Ocultar filtro de días si existe (solo aplica a algunos reportes globales)
+                if (diasSemanaHorarioSelect && diasSemanaHorarioSelect.parentElement) {
+                    diasSemanaHorarioSelect.parentElement.parentElement.classList.add('hidden');
+                }
+
 
             } else if (tipoReporteSeleccionado === 'usuario') {
                 reporteUsuarioSeleccion.classList.remove('hidden');
-                filtrosUsuario.classList.remove('hidden');
+                filtrosUsuario.classList.remove('hidden'); // Mostrar filtros de usuario general
                 toggleReportesUsuarioCheckboxes(true); // Deshabilitados hasta buscar RU
                 toggleReportesEstadisticosCheckboxes(true);
-                filtrosGlobales.classList.add('hidden'); // Ocultar filtros globales
+                filtrosGlobales.classList.add('hidden'); // Ocultar filtros globales general
+                // Ocultar filtro de días si existe
+                if (diasSemanaHorarioSelect && diasSemanaHorarioSelect.parentElement) {
+                    diasSemanaHorarioSelect.parentElement.parentElement.classList.add('hidden');
+                }
             }
 
             // Deshabilitar botones generar/imprimir
@@ -458,103 +534,159 @@ document.addEventListener('DOMContentLoaded', () => {
         reporteContenido.innerHTML = '';
         destroyCharts();
 
-        // Limpiar campos de filtro y checkboxes
+        // Limpiar campos de filtro (todos) y checkboxes (todos)
         document.querySelectorAll('input[type="checkbox"][name^="reportes"]').forEach(checkbox => { checkbox.checked = false; });
-        document.querySelectorAll('#filtros-globales input, #filtros-globales select, #filtros-usuario input, #filtros-usuario select').forEach(input => {
+        document.querySelectorAll('#filtros-globales input, #filtros-globales select, #filtros-usuario input, #filtros-usuario select, #filtros-equipos-mas-prestados-grafico input, #filtros-equipos-mas-prestados-grafico select, #filtros-usuarios-mas-prestaron-grafico input, #filtros-usuarios-mas-prestaron-grafico select').forEach(input => {
             if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; }
         });
-        Array.from(diasSemanaHorarioSelect.options).forEach(option => { option.selected = false; });
-        toggleReportesUsuarioCheckboxes(true); // Deshabilitar checkboxes de usuario y limpiar filtros
-        toggleReportesEstadisticosCheckboxes(true); // Deshabilitar checkboxes estadísticos
-
-        generarReporteBtn.disabled = true; generarReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); generarReporteBtn.classList.remove('bg-indigo-500', 'hover:bg-indigo-700', 'cursor-pointer');
-        imprimirReporteBtn.disabled = true; imprimirReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.remove('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer');
+        Array.from(diasSemanaHorarioSelect ? diasSemanaHorarioSelect.options : []).forEach(option => { option.selected = false; }); // Añadida verificación
+        toggleReportesUsuarioCheckboxes(true);
+        toggleReportesEstadisticosCheckboxes(true);
 
         const mensajesExistentes = document.querySelectorAll('.mensaje-flotante'); mensajesExistentes.forEach(msg => msg.remove());
     });
 
 
     // Event listener para el cambio en el selector de laboratorio global para filtrar categorías
-    laboratorioGlobalSelect.addEventListener('change', function() {
-        const selectedLabId = this.value;
-        categoriaGlobalSelect.innerHTML = '<option value="">Cargando...</option>';
-        categoriaGlobalSelect.disabled = true;
-        if (selectedLabId) { cargarCategorias(parseInt(selectedLabId, 10)); } else { cargarCategorias(); }
-    });
+    // (Este listener solo afecta al selector #categoria-global. Si necesitas filtrar categorías
+    // en los selectores de las secciones estadísticas específicas, necesitarías listeners adicionales
+    // para cada uno, o modificar cargarCategorias para manejarlo)
+    if(laboratorioGlobalSelect) { // Verificar que el elemento existe
+        laboratorioGlobalSelect.addEventListener('change', function() {
+            const selectedLabId = this.value;
+            if(categoriaGlobalSelect) { // Verificar que el elemento existe
+                categoriaGlobalSelect.innerHTML = '<option value="">Cargando...</option>';
+                categoriaGlobalSelect.disabled = true;
+            }
+            if (selectedLabId) { cargarCategorias(parseInt(selectedLabId, 10)); } else { cargarCategorias(); }
+        });
+    }
 
 
-    // Event listeners para checkboxes de reportes de usuario para mostrar/ocultar filtros específicos
-    historialPrestamosUsuarioCheckbox.addEventListener('change', function() {
-        if (this.checked) { filtrosHistorialPrestamosDiv.classList.remove('hidden'); }
-        else {
-            filtrosHistorialPrestamosDiv.classList.add('hidden');
-            filtrosHistorialPrestamosDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } });
-        }
-        validarYToggleGenerarBoton();
-    });
-
-    sancionesUsuarioCheckbox.addEventListener('change', function() {
-        if (this.checked) { filtrosSancionesDiv.classList.remove('hidden'); }
-        else {
-            filtrosSancionesDiv.classList.add('hidden');
-            filtrosSancionesDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } });
-        }
-        validarYToggleGenerarBoton();
-    });
-
-    document.getElementById('info-usuario').addEventListener('change', validarYToggleGenerarBoton);
-
-
-    // Event listener para el input de RU de usuario (para buscar y habilitar/deshabilitar checkboxes)
-    ruUsuarioInput.addEventListener('input', function() {
-        const ru = this.value.trim(); usuarioSeleccionado = null; usuarioInfoDiv.textContent = '';
-        toggleReportesUsuarioCheckboxes(true); reportesUsuarioCheckboxes.forEach(checkbox => checkbox.checked = false);
-        filtrosHistorialPrestamosDiv.classList.add('hidden'); filtrosSancionesDiv.classList.add('hidden');
-
-        if (ru !== '') {
-            fetch(`/usuarios/buscarPorRu/${ru}`) // Revisa esta URL
-                .then(response => { if (response.ok) { return response.json(); } else if (response.status === 404) { return null; } else { throw new Error('Error inesperado al buscar usuario (' + response.status + ')'); } })
-                .then(data => {
-                    usuarioSeleccionado = data;
-                    if (usuarioSeleccionado) { usuarioInfoDiv.textContent = `Usuario encontrado: ${data.nombre} ${data.apellido}, RU: ${data.ru}`; toggleReportesUsuarioCheckboxes(false); mostrarMensaje('Usuario encontrado.', 'success'); }
-                    else { usuarioInfoDiv.textContent = 'Usuario no encontrado'; toggleReportesUsuarioCheckboxes(true); mostrarMensaje('Usuario no encontrado con RU ' + ru + '. Por favor, ingrese un RU válido.', 'error'); }
-                    validarYToggleGenerarBoton();
-                })
-                .catch(error => { console.error('Error al buscar usuario:', error); usuarioSeleccionado = null; usuarioInfoDiv.textContent = 'Error al buscar usuario'; toggleReportesUsuarioCheckboxes(true); mostrarMensaje('Error al buscar usuario. Por favor, inténtelo de nuevo.', 'error'); validarYToggleGenerarBoton(); });
-        } else { validarYToggleGenerarBoton(); }
-    });
+    // --- Event listeners para los checkboxes de reportes ---
 
     // Event listeners para los checkboxes de reportes globales para validar
     reportesGlobalesCheckboxes.forEach(checkbox => { checkbox.addEventListener('change', validarYToggleGenerarBoton); });
 
-    // Event listeners para los checkboxes de reportes estadísticos para validar
-    reportesEstadisticosCheckboxes.forEach(checkbox => { checkbox.addEventListener('change', validarYToggleGenerarBoton); });
+    // Event listeners para los checkboxes de reportes estadísticos (para mostrar/ocultar sus filtros específicos)
+    reportesEstadisticosCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const reporteKey = this.value; // 'equiposMasPrestados' o 'usuariosMasPrestaron'
+            let filtroDiv = null;
 
-    // Event listener para el select de días de semana (para validar)
-    diasSemanaHorarioSelect.addEventListener('change', validarYToggleGenerarBoton);
+            if (reporteKey === 'equiposMasPrestados') {
+                filtroDiv = filtrosEquiposEstadisticoDiv;
+            } else if (reporteKey === 'usuariosMasPrestaron') {
+                filtroDiv = filtrosUsuariosEstadisticoDiv;
+            }
+
+            if (filtroDiv) {
+                if (this.checked) {
+                    filtroDiv.classList.remove('hidden'); // Mostrar sección de filtro específica
+                    // Opcional: Limpiar los campos de este filtro específico al mostrarlo
+                    filtroDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } });
+                    // Opcional: Si necesitas cargar laboratorios/categorias solo en los selects de este div
+                    // puedes llamar aquí a cargarLaboratorios() y cargarCategorias(). Pero la función
+                    // cargarLaboratorios/Categorias actual puebla todos los selects relevantes,
+                    // así que si se llama al seleccionar el tipo estadístico, ya deberían estar cargados.
+
+                } else {
+                    filtroDiv.classList.add('hidden'); // Ocultar sección de filtro específica
+                    // Limpiar los campos al ocultar
+                    filtroDiv.querySelectorAll('input, select').forEach(input => {
+                        if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; }
+                    });
+                }
+            }
+            validarYToggleGenerarBoton(); // Validar después de cambiar la selección
+        });
+    });
+
+    // Event listeners para checkboxes de reportes de usuario (para mostrar/ocultar filtros específicos y validar)
+    if(historialPrestamosUsuarioCheckbox) { // Verificar que el elemento existe
+        historialPrestamosUsuarioCheckbox.addEventListener('change', function() {
+            if (this.checked) { if(filtrosHistorialPrestamosDiv) filtrosHistorialPrestamosDiv.classList.remove('hidden'); }
+            else { if(filtrosHistorialPrestamosDiv) filtrosHistorialPrestamosDiv.classList.add('hidden'); filtrosHistorialPrestamosDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } }); }
+            validarYToggleGenerarBoton();
+        });
+    }
+
+    if(sancionesUsuarioCheckbox) { // Verificar que el elemento existe
+        sancionesUsuarioCheckbox.addEventListener('change', function() {
+            if (this.checked) { if(filtrosSancionesDiv) filtrosSancionesDiv.classList.remove('hidden'); }
+            else { if(filtrosSancionesDiv) filtrosSancionesDiv.classList.add('hidden'); filtrosSancionesDiv.querySelectorAll('input, select').forEach(input => { if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; } }); }
+            validarYToggleGenerarBoton();
+        });
+    }
+
+    const infoUsuarioCheckbox = document.getElementById('info-usuario'); // Obtener referencia también para este
+    if(infoUsuarioCheckbox) {
+        infoUsuarioCheckbox.addEventListener('change', validarYToggleGenerarBoton);
+    }
+
+
+    // Event listener para el input de RU de usuario (para buscar y habilitar/deshabilitar checkboxes y validar)
+    if(ruUsuarioInput) { // Verificar que el elemento existe
+        ruUsuarioInput.addEventListener('input', function() {
+            const ru = this.value.trim(); usuarioSeleccionado = null; if(usuarioInfoDiv) usuarioInfoDiv.textContent = ''; // Verificar usuarioInfoDiv
+            toggleReportesUsuarioCheckboxes(true); reportesUsuarioCheckboxes.forEach(checkbox => checkbox.checked = false);
+            if(filtrosHistorialPrestamosDiv) filtrosHistorialPrestamosDiv.classList.add('hidden'); // Verificar
+            if(filtrosSancionesDiv) filtrosSancionesDiv.classList.add('hidden'); // Verificar
+
+            if (ru !== '') {
+                fetch(`/usuarios/buscarPorRu/${ru}`)
+                    .then(response => { if (response.ok) { return response.json(); } else if (response.status === 404) { return null; } else { throw new Error('Error inesperado al buscar usuario (' + response.status + ')'); } })
+                    .then(data => {
+                        usuarioSeleccionado = data;
+                        if (usuarioSeleccionado) { if(usuarioInfoDiv) usuarioInfoDiv.textContent = `Usuario encontrado: ${data.nombre} ${data.apellido}, RU: ${data.ru}`; toggleReportesUsuarioCheckboxes(false); mostrarMensaje('Usuario encontrado.', 'success'); }
+                        else { if(usuarioInfoDiv) usuarioInfoDiv.textContent = 'Usuario no encontrado'; toggleReportesUsuarioCheckboxes(true); mostrarMensaje('Usuario no encontrado con RU ' + ru + '. Por favor, ingrese un RU válido.', 'error'); }
+                        validarYToggleGenerarBoton();
+                    })
+                    .catch(error => { console.error('Error al buscar usuario:', error); usuarioSeleccionado = null; if(usuarioInfoDiv) usuarioInfoDiv.textContent = 'Error al buscar usuario'; toggleReportesUsuarioCheckboxes(true); mostrarMensaje('Error al buscar usuario. Por favor, inténtelo de nuevo.', 'error'); validarYToggleGenerarBoton(); });
+            } else { validarYToggleGenerarBoton(); }
+        });
+    }
+
+
+    // Event listener para el select de días de semana (para validar) - Este solo aplica a reportes globales
+    if(diasSemanaHorarioSelect) { // Verificar que el elemento existe
+        diasSemanaHorarioSelect.addEventListener('change', validarYToggleGenerarBoton);
+    }
 
 
     // --- Lógica de Inicialización al Cargar la Página ---
 
     // Deshabilitar botones generar/imprimir al cargar la página
-    generarReporteBtn.disabled = true; generarReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); generarReporteBtn.classList.remove('bg-indigo-500', 'hover:bg-indigo-700', 'cursor-pointer');
-    imprimirReporteBtn.disabled = true; imprimirReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.remove('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer');
+    if(generarReporteBtn) { // Verificar que los botones existen antes de usarlos
+        generarReporteBtn.disabled = true; generarReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); generarReporteBtn.classList.remove('bg-indigo-500', 'hover:bg-indigo-700', 'cursor-pointer');
+    }
+    if(imprimirReporteBtn) { // Verificar
+        imprimirReporteBtn.disabled = true; imprimirReporteBtn.classList.add('bg-gray-500', 'cursor-not-allowed'); imprimirReporteBtn.classList.remove('bg-gray-700', 'hover:bg-gray-700', 'cursor-pointer');
+    }
+
 
     // Ocultar formularios y vista previa al inicio
-    ocultarFormularios();
-    vistaPrevia.classList.add('hidden'); // Asegurarse de que la vista previa esté oculta al inicio
+    // Esto requiere que todos los elementos existan, por eso es crucial verificar IDs.
+    ocultarFormularios(); // Si un elemento no existe, este llamará al error.
+
+    // Asegurarse de que la vista previa esté oculta al inicio
+    if(vistaPrevia) vistaPrevia.classList.add('hidden'); // Verificar
 
     // Asegurarse de que los checkboxes de usuario y estadísticos estén deshabilitados al inicio
-    toggleReportesUsuarioCheckboxes(true);
-    toggleReportesEstadisticosCheckboxes(true);
+    toggleReportesUsuarioCheckboxes(true); // Esto también ocultará y limpiará los filtros de usuario
+    toggleReportesEstadisticosCheckboxes(true); // Esto también ocultará y limpiará los nuevos filtros específicos estadísticos
 
-    // Limpiar campos de filtro y checkboxes al inicio
+
+    // Limpiar campos de filtro (todos) y checkboxes (todos) al inicio
     document.querySelectorAll('input[type="checkbox"][name^="reportes"]').forEach(checkbox => { checkbox.checked = false; });
-    document.querySelectorAll('#filtros-globales input, #filtros-globales select, #filtros-usuario input, #filtros-usuario select').forEach(input => {
+    // Seleccionar todos los campos de entrada y selectores relevantes en todas las secciones de filtro
+    document.querySelectorAll('#filtros-globales input, #filtros-globales select, #filtros-usuario input, #filtros-usuario select, #filtros-equipos-mas-prestados-grafico input, #filtros-equipos-mas-prestados-grafico select, #filtros-usuarios-mas-prestaron-grafico input, #filtros-usuarios-mas-prestaron-grafico select').forEach(input => {
         if (input.tagName === 'SELECT') { input.selectedIndex = 0; } else { input.value = ''; }
     });
-    Array.from(diasSemanaHorarioSelect.options).forEach(option => { option.selected = false; });
-    usuarioSeleccionado = null; ruUsuarioInput.value = ''; usuarioInfoDiv.textContent = '';
+
+    Array.from(diasSemanaHorarioSelect ? diasSemanaHorarioSelect.options : []).forEach(option => { option.selected = false; }); // Añadida verificación
+    if(ruUsuarioInput) ruUsuarioInput.value = ''; // Verificar
+    if(usuarioInfoDiv) usuarioInfoDiv.textContent = ''; // Verificar
 
 
 }); // Fin del único listener DOMContentLoaded

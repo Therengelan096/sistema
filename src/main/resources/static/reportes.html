@@ -11,7 +11,7 @@
         /* Estilos adicionales para la impresión (opcional) */
         @media print {
             .no-print {
-                display: none;
+                display: none !important;
             }
             /* Estilos para tablas impresas */
             table {
@@ -36,7 +36,7 @@
                 display: none !important;
             }
             /* Puedes añadir un img con la gráfica si la generas como imagen en JS para imprimir */
-            .chart-print-img {
+            .chart-print-image { /* Usar la clase del JS */
                 display: block !important;
                 max-width: 100%;
                 height: auto;
@@ -46,12 +46,6 @@
             /* Ajuste para el logo en impresión si queda raro */
             .print-logo {
                 /* Puedes ajustar el display, position, etc. aquí si necesitas que el logo se vea diferente al imprimir */
-                /* display: block !important; */
-                /* position: absolute !important; */
-                /* top: 20px !important; */
-                /* right: 20px !important; */
-                /* height: 50px !important; */
-                /* width: auto !important; */
             }
         }
 
@@ -92,11 +86,14 @@
         <h1 class="text-2xl font-semibold text-gray-800 text-center">Generar Reportes</h1>
         <img src="images/logouniversidad.png" alt="Logo Universidad Salesiana de Bolivia" class="header-logo print-logo">
     </div>
-    <div id="tipo-reporte-seleccion" class="mb-8 no-print"> <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">Seleccione el tipo de reporte</h2> <div class="flex justify-center space-x-4">
-        <button class="tipo-reporte-btn bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-tipo="global">Reporte Global</button>
-        <button class="tipo-reporte-btn bg-purple-500 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-tipo="estadistico">Reportes Estadísticos</button>
-        <button class="tipo-reporte-btn bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-tipo="usuario">Reporte por Usuario</button>
-    </div>
+
+    <div id="tipo-reporte-seleccion" class="mb-8 no-print">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center">Seleccione el tipo de reporte</h2>
+        <div class="flex justify-center space-x-4">
+            <button class="tipo-reporte-btn bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-tipo="global">Reporte Global</button>
+            <button class="tipo-reporte-btn bg-purple-500 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-tipo="estadistico">Reportes Estadísticos</button>
+            <button class="tipo-reporte-btn bg-green-500 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" data-tipo="usuario">Reporte por Usuario</button>
+        </div>
     </div>
 
     <div id="reporte-global-seleccion" class="hidden mb-8 no-print">
@@ -112,14 +109,16 @@
             </div>
             <div class="reporte-opcion">
                 <input type="checkbox" id="prestamos-por-fecha" name="reportesGlobales" value="prestamos-por-fecha" class="mr-2">
-                <label for="prestamos-por-fecha" class="text-gray-600 font-medium">Préstamos por fecha (Tabla)</label> </div>
+                <label for="prestamos-por-fecha" class="text-gray-600 font-medium">Préstamos por fecha (Tabla)</label>
+            </div>
             <div class="reporte-opcion">
                 <input type="checkbox" id="mantenimientos" name="reportesGlobales" value="mantenimientos" class="mr-2">
                 <label for="mantenimientos" class="text-gray-600 font-medium">Todos los mantenimientos</label>
             </div>
             <div class="reporte-opcion">
                 <input type="checkbox" id="prestamos-fecha-fecha" name="reportesGlobales" value="prestamos-fecha-fecha" class="mr-2">
-                <label for="prestamos-fecha-fecha" class="text-gray-600 font-medium">Préstamos de una fecha a otra (Tabla)</label> </div>
+                <label for="prestamos-fecha-fecha" class="text-gray-600 font-medium">Préstamos de una fecha a otra (Tabla)</label>
+            </div>
             <div class="reporte-opcion">
                 <input type="checkbox" id="administradores-prestamo" name="reportesGlobales" value="administradores-prestamo" class="mr-2">
                 <label for="administradores-prestamo" class="text-gray-600 font-medium">Administradores que prestaron</label>
@@ -139,33 +138,133 @@
         <h2 class="text-xl font-semibold text-gray-700 mb-4">Seleccione los reportes estadísticos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="reporte-opcion">
-                <input type="checkbox" id="equipos-mas-prestados-grafico" name="reportesEstadisticos" value="equiposMasPrestados" class="mr-2"> <label for="equipos-mas-prestados-grafico" class="text-gray-600 font-medium">Equipos más prestados (Gráfico)</label>
+                <input type="checkbox" id="equipos-mas-prestados-grafico" name="reportesEstadisticos" value="equiposMasPrestados" class="mr-2">
+                <label for="equipos-mas-prestados-grafico" class="text-gray-600 font-medium">Equipos más prestados (Gráfico)</label>
             </div>
             <div class="reporte-opcion">
-                <input type="checkbox" id="usuarios-mas-prestaron-grafico" name="reportesEstadisticos" value="usuariosMasPrestaron" class="mr-2"> <label for="usuarios-mas-prestaron-grafico" class="text-gray-600 font-medium">Usuarios que más prestaron (Gráfico)</label>
+                <input type="checkbox" id="usuarios-mas-prestaron-grafico" name="reportesEstadisticos" value="usuariosMasPrestaron" class="mr-2">
+                <label for="usuarios-mas-prestaron-grafico" class="text-gray-600 font-medium">Usuarios que más prestaron (Gráfico)</label>
             </div>
         </div>
-    </div>
-    <div id="reporte-usuario-seleccion" class="hidden mb-8 no-print">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">Seleccione el usuario</h2>
-        <div class="mb-4">
-            <label for="ru-usuario" class="block text-gray-700 text-sm font-bold mb-2">RU del Usuario:</label>
-            <input type="number" id="ru-usuario" placeholder="Ingrese el RU del usuario" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            <div id="usuario-info" class="mt-2 text-gray-600 font-medium"></div>
+
+        <div id="filtros-equipos-mas-prestados-grafico" class="hidden mt-6 mb-4 border p-4 rounded-md no-print">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Filtros para Equipos más prestados (Gráfico)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="fecha-inicio-equipos-est" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Inicio:</label>
+                    <input type="date" id="fecha-inicio-equipos-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="fecha-fin-equipos-est" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Fin:</label>
+                    <input type="date" id="fecha-fin-equipos-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="laboratorio-equipos-est" class="block text-gray-700 text-sm font-bold mb-2">Laboratorio:</label>
+                    <select id="laboratorio-equipos-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Todos los Laboratorios</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="categoria-equipos-est" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
+                    <select id="categoria-equipos-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Todas las Categorías</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">Seleccione los reportes del usuario</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div id="filtros-usuarios-mas-prestaron-grafico" class="hidden mt-4 mb-4 border p-4 rounded-md no-print">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Filtros para Usuarios que más prestaron (Gráfico)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="fecha-inicio-usuarios-est" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Inicio:</label>
+                    <input type="date" id="fecha-inicio-usuarios-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="fecha-fin-usuarios-est" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Fin:</label>
+                    <input type="date" id="fecha-fin-usuarios-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="laboratorio-usuarios-est" class="block text-gray-700 text-sm font-bold mb-2">Laboratorio:</label>
+                    <select id="laboratorio-usuarios-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Todos los Laboratorios</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="categoria-usuarios-est" class="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
+                    <select id="categoria-usuarios-est" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Todas las Categorías</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="reporte-usuario-seleccion" class="hidden mb-8 no-print">
+
+        <div class="mb-4"> <label for="ru-usuario" class="block text-gray-700 text-sm font-bold mb-2">Buscar Usuario por RU:</label>
+            <input type="text" id="ru-usuario" placeholder="Ingrese RU del usuario" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <div id="usuario-info" class="mt-2 text-gray-600 text-sm italic"></div>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Seleccione los reportes por usuario</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="reporte-opcion">
+                <input type="checkbox" id="info-usuario" name="reportesUsuario" value="info-usuario" class="mr-2">
+                <label for="info-usuario" class="text-gray-600 font-medium">Información del Usuario</label>
+            </div>
             <div class="reporte-opcion">
                 <input type="checkbox" id="historial-prestamos-usuario" name="reportesUsuario" value="historial-prestamos-usuario" class="mr-2">
                 <label for="historial-prestamos-usuario" class="text-gray-600 font-medium">Historial de Préstamos</label>
             </div>
             <div class="reporte-opcion">
                 <input type="checkbox" id="sanciones-usuario" name="reportesUsuario" value="sanciones-usuario" class="mr-2">
-                <label for="sanciones-usuario" class="text-gray-600 font-medium">Sanciones del Usuario</label>
+                <label for="sanciones-usuario" class="text-gray-600 font-medium">Sanciones</label>
             </div>
-            <div class="reporte-opcion">
-                <input type="checkbox" id="info-usuario" name="reportesUsuario" value="info-usuario" class="mr-2">
-                <label for="info-usuario" class="text-gray-600 font-medium">Información del Usuario</label>
+        </div>
+        <div id="filtros-usuario" class="hidden mt-6 mb-8 no-print">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Filtros Adicionales (Reportes Seleccionados)</h2> <div id="filtros-historial-prestamos" class="hidden border p-4 rounded-md mb-4">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Historial de Préstamos</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="fecha-inicio-prestamos" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Inicio:</label>
+                    <input type="date" id="fecha-inicio-prestamos" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="fecha-fin-prestamos" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Fin:</label>
+                    <input type="date" id="fecha-fin-prestamos" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="estado-prestamo" class="block text-gray-700 text-sm font-bold mb-2">Estado del Préstamo:</label>
+                    <select id="estado-prestamo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Todos los Estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="devuelto">Devuelto</option>
+                        <option value="retrasado">Retrasado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+            <div id="filtros-sanciones" class="hidden border p-4 rounded-md mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Sanciones</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="fecha-inicio-sanciones" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Inicio:</label>
+                        <input type="date" id="fecha-inicio-sanciones" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label for="fecha-fin-sanciones" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Fin:</label>
+                        <input type="date" id="fecha-fin-sanciones" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label for="estado-sancion" class="block text-gray-700 text-sm font-bold mb-2">Estado de la Sanción:</label>
+                        <select id="estado-sancion" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Todos los Estados</option>
+                            <option value="activa">Activa</option>
+                            <option value="inactiva">Inactiva</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -195,62 +294,13 @@
             </div>
             <div>
                 <label for="dias-semana-horario" class="block text-gray-700 text-sm font-bold mb-2">Días de la Semana (Horario):</label>
-                <select id="dias-semana-horario" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"> {/* Ajusta la altura (h-32) según necesites */}
-                    {/* Los valores de las opciones deben coincidir con los nombres del ENUM DiaSemana en tu backend (LUNES, MARTES, etc.) */}
-                    <option value="LUNES">Lunes</option>
+                <select id="dias-semana-horario" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"> <option value="LUNES">Lunes</option>
                     <option value="MARTES">Martes</option>
                     <option value="MIERCOLES">Miércoles</option>
                     <option value="JUEVES">Jueves</option>
                     <option value="VIERNES">Viernes</option>
                 </select>
                 <p class="text-xs text-gray-500 mt-1">Mantén Ctrl para seleccionar varios días.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="filtros-usuario" class="hidden mb-8 no-print">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">Filtros por Usuario</h2>
-        <div id="filtros-historial-prestamos" class="hidden border p-4 rounded-md mb-4">
-            <h3 class="text-lg font-semibold text-gray-700 mb-2">Historial de Préstamos</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="fecha-inicio-prestamos" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Inicio:</label>
-                    <input type="date" id="fecha-inicio-prestamos" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                    <label for="fecha-fin-prestamos" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Fin:</label>
-                    <input type="date" id="fecha-fin-prestamos" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                    <label for="estado-prestamo" class="block text-gray-700 text-sm font-bold mb-2">Estado del Préstamo:</label>
-                    <select id="estado-prestamo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Todos los Estados</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="devuelto">Devuelto</option>
-                        <option value="retrasado">Retrasado</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="filtros-sanciones" class="hidden border p-4 rounded-md mb-4">
-            <h3 class="text-lg font-semibold text-gray-700 mb-2">Sanciones</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="fecha-inicio-sanciones" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Inicio:</label>
-                    <input type="date" id="fecha-inicio-sanciones" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                    <label for="fecha-fin-sanciones" class="block text-gray-700 text-sm font-bold mb-2">Fecha de Fin:</label>
-                    <input type="date" id="fecha-fin-sanciones" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-                <div>
-                    <label for="estado-sancion" class="block text-gray-700 text-sm font-bold mb-2">Estado de la Sanción:</label>
-                    <select id="estado-sancion" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Todos los Estados</option>
-                        <option value="activa">Activa</option>
-                        <option value="inactiva">Inactiva</option>
-                    </select>
-                </div>
             </div>
         </div>
     </div>
