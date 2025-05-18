@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List; // Importa la clase List
 
 @Entity
@@ -31,7 +32,7 @@ public class Prestamo {
     private String estado;
 
     @Column(nullable = false)
-    private Date fechaDevolucionEstimada;
+    private LocalDateTime fechaDevolucionEstimada;
 
     // **Nueva relación con DetallePrestamo**
     @OneToMany(mappedBy = "prestamo", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -88,11 +89,11 @@ public class Prestamo {
         this.estado = estado;
     }
 
-    public Date getFechaDevolucionEstimada() {
+    public LocalDateTime getFechaDevolucionEstimada() {
         return fechaDevolucionEstimada;
     }
 
-    public void setFechaDevolucionEstimada(Date fechaDevolucionEstimada) {
+    public void setFechaDevolucionEstimada(LocalDateTime fechaDevolucionEstimada) {
         this.fechaDevolucionEstimada = fechaDevolucionEstimada;
     }
 
@@ -104,3 +105,4 @@ public class Prestamo {
         this.detallesPrestamo = detallesPrestamo;
     }
 }
+

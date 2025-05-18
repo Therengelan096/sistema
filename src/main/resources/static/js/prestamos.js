@@ -587,64 +587,90 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   // Evento al enviar el formulario de nuevo préstamo (Ya estaba)
-  nuevoPrestamoForm.addEventListener('submit', function (event) {
-    event.preventDefault();
-      const usuarioId = document.getElementById('usuarioIdOculto').value;
-      const administradorId = document.getElementById('administrador').value;// <--- USA EL VALOR DEL CAMPO OCULTO
-      // const administradorId = document.getElementById('administrador').value;
-      if (!usuarioId) {
-          // Usa el div de infoUsuarioEncontrado para mostrar el mensaje
-          infoUsuarioEncontrado.textContent = "Por favor, busca y selecciona un usuario por su RU antes de guardar.";
-          return; // Detiene el envío del formulario
-      }
-      if (!administradorId) { alert("Selecciona un administrador."); return; }
-    const fechaPrestamo = document.getElementById('fechaPrestamo').value;
-    const fechaDevolucionEstimada = document.getElementById('fechaDevolucionEstimada').value;
-    const prestamoId = prestamoIdInput.value;
-    const detallesPrestamo = equiposSeleccionados.map(equipo => ({
-      equipo: { idEquipo: equipo.idEquipo },
-      cantidad: equipo.cantidad
-    }));
-    if (!prestamoId && detallesPrestamo.length === 0) {
-        alert("Debe seleccionar al menos un equipo para el préstamo.");
-        return;
-    }
-    if (!usuarioId) { alert("Selecciona un usuario."); return; }
-    if (!administradorId) { alert("Selecciona un administrador."); return; }
-    const prestamoData = {
-      idPrestamo: prestamoId ? parseInt(prestamoId) : null,
-      usuario: { idUsuario: parseInt(usuarioId) },
-      administrador: { idAdministrador: parseInt(administradorId) },
-      fechaPrestamo: fechaPrestamo,
-      estado: 'pendiente',
-      fechaDevolucionEstimada: fechaDevolucionEstimada,
-      detallesPrestamo: detallesPrestamo
-    };
-    const url = prestamoId ? `/prestamos/${prestamoId}` : '/prestamos';
-    const method = prestamoId ? 'PUT' : 'POST';
-    fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(prestamoData)
-    })
-      .then(async response => {
-        if (response.ok) {
-          window.cargarPrestamos(); // <-- LLAMADA A FUNCIÓN AHORA GLOBAL
-          prestamoModal.hide();
-          alert('Préstamo guardado con éxito.');
-        } else {
-          const text = await response.text();
-          console.error('Error al guardar/actualizar préstamo:', response.status, text);
-          alert('Error al guardar/actualizar préstamo: ' + text);
+    // Evento al enviar el formulario de nuevo préstamo (Modificado para añadir blur)
+    nuevoPrestamoForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        // ... (Tu código de validación y preparación de datos, mantenlo igual) ...
+        const usuarioId = document.getElementById('usuarioIdOculto').value;
+        const administradorId = document.getElementById('administrador').value;
+        if (!usuarioId) {
+            infoUsuarioEncontrado.textContent = "Por favor, busca y selecciona un usuario por su RU antes de guardar.";
+            return;
         }
-      })
-      .catch(error => {
-        console.error('Error en la petición de préstamo:', error);
-        alert('Ocurrió un error en la comunicación con el servidor al guardar el préstamo.');
-      });
-  });
+        if (!administradorId) { alert("Selecciona un administrador."); return; }
+        const fechaPrestamo = document.getElementById('fechaPrestamo').value;
+        const fechaDevolucionEstimada = document.getElementById('fechaDevolucionEstimada').value;
+        const prestamoId = prestamoIdInput.value;
+        const detallesPrestamo = equiposSeleccionados.map(equipo => ({
+            equipo: { idEquipo: equipo.idEquipo },
+            cantidad: equipo.cantidad
+        }));
+        if (!prestamoId && detallesPrestamo.length === 0) {
+            alert("Debe seleccionar al menos un equipo para el préstamo.");
+            return;
+        }
+        if (!usuarioId) { alert("Selecciona un usuario."); return; }
+        if (!administradorId) { alert("Selecciona un administrador."); return; }
+
+        const prestamoData = {
+            idPrestamo: prestamoId ? parseInt(prestamoId) : null,
+            usuario: { idUsuario: parseInt(usuarioId) },
+            administrador: { idAdministrador: parseInt(administradorId) },
+            fechaPrestamo: fechaPrestamo,
+            estado: 'pendiente', // O el estado que corresponda
+            fechaDevolucionEstimada: fechaDevolucionEstimada,
+            detallesPrestamo: detallesPrestamo
+        };
+
+        const url = prestamoId ? `/prestamos/${prestamoId}` : '/prestamos';
+        const method = prestamoId ? 'PUT' : 'POST';
+
+        console.log('>>> Submit Form Prestamo. Elemento enfocado antes de fetch:', document.activeElement);
+
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(prestamoData)
+        })
+            .then(async response => {
+                if (response.ok) {
+                    // Éxito al guardar/actualizar
+                    window.cargarPrestamos();
+
+                    console.log('>>> Préstamo guardado/actualizado con éxito.');
+                    console.log('>>> Elemento enfocado JUSTO ANTES de llamar a prestamoModal.hide():', document.activeElement);
+
+                    // --- >>> AÑADE ESTE CÓDIGO <<< ---
+                    // Forzar que el elemento actualmente enfocado pierda el foco antes de ocultar el modal
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                        console.log('>>> Forzando blur() en el elemento enfocado.');
+                    }
+                    // ---------------------------------
+
+                    prestamoModal.hide(); // <-- Ahora se cierra el modal después del blur
+
+                    alert('Préstamo guardado con éxito.');
+
+                } else {
+                    // Error al guardar/actualizar
+                    const text = await response.text();
+                    console.error('Error al guardar/actualizar préstamo:', response.status, text);
+                    alert('Error al guardar/actualizar préstamo: ' + text);
+                }
+            })
+            .catch(error => {
+                // Error en la petición
+                console.error('Error en la petición de préstamo:', error);
+                alert('Ocurrió un error en la comunicación con el servidor al guardar el préstamo.');
+            });
+    });
+
+// MANTÉN TUS LISTENERS hide.bs.modal y hidden.bs.modal con los logs para verificar
+// ... (código de los listeners hide.bs.modal y hidden.bs.modal) ...
   // Evento al ocultar el modal de préstamo (Resetear formulario) (Ya estaba)
     // Evento al ocultar el modal de préstamo (Resetear formulario)
     // Evento que se dispara cuando el modal de préstamo/edición ha terminado de ocultarse.
@@ -675,67 +701,91 @@ document.addEventListener('DOMContentLoaded', function () {
         if (infoUsuarioEncontrado) infoUsuarioEncontrado.textContent = '';
         if (usuarioIdOculto) usuarioIdOculto.value = '';
         // Usamos un pequeño setTimeout para dar tiempo al DOM a estabilizarse después de que el modal se oculte.
-        setTimeout(() => {
-            // Intentamos enfocar el botón "Nuevo Préstamo".
-            // Asegúrate de que la variable 'btnNuevoPrestamo' esté declarada al inicio de tu script
-            // (por ejemplo: const btnNuevoPrestamo = document.querySelector('[data-bs-target="#prestamoModal"]');)
-            if (btnNuevoPrestamo) {
-                btnNuevoPrestamo.focus(); // Mueve el foco a este elemento
-                console.log('Foco movido al botón Nuevo Préstamo después de cerrar modal préstamo.'); // Log para depuración
-            } else {
-                // Si por alguna razón no se encuentra el botón, registramos una advertencia
-                console.warn('Botón "Nuevo Préstamo" (o el elemento de destino del foco) no encontrado para mover el foco después de cerrar modal préstamo.');
-            }
-        }, 100); // Retraso de 100 milisegundos. Puedes ajustar este valor si es necesario.
+        // Retraso de 100 milisegundos. Puedes ajustar este valor si es necesario.
 
     });
   // **EVENTO AL ENVIAR EL FORMULARIO DE DEVOLUCIÓN** (Ya estaba, se mantiene)
-  devolucionForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-      const prestamoId = devolucionPrestamoIdInput.value;
-      const fechaDevolucion = document.getElementById('fechaDevolucion').value;
-      const horaDevolucion = document.getElementById('horaDevolucion').value;
-      const estadoEquipoAlDevolver = document.getElementById('estadoEquipoAlDevolver').value;
-      const observaciones = document.getElementById('observaciones').value;
-      if (!estadoEquipoAlDevolver) {
-          alert("Por favor, selecciona el estado del equipo.");
-          return;
-      }
-      const devolucionData = {
-          prestamo: { idPrestamo: parseInt(prestamoId) },
-          fechaDevolucion: fechaDevolucion,
-          horaDevolucion: horaDevolucion,
-          estadoEquipoAlDevolver: estadoEquipoAlDevolver,
-          observaciones: observaciones
-      };
-      fetch('/devolucion/registrar', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(devolucionData)
-      })
-      .then(async response => {
-          if (response.ok) {
-              window.cargarPrestamos(); // <-- LLAMADA A FUNCIÓN AHORA GLOBAL
-              devolucionModal.hide();
-              alert('Devolución registrada con éxito.');
-          } else {
-              const text = await response.text();
-              console.error('Error al registrar devolución:', response.status, text);
-              alert('Error al registrar la devolución: ' + text);
-          }
-      })
-      .catch(error => {
-          console.error('Error en la petición de devolución:', error);
-          alert('Ocurrió un error en la comunicación con el servidor al registrar la devolución.');
-      });
-  });
-  // Evento al ocultar el modal de devolución (Resetear formulario) (Ya estaba)
-  devolucionModalElement.addEventListener('hidden.bs.modal', function () {
-      devolucionForm.reset();
-      devolucionPrestamoIdInput.value = '';
-  });
+    // Modificado: Evento al enviar el formulario de devolución (Añadidos logs y blur)
+    devolucionForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const prestamoId = devolucionPrestamoIdInput.value;
+        const fechaDevolucion = document.getElementById('fechaDevolucion').value;
+        const horaDevolucion = document.getElementById('horaDevolucion').value;
+        const estadoEquipoAlDevolver = document.getElementById('estadoEquipoAlDevolver').value;
+        const observaciones = document.getElementById('observaciones').value;
+        if (!estadoEquipoAlDevolver) {
+            alert("Por favor, selecciona el estado del equipo.");
+            return;
+        }
+        const devolucionData = {
+            prestamo: { idPrestamo: parseInt(prestamoId) },
+            fechaDevolucion: fechaDevolucion,
+            horaDevolucion: horaDevolucion,
+            estadoEquipoAlDevolver: estadoEquipoAlDevolver,
+            observaciones: observaciones
+        };
+
+        console.log('>>> Submit Form Devolucion. Elemento enfocado antes de fetch:', document.activeElement);
+
+        fetch('/devolucion/registrar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(devolucionData)
+        })
+            .then(async response => {
+                if (response.ok) {
+                    console.log('>>> Devolución registrada con éxito.');
+                    window.cargarPrestamos(); // <-- LLAMADA A FUNCIÓN AHORA GLOBAL
+
+                    console.log('>>> Elemento enfocado JUSTO ANTES de llamar a devolucionModal.hide():', document.activeElement);
+
+                    // --- >>> AÑADE ESTE CÓDIGO: Forzar blur antes de ocultar <<< ---
+                    // Esto intenta asegurar que ningún elemento dentro del modal tenga foco
+                    // justo cuando el modal empieza a recibir aria-hidden="true".
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                        console.log('>>> Forzando blur() en el elemento enfocado en modal Devolucion.');
+                    }
+                    // ------------------------------------------------------------------
+
+                    devolucionModal.hide(); // <-- Ahora se cierra el modal después del blur
+
+                    alert('Devolución registrada con éxito.');
+
+                } else {
+                    const text = await response.text();
+                    console.error('Error al registrar devolución:', response.status, text);
+                    alert('Error al registrar la devolución: ' + text);
+                }
+            })
+            .catch(error => {
+                console.error('Error en la petición de devolución:', error);
+                alert('Ocurrió un error en la comunicación con el servidor al registrar la devolución.');
+            });
+    });
+
+// --- NUEVO LISTENER: Evento al inicio del ocultamiento del modal de devolución ---
+// Añade este listener si no lo tienes ya con los logs
+    devolucionModalElement.addEventListener('hide.bs.modal', function () {
+        console.log('>>> Evento hide.bs.modal en DevolucionModal. Modal comenzando a ocultarse.');
+        // Log justo antes de que empiece a ocultarse
+        console.log('>>> Elemento enfocado JUSTO ANTES de que DevolucionModal comience a ocultarse:', document.activeElement);
+    });
+
+// Modificado: Evento al ocultar el modal de devolución (Añadidos logs)
+    devolucionModalElement.addEventListener('hidden.bs.modal', function () {
+        console.log('>>> Evento hidden.bs.modal en DevolucionModal. Modal ya oculto y con aria-hidden="true".');
+
+        // --- Código de limpieza del formulario (Mantenlo) ---
+        devolucionForm.reset();
+        devolucionPrestamoIdInput.value = '';
+        // --- Fin Código de limpieza ---
+
+        // Log al final del hidden listener
+        console.log('>>> Elemento enfocado al final del listener hidden.bs.modal [Devolucion]:', document.activeElement);
+    });
 // Evento de clic usando delegación para los botones 'Cancelar' devolución
   tableBody.addEventListener('click', function(event) {
       if (event.target.classList.contains('btn-cancelar-devolucion')) {
