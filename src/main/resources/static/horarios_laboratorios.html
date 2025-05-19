@@ -9,16 +9,10 @@
 	<link rel="stylesheet" href="css/horarios_laboratorios.css">
 </head>
 <body>
-
-<div class="user-info">
-	<div class="username">Usuario123</div>
-	<div class="status">🟢 En línea</div>
-</div>
-
 <div class="sidebar" id="sidebar">
 	<a href="#" id="toggleSidebar"><i class="bi bi-list"></i><span>Menú</span></a>
 	<hr>
-	<a href="/horarios_laboratorios.html"><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
+	<a href="/horarios_laboratorios.html" class=""><i class="bi bi-house-door"></i><span>Laboratorios</span></a>
 	<hr>
 	<a href="/usuarios.html"><i class="bi bi-people"></i><span>Usuarios</span></a>
 	<hr>
@@ -37,14 +31,18 @@
 	<a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
 	<hr>
 	<a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+	<hr>
 	<a href="/logout" class="logout-btn">
 		<i class="bi bi-power"></i><span>Cerrar Sesión</span>
 	</a>
 </div>
 
 <div class="content" id="content">
-	<div id="adminLaboratoriosSection">
+	<div class="header-content">
 		<h1>Gestión de Laboratorios</h1>
+	</div>
+
+	<div id="adminLaboratoriosSection">
 		<div class="form-container">
 			<form id="laboratorio-form">
 				<input type="hidden" id="laboratorio-id">

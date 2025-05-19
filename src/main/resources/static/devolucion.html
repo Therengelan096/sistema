@@ -14,23 +14,23 @@
             padding: 0;
             background-color: #121212;
             color: white;
-            font-family: Arial, sans-serif; /* Añadido para consistencia */
-            flex-direction: row; /* Modificado para colocar el sidebar a la izquierda */
-            align-items: stretch; /* Estirar el sidebar para que ocupe toda la altura */
+            /* Usamos flex-direction row implícitamente por el layout */
+            align-items: stretch; /* Estirar el sidebar y contenido */
         }
 
         .sidebar {
             width: 280px;
-            background-color: #191970;
+            background-color: #191970; /* Azul oscuro */
             padding-top: 20px;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            position: sticky;
+            position: fixed; /* Fijo para que no se mueva al hacer scroll en el contenido */
             top: 0;
             left: 0;
             transition: width 0.3s ease;
-            overflow: hidden;
+            overflow-x: hidden; /* Ocultar scroll horizontal si el contenido del span es largo */
+            z-index: 100; /* Asegura que esté sobre el contenido */
         }
 
         .sidebar.collapsed {
@@ -46,23 +46,28 @@
             font-size: 0.9rem;
             display: flex;
             align-items: center;
-            white-space: nowrap;
+            white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
         }
 
         .sidebar a:hover,
         .sidebar a.active {
-            background-color: #34495E;
-            border-left-color: #ff69b4;
+            background-color: #34495E; /* Gris azulado */
+            border-left-color: #ff69b4; /* Rosa neón */
         }
 
         .sidebar a i {
             font-size: 1.2rem;
+            /* Ajustar margen si es necesario para alinear iconos */
         }
 
+        /* Ocultamos el texto cuando está colapsado */
         .sidebar a span {
             margin-left: 10px;
             white-space: nowrap;
             overflow: hidden;
+            /* Usamos width: 0 y opacity: 0 para una transición suave */
+            width: auto; /* Ancho automático por defecto */
+            opacity: 1;
             transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
         }
 
@@ -70,11 +75,11 @@
             opacity: 0;
             width: 0;
             margin: 0;
-            pointer-events: none;
+            pointer-events: none; /* Permite hacer clic en el icono subyacente */
         }
 
         .sidebar.collapsed a {
-            justify-content: center;
+            justify-content: center; /* Centra el icono cuando está colapsado */
         }
 
         .sidebar hr {
@@ -83,84 +88,108 @@
         }
 
         .sidebar .logout-btn {
-            margin-top: auto;
+            margin-top: auto; /* Empuja este elemento al final */
             border-top: 1px solid #34495E;
         }
 
         .content {
             flex-grow: 1;
             padding: 20px;
-            background-color: #283747;
-            position: relative;
+            background-color: #283747; /* Azul grisáceo */
+            /* Ajuste de margen y ancho para acomodar la sidebar */
+            margin-left: 280px; /* Espacio para la sidebar */
+            width: calc(100% - 280px); /* Ocupa el resto del ancho */
+            transition: margin-left 0.3s ease, width 0.3s ease; /* Transición suave */
             display: flex;
             flex-direction: column;
+            align-items: center; /* Centra el contenido horizontalmente */
+            overflow-y: auto; /* Permite scroll si el contenido es largo */
+        }
+
+        .content.sidebar-collapsed {
+            margin-left: 60px; /* Espacio para la sidebar colapsada */
+            width: calc(100% - 60px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between; /* Alinea elementos a los lados */
             align-items: center;
-        }
-
-        h1 {
-            color: #ff69b4;
-            text-shadow: 0 4px 8px rgba(255, 105, 180, 0.8);
             margin-bottom: 20px;
+            width: 95%; /* Ajusta al ancho del contenedor */
+            max-width: 1000px; /* Limita el ancho máximo */
+            /* No hay botón de "Agregar" en Devoluciones, así que el título ocupará todo */
+            justify-content: flex-start;
         }
 
+        .header-content h1 {
+            margin: 0; /* Elimina margen por defecto */
+            text-align: left; /* Alinea a la izquierda */
+            color: #ff69b4; /* Color del título */
+            text-shadow: 0 4px 8px rgba(255, 105, 180, 0.4); /* Sombra para el título */
+        }
+
+
+        /* Estilos de la tabla adaptados de categorias_equipos.html */
         .table-container {
-            width: 80%;
-            max-width: 800px;
-            background-color: #222;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
-            margin-top: 20px; /* Añadido para espaciar del título */
+            width: 95%; /* Ajusta al ancho del contenedor */
+            max-width: 1000px; /* Limita el ancho máximo */
+            margin: 20px auto 0 auto; /* Centra la tabla y añade margen superior */
+            overflow-x: auto; /* Añade scroll horizontal si la tabla es muy ancha */
         }
 
         table {
             width: 100%;
-            border-collapse: collapse; /* Añadido para evitar doble borde */
+            background-color: #1e2a38; /* Azul oscuro sutil */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border-collapse: separate; /* Permite border-spacing */
+            border-spacing: 0;
+            overflow: hidden; /* Oculta los bordes redondeados del thead/tbody */
         }
 
         th, td {
-            border: 1px solid #333;
-            padding: 12px;
+            border-bottom: 1px solid #34495E; /* Borde de fila */
+            padding: 12px 15px;
             text-align: left;
+            vertical-align: middle;
+        }
+        td {
+            color: #e0e0e0; /* Color de texto claro */
         }
 
         th {
-            background-color: #ff69b4;
+            background-color: #34495E; /* Fondo para el encabezado */
+            color: #ff69b4; /* Color rosa para el texto del encabezado */
+            font-weight: 600;
         }
 
-        tr:nth-child(even) {
-            background-color: #333;
+        tr:last-child td {
+            border-bottom: none; /* Elimina el borde de la última fila */
         }
 
-        .top-right-user {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            text-align: right;
+        tr:hover {
+            background-color: #2c3e50; /* Fondo al pasar el ratón */
         }
+        /* Fin estilos de tabla */
 
-        .top-right-user i {
-            font-size: 1.5rem;
-        }
-
-        .top-right-user small {
-            font-size: 0.8rem;
-            color: #00ff00;
-        }
-
-        .bottom-right {
-            position: absolute;
+        /* Footer fijo en la esquina inferior derecha */
+        .footer {
+            position: fixed; /* Fijo en la ventana */
             bottom: 10px;
             right: 20px;
-            font-size: 0.85rem;
-            color: #ccc;
+            font-size: 0.9rem;
+            text-align: right;
+            color: white; /* Asegura que el color sea blanco */
+            z-index: 100; /* Asegura que esté sobre el contenido principal */
         }
 
-        .bottom-right a {
-            color: #00bfff;
+        .footer a {
+            color: #00BFFF; /* Azul claro */
             text-decoration: none;
         }
 
-        .bottom-right a:hover {
+        .footer a:hover {
             text-decoration: underline;
         }
 
@@ -183,25 +212,24 @@
     <hr>
     <a href="/prestamos.html"><i class="bi bi-arrow-left-right"></i><span>Préstamos</span></a>
     <hr>
-    <a href="/devolucion.html"><i class="bi bi-arrow-return-left"></i><span>Devoluciones</span></a>
+    <a href="/devolucion.html" class=""><i class="bi bi-arrow-return-left"></i><span>Devoluciones</span></a>
     <hr>
     <a href="/sanciones.html"><i class="bi bi-exclamation-triangle"></i><span>Sanciones</span></a>
     <hr>
     <a href="/administradores.html"><i class="bi bi-person-gear"></i><span>Administradores</span></a>
     <hr>
     <a href="/categorias_equipos.html"><i class="bi bi-tags"></i><span>Categoría de Equipos</span></a>
+    <hr>
     <a href="/logout" class="logout-btn">
         <i class="bi bi-power"></i><span>Cerrar Sesión</span>
     </a>
 </div>
 
-<div class="content">
-    <div class="top-right-user">
-        <i class="bi bi-person-circle"></i> <strong id="user-name">Cargando...</strong><br>
-        <small>🟢 En línea</small>
+<div class="content" id="content">
+    <div class="header-content">
+        <h1>Devoluciones</h1>
     </div>
 
-    <h1>Devoluciones</h1>
     <div class="table-container">
         <table>
             <thead>
@@ -217,50 +245,69 @@
             <tbody id="devolucion-body"></tbody>
         </table>
     </div>
-
-    <div class="bottom-right">
-        2025 Control de laboratorio | <a href="/contacto.html">Contáctanos</a>
-    </div>
 </div>
 
+<div class="footer">
+    © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Variables del DOM
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content'); // Obtener el div de contenido
 
+        // Lógica de Sidebar
         toggleBtn.addEventListener('click', function (e) {
             e.preventDefault();
             sidebar.classList.toggle('collapsed');
+            content.classList.toggle('sidebar-collapsed'); // Alternar clase en el contenido
         });
-    });
 
-    // Redirige a login.html después de cerrar sesión
-    document.querySelector('.logout-btn').addEventListener('click', function (e) {
-        e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
-        window.location.href = '/login.html'; // Redirige a login.html
-    });
-</script>
-<script src="/js/usuario.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    fetch('http://localhost:8083/devolucion')
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById('devolucion-body');
-            data.forEach(item => {
-                tableBody.innerHTML += `
-                    <tr>
-                        <td>${item.idDevolucion}</td>
-                        <td>${item.prestamo.idPrestamo}</td>
-                        <td>${item.fechaDevolucion}</td>
-                        <td>${item.horaDevolucion}</td>
-                        <td>${item.estadoEquipoAlDevolver}</td>
-                        <td>${item.observaciones}</td>
-                    </tr>
-                `;
+        // Asegura el estado inicial del contenido si la sidebar ya está colapsada (por defecto no lo está)
+        // Esto es útil si la página se carga con la sidebar en un estado diferente al expandido por defecto
+        if (sidebar.classList.contains('collapsed')) {
+            content.classList.add('sidebar-collapsed');
+        }
+
+        // Redirige a login.html después de cerrar sesión
+        document.querySelector('.logout-btn').addEventListener('click', function (e) {
+            e.preventDefault(); // Evita que el enlace siga su comportamiento predeterminado
+            console.log("Intento de cerrar sesión. Implementar petición al backend.");
+            window.location.href = '/login.html'; // Redirección temporal
+        });
+
+        // Script para cargar datos de Devoluciones (mantenido del original)
+        fetch('http://localhost:8083/devolucion')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al cargar devoluciones');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById('devolucion-body');
+                tableBody.innerHTML = ''; // Limpiar tabla antes de añadir datos
+                data.forEach(item => {
+                    // Extraer solo la parte de la fecha (YYYY-MM-DD) si la fecha existe
+                    const fechaFormateada = item.fechaDevolucion ? item.fechaDevolucion.substring(0, 10) : 'N/A';
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${item.idDevolucion}</td>
+                            <td>${item.prestamo ? item.prestamo.idPrestamo : 'N/A'}</td> <td>${fechaFormateada}</td> <td>${item.horaDevolucion || 'N/A'}</td>   <td>${item.estadoEquipoAlDevolver || 'N/A'}</td> <td>${item.observaciones || 'N/A'}</td> </tr>
+                    `;
+                });
+            })
+            .catch(error => {
+                console.error('Error al cargar devoluciones:', error);
+                // Opcional: Mostrar un mensaje de error en la UI
+                const tableBody = document.getElementById('devolucion-body');
+                tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Error al cargar las devoluciones.</td></tr>`;
             });
-        })
-        .catch(error => console.error('Error:', error));
+    });
 </script>
 </body>
 </html>

@@ -5,6 +5,8 @@ body {
     padding: 0;
     background-color: #121212; /* Fondo oscuro general */
     color: white;
+    /* Aseguramos que el body y html ocupen al menos el 100% del viewport height */
+    /* La clase h-100 en el html ya ayuda con esto */
 }
 
 .sidebar {
@@ -19,6 +21,7 @@ body {
     left: 0;
     transition: width 0.3s ease;
     overflow: hidden;
+    z-index: 100; /* Asegura que esté sobre el contenido */
 }
 
 .sidebar.collapsed {
@@ -80,128 +83,210 @@ body {
     padding: 20px;
     background-color: #283747; /* Azul acero oscuro */
     position: relative;
-    margin-left: 280px;
-    transition: margin-left 0.3s ease;
+    margin-left: 280px; /* Espacio para el sidebar */
+    width: calc(100% - 280px); /* Ocupa el resto del ancho */
+    transition: margin-left 0.3s ease, width 0.3s ease;
+    min-height: 100vh; /* Asegura que el contenido sea al menos tan alto como el viewport */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    overflow-y: auto; /* Permite scroll vertical si el contenido es largo */
 }
 
 .content.sidebar-collapsed {
     margin-left: 60px;
+    width: calc(100% - 60px); /* Ajusta el ancho */
 }
+
+/* Estilos del header-content para centrar el título */
+.header-content {
+    display: flex;
+    justify-content: center; /* Centra el título */
+    align-items: center;
+    margin-bottom: 20px;
+    width: 95%; /* Ajusta al ancho del contenedor */
+    max-width: 1000px; /* Limita el ancho máximo */
+}
+
+h1, h2 {
+    color: #ffffff; /* Color de títulos */
+    margin-bottom: 20px;
+    text-align: center;
+}
+h2 {
+    color: #ccc; /* Color ligeramente más tenue para h2 */
+    font-size: 1.5rem;
+}
+
 
 .form-container, .table-container {
     width: 95%; /* Más ancho para aprovechar el espacio */
     max-width: 1000px; /* Un poco más de ancho máximo */
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 20px; /* Espacio entre form y tabla */
 }
+.table-container h2 {
+    text-align: left; /* Alinea el título de la tabla a la izquierda */
+}
+
 
 .form-group {
     margin-bottom: 15px;
 }
 
-input[type="text"], input[type="number"], select { /* Estilos para otros inputs si los añades */
+/* Estilos para inputs/selects */
+input[type="text"], input[type="number"], select {
     width: 100%;
     padding: 10px;
     border: 1px solid #444;
-    background-color: #222;
+    background-color: #222; /* Fondo oscuro para inputs */
     color: white;
     border-radius: 5px;
+    box-sizing: border-box;
+}
+select {
+    background-color: #344960; /* Fondo ligeramente diferente para select */
 }
 
-table {
+
+/* === TABLA GENERAL (Aplicando estilos de categorias_equipos.html) === */
+table { /* Esto afectará tanto a la tabla de laboratorios como a la tabla de horarios por defecto */
     width: 100%;
-    background-color: #2c3e50; /* Color de fondo más oscuro para la tabla */
-    border-radius: 8px; /* Bordes redondeados más suaves */
+    background-color: #1e2a38; /* Azul oscuro sutil (De categorias_equipos.html) */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     border-collapse: separate; /* Permite border-spacing */
     border-spacing: 0;
-    color: #ecf0f1; /* Color de texto más claro */
+    /* color: #e0e0e0; REMOVIDO - color de td es más específico */
     margin-top: 20px;
     overflow: hidden; /* Asegura que los bordes redondeados se vean bien */
 }
 
 th, td {
-    border: 1px solid #34495e; /* Bordes más sutiles */
+    border-bottom: 1px solid #34495E; /* Bordes de fila (De categorias_equipos.html) */
+    /* border: 1px solid #34495e; REMOVIDO */
     padding: 12px 15px; /* Más padding */
     text-align: left;
+    vertical-align: middle; /* Alineación vertical */
+}
+td {
+    color: #e0e0e0; /* Color de texto en celdas (De categorias_equipos.html)*/
 }
 
 th {
-    background-color: #ff69b4; /* Rosa para encabezados */
-    color: #1a1a2e; /* Texto oscuro para contraste en encabezados */
-    font-weight: bold;
+    background-color: #34495E; /* Fondo para cabeceras (De categorias_equipos.html) */
+    color: #ff69b4; /* Texto rosa para contraste en encabezados (De categorias_equipos.html) */
+    font-weight: 600; /* Peso de fuente (De categorias_equipos.html) */
+    /* background-color: #ff69b4; REMOVIDO */
+    /* color: #1a1a2e; REMOVIDO */
+    /* font-weight: bold; REMOVIDO */
+}
+tr:last-child td {
+    border-bottom: none; /* Sin borde en la última fila (De categorias_equipos.html) */
 }
 
-/* Estilos para la tabla de horarios */
+tr:hover {
+    background-color: #2c3e50; /* Color al pasar el mouse sobre una fila (De categorias_equipos.html) */
+}
+/* Fin Estilos Tabla General */
+
+
+/* Estilos para la tabla de horarios - Sobrescribiendo lo necesario y adaptando al tema */
 .horario-container {
     margin-top: 30px;
     padding: 20px;
     background-color: #1f2b38; /* Fondo ligeramente diferente para el contenedor del horario */
     border-radius: 8px;
+    width: 95%; /* Asegura que ocupe el mismo ancho que las tablas/forms */
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
     /* display: none; /* Oculto por defecto, controlado por JS */
 }
+.horario-container h2 {
+    text-align: center; /* Centra el título del horario */
+    margin-bottom: 20px;
+}
+
 
 .horario-tabla {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* Colapso normal para la tabla de horario */
     margin-top: 15px;
+    border-spacing: 0; /* Asegura border-spacing 0 incluso si el padre lo permite */
+    overflow: hidden; /* Puede ser útil si tiene bordes redondeados */
+    background-color: #1e2a38; /* Fondo para la tabla de horario (coherente con tabla general) */
+    border-radius: 8px; /* Bordes redondeados (coherente) */
 }
 
 .horario-tabla th, .horario-tabla td {
-    border: 1px solid #34495e;
+    border: 1px solid #34495e; /* Mantenemos bordes en todas direcciones para el horario */
     padding: 8px;
     text-align: center;
     min-width: 70px; /* Ancho mínimo */
+    color: #e0e0e0; /* Color de texto */
+    vertical-align: middle;
 }
 
 .horario-tabla th {
-    background-color: #007bff; /* Un azul diferente para el encabezado del horario */
-    color: white;
+    background-color: #34495E; /* Fondo del encabezado (coherente con tabla general th) */
+    color: #ff69b4; /* Texto del encabezado (coherente con tabla general th) */
+    font-weight: 600; /* Peso de fuente (coherente con tabla general th) */
+    /* background-color: #007bff; REMOVIDO */
+    /* color: white; REMOVIDO */
 }
 
 .horario-celda {
     height: 35px;
     cursor: pointer;
-    background-color: #4a627a; /* Celda disponible más oscura */
+    background-color: #283747; /* Celda disponible (coherente con fondo content) */
     transition: background-color 0.3s ease;
     color: #e0e0e0;
 }
 
 .horario-celda.ocupado {
-    background-color: #28a745; /* Verde para ocupado */
+    background-color: #dc3545; /* Rojo para ocupado (coherente con btn-danger) */
     color: white;
 }
 .horario-celda:hover:not(.ocupado) {
-    background-color: #5f7a93; /* Hover para celdas disponibles */
+    background-color: #3a4f65; /* Hover para celdas disponibles (ligeramente más claro) */
 }
 
 .horario-tabla td:first-child { /* Celda de la hora */
-    background-color: #3b5065;
+    background-color: #34495E; /* Fondo de la columna de hora (coherente con th) */
     font-weight: bold;
     color: #f0f0f0;
 }
 /* Botones de acción más estilizados */
 .btn-accion {
     margin-right: 5px;
+    /* Asegúrate de que estos botones tengan estilos coherentes con otros botones */
+    /* (btn-primary, btn-secondary, btn-warning, btn-danger, btn-info) */
 }
 .btn-sm {
     padding: .25rem .5rem;
     font-size: .875rem;
 }
 
-.user-info, .footer {
+/* Eliminado el selector .user-info */
+.footer {
     position: fixed;
     right: 20px;
     text-align: right;
-    z-index: 1000; /* Para asegurar que estén sobre el contenido */
+    z-index: 100; /* Aseguramos que esté sobre el contenido */
+    bottom: 10px;
+    font-size: 0.9rem;
+    color: white; /* Asegura que el color sea blanco */
 }
-.user-info { top: 10px; }
-.user-info .username { font-weight: bold; }
-.user-info .status { font-size: 0.9rem; color: #00FF00; }
-.footer { bottom: 10px; font-size: 0.9rem; }
+/* Eliminados los selectores y reglas específicas de .user-info */
+
+
 .footer a { color: #00BFFF; text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
 
 /* Ajuste para el contenido cuando el sidebar está colapsado */
 .content.sidebar-collapsed {
     margin-left: 60px;
+    width: calc(100% - 60px); /* Asegura que el contenido use el ancho restante */
 }

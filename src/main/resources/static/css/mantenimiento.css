@@ -5,11 +5,13 @@ body {
     padding: 0;
     background-color: #121212;
     color: white;
+    /* Aseguramos que el body y html ocupen al menos el 100% del viewport height */
+    /* La clase h-100 en el html ya ayuda con esto */
 }
 
 .sidebar {
     width: 280px;
-    background-color: #191970;
+    background-color: #191970; /* Azul oscuro */
     padding-top: 20px;
     display: flex;
     flex-direction: column;
@@ -18,7 +20,8 @@ body {
     top: 0;
     left: 0;
     transition: width 0.3s ease;
-    overflow: hidden;
+    overflow-x: hidden; /* Ocultar scroll horizontal */
+    z-index: 100; /* Asegura que esté sobre el contenido */
 }
 
 .sidebar.collapsed {
@@ -34,23 +37,26 @@ body {
     font-size: 0.9rem;
     display: flex;
     align-items: center;
-    white-space: nowrap;
+    white-space: nowrap; /* Evita que el texto se rompa */
 }
 
 .sidebar a:hover,
 .sidebar a.active {
-    background-color: #34495E;
-    border-left-color: #ff69b4;
+    background-color: #34495E; /* Gris azulado */
+    border-left-color: #ff69b4; /* Rosa neón */
 }
 
 .sidebar a i {
     font-size: 1.2rem;
+    /* Ajustar margen si es necesario */
 }
 
 .sidebar a span {
     margin-left: 10px;
     white-space: nowrap;
     overflow: hidden;
+    width: auto; /* Ancho automático por defecto */
+    opacity: 1;
     transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
 }
 
@@ -62,7 +68,7 @@ body {
 }
 
 .sidebar.collapsed a {
-    justify-content: center;
+    justify-content: center; /* Centra el icono */
 }
 
 .sidebar hr {
@@ -71,31 +77,58 @@ body {
 }
 
 .sidebar .logout-btn {
-    margin-top: auto;
+    margin-top: auto; /* Empuja este elemento al final */
     border-top: 1px solid #34495E;
 }
 
-.toggle-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    z-index: 1000;
-}
 
 /* === CONTENIDO PRINCIPAL === */
 .content {
-    flex-grow: 1;
+    flex-grow: 1; /* Permite que el contenido ocupe el espacio restante en el contenedor flex (body) */
     padding: 20px;
-    background-color: #283747;
+    background-color: #283747; /* Azul grisáceo */
     position: relative;
-    margin-left: 280px;
-    transition: margin-left 0.3s ease;
+    margin-left: 280px; /* Empuja el contenido para que no quede detrás de la sidebar fija */
+    /* width: calc(100% - 280px); */ /* <-- REMOVIDO: Permitimos que flex-grow determine el ancho */
+    width: auto; /* Permitimos que el ancho se ajuste automáticamente */
+    transition: margin-left 0.3s ease; /* Solo transición para el margen */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    overflow-y: auto; /* Permite scroll vertical si el contenido es largo */
+    /* Aseguramos que el contenido ocupe al menos el 100% del espacio vertical si es necesario */
+    min-height: calc(100vh - 0px); /* Ajuste para asegurar que el contenido no sea más corto que el viewport, restando posible padding/margin superior */
+
 }
 
 .content.sidebar-collapsed {
     margin-left: 60px;
+    /* width: calc(100% - 60px); */ /* <-- REMOVIDO */
+    width: auto; /* Permitir que el ancho se ajuste automáticamente */
+}
+
+/* Estilos del header-content para centrar el título */
+.header-content {
+    display: flex;
+    justify-content: center; /* Centra el título */
+    align-items: center;
+    margin-bottom: 20px;
+    width: 95%; /* Ajusta al ancho del contenedor */
+    max-width: 1000px; /* Limita el ancho máximo */
+}
+
+
+h1 {
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-align: center; /* Asegura centrado si no usa header-content */
+}
+h4 {
+    text-shadow: none;
+    color: #ccc;
+    margin-bottom: 20px; /* Espacio debajo de h4 */
+    text-align: center; /* Asegura centrado si no usa header-content */
 }
 
 .form-container {
@@ -117,6 +150,7 @@ body {
 input[type="text"],
 input[type="number"],
 input[type="email"],
+input[type="date"], /* Agregado para inputs de fecha */
 select,
 textarea {
     width: 100%;
@@ -126,7 +160,7 @@ textarea {
     color: white;
     border-radius: 5px;
     box-sizing: border-box;
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Espacio debajo de cada input */
 }
 
 textarea {
@@ -135,10 +169,11 @@ textarea {
 
 .modal-title {
     color: #ff69b4;
-    margin-bottom: 20px;
-    text-align: center;
+    margin-bottom: 20px; /* Ajustar si es necesario */
+    text-align: center; /* Asegura centrado */
 }
 
+/* Botones */
 .btn-primary {
     background-color: #007bff;
     border: none;
@@ -147,7 +182,7 @@ textarea {
     border-radius: 5px;
     cursor: pointer;
     transition: opacity 0.2s ease;
-    margin-top: 10px;
+    margin-top: 10px; /* Espacio superior */
 }
 
 .btn-primary:hover {
@@ -156,10 +191,10 @@ textarea {
 }
 
 .form-select:focus {
-    background-color: #1e2a38;
-    color: white;
-    border-color: #ff69b4;
-    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+    background-color: #1e2a38; /* Fondo en focus */
+    color: white; /* Color de texto en focus */
+    border-color: #ff69b4; /* Borde en focus */
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25); /* Sombra en focus */
 }
 
 .button-group {
@@ -172,7 +207,7 @@ textarea {
 }
 
 .btn-secondary {
-    background-color: #f5082b;
+    background-color: #6c757d; /* Color de ejemplo, ajusta si es diferente en tu diseño */
     border: none;
     color: white;
     padding: 10px 15px;
@@ -183,16 +218,59 @@ textarea {
 }
 
 .btn-secondary:hover {
-    background-color: #f8044c;
-    border-color: #a20432;
+    background-color: #5a6268;
+    border-color: #545b62;
 }
 
-h1 {
-    color: #ffffff;
-    margin-bottom: 20px;
-    text-align: center;
+/* Otros botones específicos si los hay y no están en Bootstrap */
+.btn-pink {
+    background-color: #ff69b4;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
 }
 
+.btn-pink:hover {
+    opacity: 0.9;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem; /* Botones un poco más pequeños */
+    font-size: 0.8rem;
+}
+.btn-warning {
+    /* Ajusta los colores del botón Editar si es necesario */
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529; /* Color de texto oscuro para contraste */
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+.btn-danger {
+    /* Estilos para botón Eliminar */
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+.btn-info {
+    /* Estilos para botón Ver Unidades */
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
 
 
 /* === TABLA === */
@@ -237,14 +315,12 @@ tr:hover {
     background-color: #2c3e50; /* Color al pasar el mouse sobre una fila */
 }
 
-/* === DETALLES SECTION === */
+/* === DETALLES SECTION (Usando los mismos estilos de tabla) === */
 #detalles-section {
-    width: 98%; /* Similar al table-container */
-    max-width: 1200px; /* Similar al table-container */
-    margin: 0 auto; /* Centrado horizontal */
-    margin-top: 80px; /* AÑADIDO: Espacio superior para empujar hacia abajo */
-    /* Puedes ajustar 80px o usar una unidad relativa como vh, por ejemplo: */
-    /* margin-top: 10vh; */ /* 10% del alto de la ventana */
+    width: 95%; /* Similar al table-container */
+    max-width: 1000px; /* Similar al table-container */
+    margin: 20px auto; /* Centrado */
+    /* margin-top ya está definido en .table-container si está dentro*/
 }
 
 #detalles-section h2 {
@@ -253,8 +329,12 @@ tr:hover {
     text-align: center;
 }
 
+/* Las reglas para #detalles-section table, th, td, etc. se pueden eliminar
+   si solo quieres que hereden de los estilos generales de table, th, td.
+   Si necesitas sobrescribir algo para la tabla de detalles, déjalas.
+   Dado que ya están en tu CSS y son idénticas a las de la tabla principal,
+   las mantengo para que no haya cambios inesperados en tu CSS original. */
 #detalles-section table {
-
     width: 100%;
     background-color: #1e2a38;
     border-radius: 8px;
@@ -266,7 +346,6 @@ tr:hover {
 
 #detalles-section th,
 #detalles-section td {
-
     border-bottom: 1px solid #34495E;
     padding: 12px 15px;
     text-align: left;
@@ -291,28 +370,10 @@ tr:hover {
 }
 
 
-/* === BOTÓN PERSONALIZADO === */
-.btn-pink {
-    background-color: #ff69b4;
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-}
-
-.btn-pink:hover {
-    opacity: 0.9;
-}
-
-.btn-sm {
-    padding: 0.25rem 0.5rem; /* Botones un poco más pequeños */
-    font-size: 0.8rem;
-}
-
 /* Estilos adicionales para los modales */
 .modal-content {
+    background-color: #1e2a38; /* Fondo oscuro */
+    color: white;
     border: 1px solid #34495E;
 }
 
@@ -320,25 +381,51 @@ tr:hover {
     border-bottom: 1px solid #34495E;
 }
 
+.modal-title {
+    color: #ff69b4; /* Color del título del modal */
+}
+
+.modal-body {
+    background-color: #1e2a38;
+    color: white;
+}
+
 .modal-footer {
     border-top: 1px solid #34495E;
 }
-
-/* Estilos para los selectores */
-.form-select {
+.modal-header .btn-close {
+    /* Estilo para el botón de cerrar (la X) */
+    filter: invert(1) grayscale(100%) brightness(200%); /* Lo hace blanco */
+    opacity: 0.8;
+}
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+/* Estilos para los selectores dentro del modal */
+.modal-content .form-select {
     background-color: #1e2a38;
     color: white;
     border: 1px solid #34495E;
 }
-
-.form-select:focus {
+.modal-content .form-select:focus {
+    background-color: #1e2a38;
+    color: white;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
+}
+.modal-content .form-control {
+    background-color: #1e2a38;
+    color: white;
+    border: 1px solid #34495E;
+}
+.modal-content .form-control:focus {
     background-color: #1e2a38;
     color: white;
     border-color: #ff69b4;
     box-shadow: 0 0 0 0.25rem rgba(255, 105, 180, 0.25);
 }
 
-/* Estilos para las instancias seleccionadas */
+/* Estilos para las instancias seleccionadas en el modal */
 #instanciasContainer {
     background-color: #1e2a38;
     padding: 15px;
@@ -352,21 +439,35 @@ tr:hover {
     margin-bottom: 10px;
     border-radius: 5px;
     border-left: 3px solid #ff69b4;
+    display: flex; /* Para alinear checkbox y texto */
+    align-items: center;
 }
+.instancia-item input[type="checkbox"] {
+    margin-right: 10px; /* Espacio entre checkbox y texto */
+}
+.instancia-item label {
+    margin-bottom: 0; /* Elimina margen inferior del label */
+    color: #e0e0e0; /* Color claro para el texto */
+}
+
 
 /* Botón de acción reparar */
 .btn-reparar {
-    background-color: #28a745;
+    background-color: #28a745; /* Verde */
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 3px;
     font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .btn-reparar:hover {
-    background-color: #218838;
+    background-color: #218838; /* Verde más oscuro */
 }
+
+/* Contenedor de botones */
 .button-container {
     display: flex;
     justify-content: center;
@@ -374,9 +475,9 @@ tr:hover {
     padding: 20px 0;
 }
 
-/* Estilos para el modal de edición (reparación) */
-/* Nota: Los estilos de #reparacion-form-container también deberían ir aquí o fusionarse */
-.form-container#reparacion-form-container {
+
+/* Estilos para el formulario flotante de reparación */
+#reparacion-form-container {
     position: fixed; /* O absolute, dependiendo de cómo quieras que se posicione */
     top: 50%; /* Mueve el borde superior al 50% del contenedor padre */
     left: 50%; /* Mueve el borde izquierdo al 50% del contenedor padre */
@@ -397,8 +498,6 @@ tr:hover {
     text-align: center;
 }
 
-
-
 /* Estilos para mensajes de validación */
 .invalid-feedback { /* Aplicar a todos los invalid-feedback */
     color: #ff6b6b;
@@ -406,15 +505,29 @@ tr:hover {
     margin-top: 5px;
 }
 
-
-
-/* Animación del modal */
-.modal.fade .modal-dialog {
-    transition: transform 0.3s ease-out;
+/* Estilos para ocultar/mostrar secciones */
+.hidden {
+    display: none ;
 }
 
-.modal.fade.show .modal-dialog {
-    transform: none;
+/* Footer fijo en la esquina inferior derecha */
+.footer {
+    position: fixed; /* Fijo en la ventana */
+    bottom: 10px;
+    right: 20px;
+    font-size: 0.9rem;
+    text-align: right;
+    color: white; /* Asegura que el color sea blanco */
+    z-index: 100; /* Asegura que esté sobre el contenido principal */
+}
+
+.footer a {
+    color: #00BFFF; /* Azul claro */
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
 }
 
 /* Estilos responsivos */
@@ -425,6 +538,7 @@ tr:hover {
 
     .content {
         margin-left: 60px; /* Ajusta el margen del contenido */
+        width: calc(100% - 60px); /* Asegura que el contenido use el ancho restante */
     }
 
     .sidebar a span {
@@ -442,32 +556,11 @@ tr:hover {
     #detalles-section {
         width: 98%; /* Usa más ancho en pantallas pequeñas */
     }
-    .form-container#reparacion-form-container {
-        position: fixed; /* Para que se posicione respecto al viewport */
-        top: 50%; /* Posición inicial en el centro vertical */
-        left: 50%; /* Posición inicial en el centro horizontal */
-        transform: translate(-50%, -70px); /* Centra horizontalmente (-50%) y lo sube 70px (-70px) */
-        opacity: 0; /* Inicialmente invisible */
-        visibility: hidden; /* Oculto y no interactuable, pero transicionable */
-        transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Transición para opacidad y transformación */
-        z-index: 1050; /* Asegura que esté por encima de otros elementos */
-        background-color: #1e2a38; /* Ya definido */
-        padding: 25px; /* Ya definido */
-        border-radius: 10px; /* Ya definido */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Ya definido */
-        max-width: 500px; /* Ya definido */
-        width: 90%; /* Ya definido */
-        text-align: left; /* Ya definido */
-    }
 
-    /* Estado visible del formulario de reparación flotante (cuando se aplica la clase 'show') */
-    .form-container#reparacion-form-container.show {
-        opacity: 1; /* Completamente visible */
-        visibility: visible; /* Visible */
-        transform: translate(-50%, 0); /* Se desliza hacia abajo a su posición centrada original */
+    /* Ajustar el formulario de reparación flotante en pantallas pequeñas si es necesario */
+    #reparacion-form-container {
+        width: 95%; /* Ocupa más ancho */
+        max-width: none; /* Elimina el ancho máximo */
+        /* Puedes ajustar la posición si es necesario */
     }
-}
-
-.hidden {
-    display: none ;
 }
