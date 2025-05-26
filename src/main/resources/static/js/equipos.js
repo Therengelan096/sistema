@@ -32,11 +32,10 @@ const backToTypesBtn = document.getElementById('back-to-types-btn'); // Botón p
 
 
 // --- URLs del API ---
-const API_BASE_URL = 'http://localhost:8083/equipos'; // Endpoint principal para tipos
-const API_CATEGORIAS_URL = 'http://localhost:8083/categorias'; // Endpoint para categorías
-const API_LABORATORIOS_URL = 'http://localhost:8083/laboratorios'; // Endpoint para laboratorios
-const API_INSTANCIAS_URL = `${API_BASE_URL}/instancias`; // Endpoint para instancias (general)
-
+const API_BASE_URL = '/equipos';
+const API_CATEGORIAS_URL = '/categorias';
+const API_LABORATORIOS_URL = '/laboratorios';
+const API_INSTANCIAS_URL = `${API_BASE_URL}/instancias`;
 // --- Variables de estado ---
 let currentTipoEquipoId = null; // Variable para guardar el ID del tipo cuando vemos sus instancias
 

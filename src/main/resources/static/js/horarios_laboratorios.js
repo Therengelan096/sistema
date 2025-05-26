@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const API_BASE_URL = 'http://localhost:8083'; // Asegúrate que el puerto es correcto
-
+    const API_BASE_URL = '';
     // --- Código Común: Sidebar Toggle ---
     // Este código se ejecuta en cualquier página donde existan estos elementos
     const toggleBtn = document.getElementById('toggleSidebar');
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // --- Lógica para Administración de Laboratorios ---
         function cargarLaboratorios() {
-            fetch(`${API_BASE_URL}/laboratorios`)
+            fetch('/laboratorios')
                 .then(response => {
                     if (!response.ok) throw new Error('Error en la respuesta: ' + response.status);
                     return response.json();

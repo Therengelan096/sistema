@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // === Función para marcar una sanción como cumplida (inactiva) ===
     // Esta función debe estar accesible globalmente si se llama desde onclick en el HTML
     window.marcarCumplida = function(id) {
-        fetch(`http://localhost:8083/sanciones/cumplida/${id}`, {
+        fetch(`/sanciones/cumplida/${id}`, {
             method: 'PUT'
         })
             .then(response => {
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // === Función para activar una sanción ===
     // Esta función debe estar accesible globalmente si se llama desde onclick en el HTML
     window.activarSancion = function(id) {
-        fetch(`http://localhost:8083/sanciones/activar/${id}`, {
+        fetch(`/sanciones/activar/${id}`, {
             method: 'PUT'
         })
             .then(response => {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // === Función para cargar todas las sanciones ===
     function cargarSanciones() {
         console.log('Cargando sanciones desde la API...'); // Log al iniciar carga
-        fetch('http://localhost:8083/sanciones')
+        fetch('/sanciones')
             .then(response => {
                 console.log('Respuesta de carga recibida:', response.status); // Log de respuesta de carga
                 if (!response.ok) {
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log('Intentando crear sanción para RU:', ru, 'con motivo:', motivo); // Log antes del fetch
 
-        fetch(`http://localhost:8083/sanciones/crear/${ru}`, {
+        fetch(`/sanciones/crear/${ru}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function buscarUsuarioPorRu(ru) {
         console.log('Buscando usuario por RU:', ru); // Log de búsqueda de usuario
         // Reemplaza con tu endpoint real para buscar usuarios por RU
-        fetch(`http://localhost:8083/usuarios/buscarPorRu/${ru}`)
+        fetch(`/usuarios/buscarPorRu/${ru}`)
             .then(response => {
                 console.log('Respuesta búsqueda usuario:', response.status); // Log de respuesta
                 if (!response.ok) {

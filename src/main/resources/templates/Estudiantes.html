@@ -47,54 +47,58 @@
   <div class="dashboard-section">
     <h2>Mi Historial de Préstamos</h2>
     <p th:if="${prestamos == null or prestamos.empty}">No tienes préstamos registrados.</p>
-    <table th:unless="${prestamos == null or prestamos.empty}" class="table">
-      <thead>
-      <tr>
-        <th>ID Préstamo</th>
-        <th>Fecha de Préstamo</th>
-        <th>Hora de Préstamo</th>
-        <th>Estado</th>
-        <th>Fecha Devolución Estimada</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="prestamo : ${prestamos}">
-        <td th:text="${prestamo.idPrestamo}">ID</td>
-        <td th:text="${prestamo.fechaPrestamo != null ? #dates.format(prestamo.fechaPrestamo, 'dd-MM-yyyy') : 'N/A'}">Fecha</td>
-        <td th:text="${prestamo.horaPrestamo != null ? #temporals.format(prestamo.horaPrestamo, 'HH:mm') : 'N/A'}">Hora</td>
-        <td th:text="${prestamo.estado}">Estado</td>
-        <td th:text="${prestamo.fechaDevolucionEstimada != null ? #dates.format(prestamo.fechaDevolucionEstimada, 'dd-MM-yyyy') : 'N/A'}">Fecha Estimada</td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table th:unless="${prestamos == null or prestamos.empty}" class="table">
+        <thead>
+        <tr>
+          <th>ID Préstamo</th>
+          <th>Fecha de Préstamo</th>
+          <th>Hora de Préstamo</th>
+          <th>Estado</th>
+          <th>Fecha Devolución Estimada</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="prestamo : ${prestamos}">
+          <td th:text="${prestamo.idPrestamo}">ID</td>
+          <td th:text="${prestamo.fechaPrestamo != null ? #dates.format(prestamo.fechaPrestamo, 'dd-MM-yyyy') : 'N/A'}">Fecha</td>
+          <td th:text="${prestamo.horaPrestamo != null ? #temporals.format(prestamo.horaPrestamo, 'HH:mm') : 'N/A'}">Hora</td>
+          <td th:text="${prestamo.estado}">Estado</td>
+          <td th:text="${prestamo.fechaDevolucionEstimada != null ? #temporals.format(prestamo.fechaDevolucionEstimada, 'dd-MM-yyyy') : 'N/A'}">Fecha Estimada</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="dashboard-section">
     <h2>Mis Sanciones</h2>
     <p th:if="${sanciones == null or sanciones.empty}">No tienes sanciones registradas.</p>
-    <table th:unless="${sanciones == null or sanciones.empty}" class="table sanciones-table">
-      <thead>
-      <tr>
-        <th>ID Sanción</th>
-        <th>Motivo de Sanción</th>
-        <th>Fecha de Sanción</th>
-        <th>Estado</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="sancion : ${sanciones}">
-        <td th:text="${sancion.idSancion}">ID</td>
-        <td th:text="${sancion.motivoSancion}">Motivo</td>
-        <td th:text="${sancion.fechaSancion != null ? #dates.format(sancion.fechaSancion, 'dd-MM-yyyy') : 'N/A'}">Fecha</td>
-        <td th:text="${sancion.estado}">Estado</td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table th:unless="${sanciones == null or sanciones.empty}" class="table sanciones-table">
+        <thead>
+        <tr>
+          <th>ID Sanción</th>
+          <th>Motivo de Sanción</th>
+          <th>Fecha de Sanción</th>
+          <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sancion : ${sanciones}">
+          <td th:text="${sancion.idSancion}">ID</td>
+          <td th:text="${sancion.motivoSancion}">Motivo</td>
+          <td th:text="${sancion.fechaSancion != null ? #dates.format(sancion.fechaSancion, 'dd-MM-yyyy') : 'N/A'}">Fecha</td>
+          <td th:text="${sancion.estado}">Estado</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <div class="footer" id="footer">
-  © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
+  © 2025 Control de Laboratorio
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

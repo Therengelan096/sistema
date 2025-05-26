@@ -8,6 +8,7 @@ const currentMantenimientoNombre = document.getElementById('current-mantenimient
 const detallesTbody = document.getElementById('detalles-body');
 const mantenimientoListTitle = document.getElementById('mantenimiento-list-title');
 const nuevoMantenimientoBtnContainer = document.getElementById('nuevo-mantenimiento-btn-container');
+const API_BASE_URL = '';
 
 function mostrarVistaMantenimientos() {
     const mantenimientoTableContainer = document.getElementById('mantenimiento-table-container');
@@ -212,7 +213,7 @@ window.verDetalles = async function(idMantenimiento) {
     }
 
     try {
-        const response = await fetch(`http://localhost:8083/mantenimiento/${idMantenimiento}/detalles`);
+        const response = await fetch(`/mantenimiento/${idMantenimiento}/detalles`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -356,7 +357,7 @@ window.mostrarConfirmacionInstancias = function () {
 // Función para cargar laboratorios
 window.cargarLaboratorios = async function () {
     try {
-        const response = await fetch('http://localhost:8083/laboratorios');
+        const response = await fetch(`${API_BASE_URL}/laboratorios`);
         if (!response.ok) throw new Error('Error al cargar laboratorios');
         const laboratorios = await response.json();
 
@@ -387,7 +388,7 @@ window.cargarCategoriasPorLaboratorio = async function (laboratorioId) {
         return;
     }
     try {
-        const response = await fetch(`http://localhost:8083/laboratorios/${laboratorioId}/categorias`);
+        const response = await fetch(`${API_BASE_URL}/laboratorios/${laboratorioId}/categorias`);
         if (!response.ok) throw new Error('Error al cargar categorías');
         const categorias = await response.json();
 
@@ -414,7 +415,7 @@ window.cargarEquiposPorLaboratorio = async function (laboratorioId, categoriaId 
         return;
     }
     try {
-        let url = `http://localhost:8083/laboratorios/${laboratorioId}/equipos`;
+        let url = `${API_BASE_URL}/laboratorios/${laboratorioId}/equipos`;
         if (categoriaId) {
             url += `?categoriaId=${categoriaId}`;
         }
@@ -446,7 +447,7 @@ window.cargarMantenimientos = async function () {
     }
 
     try {
-        const response = await fetch('http://localhost:8083/mantenimiento');
+        const response = await fetch('/mantenimiento');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -533,7 +534,7 @@ async function guardarReparacion() {
     console.log('Datos a enviar:', data);
 
     try {
-        const response = await fetch(`http://localhost:8083/mantenimiento/detalleMantenimiento/${detalleIdActual}`, {
+        const response = await fetch(`/mantenimiento/detalleMantenimiento/${detalleIdActual}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -612,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Función para cargar instancias de un equipo
     async function cargarInstancias(equipoId) {
         try {
-            const response = await fetch(`http://localhost:8083/equipos/${equipoId}/instancias`);
+            const response = await fetch(`/equipos/${equipoId}/instancias`);
             if (!response.ok) throw new Error('Error al cargar instancias');
             const instancias = await response.json();
             mostrarOpcionesInstancias(instancias); // Llama a la función existente
@@ -687,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             console.log('Datos a enviar al servidor:', JSON.stringify(mantenimientoData, null, 2));
-            const response = await fetch('http://localhost:8083/mantenimiento', {
+            const response = await fetch('/mantenimiento', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

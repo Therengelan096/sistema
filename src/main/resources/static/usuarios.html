@@ -397,7 +397,7 @@
     }
 
     function cargarUsuarios() {
-      fetch('http://localhost:8083/usuarios')
+      fetch('/usuarios')
         .then(response => response.json())
         .then(data => {
           const tableBody = document.getElementById('usuarios-body');
@@ -444,7 +444,7 @@
       const semestre = document.getElementById('semestre').value;
 
       const method = id ? 'PUT' : 'POST';
-      const url = id ? `http://localhost:8083/usuarios/${id}` : 'http://localhost:8083/usuarios';
+      const url = id ? `/usuarios/${id}` : '/usuarios';
 
       const dataToSend = {
         ru: parseInt(ru),

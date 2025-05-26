@@ -260,6 +260,32 @@
       background-color: #e0a800;
       border-color: #d39e00;
     }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100vw;
+        height: auto;
+        position: static;
+        flex-direction: row;
+        overflow-x: auto;
+        z-index: 100;
+      }
+      .sidebar.collapsed {
+        width: 100vw;
+      }
+      .content, .content.sidebar-collapsed {
+        margin-left: 0;
+        width: 100vw;
+        padding: 10px;
+      }
+      .header-content, .table-container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .modal-dialog {
+        max-width: 98vw !important;
+        margin: 1vw auto;
+      }
+    }
 
   </style>
 </head>
@@ -376,7 +402,7 @@
 
     // Carga la lista completa de categorías y las muestra en la tabla
     function cargarCategorias() {
-      fetch('http://localhost:8083/categorias')
+      fetch('/categorias')
               .then(response => {
                 if (!response.ok) {
                   throw new Error('Error al cargar categorías');
@@ -403,7 +429,7 @@
 
     // Carga la lista completa de laboratorios disponibles (para los checkboxes)
     function cargarTodosLaboratorios() {
-      fetch('http://localhost:8083/categorias/laboratorios') // Endpoint para obtener todos los laboratorios
+      fetch('/categorias/laboratorios') // Endpoint para obtener todos los laboratorios
               .then(response => {
                 if (!response.ok) {
                   throw new Error('Error al cargar la lista de laboratorios');
