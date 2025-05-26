@@ -56,6 +56,9 @@ CREATE TABLE Administradores (
     estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO',
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 );
+--admin wasa1
+--wasa admin123
+ALTER TABLE Administradores MODIFY contraseña VARCHAR(255) NOT NULL;
 CREATE TABLE Prestamos (
     id_prestamo INT PRIMARY KEY AUTO_INCREMENT,
     id_usuario INT NOT NULL,

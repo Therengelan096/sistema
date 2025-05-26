@@ -1,12 +1,10 @@
 package com.proyecto.sistema.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // Importar si la usas
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
-
 @Entity
-@Table(name = "Administradores") // Asegúrate que el nombre de la tabla sea correcto
-// Añadir si la usas para manejar proxies de Hibernate durante la serialización
+@Table(name = "Administradores")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Administrador {
     @Id
@@ -16,23 +14,29 @@ public class Administrador {
     @Column(nullable = false, unique = true)
     private String usuario;
 
-    @Column(nullable = false)
-    private String contraseña; // ¡Seriamente, considera hashear esto!
+    @Column(nullable = false, length = 255)  // Aumentado a 255 para almacenar hash BCrypt
+    private String contraseña;
 
-    // *** MODIFICADO AQUÍ: Cambiado a FetchType.EAGER ***
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuarioRef;
 
-    // --- CAMPO ESTADO ---
-    @Enumerated(EnumType.STRING) // Guarda el nombre del enum ('ACTIVO', 'INACTIVO') en la BD
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private EstadoAdmin estado = EstadoAdmin.ACTIVO; // Valor por defecto en Java
-    // --- FIN CAMPO ESTADO ---
+    private EstadoAdmin estado = EstadoAdmin.ACTIVO;
 
+    // Constructor por defecto necesario para JPA
+    public Administrador() {}
 
-    // --- Getters and Setters ---
+    // Constructor con campos principales
+    public Administrador(String usuario, String contraseña, Usuario usuarioRef) {
+        this.usuario = usuario;
+        this.contraseña = contraseña;
+        this.usuarioRef = usuarioRef;
+        this.estado = EstadoAdmin.ACTIVO;
+    }
 
+    // Getters y Setters
     public int getIdAdministrador() { return idAdministrador; }
     public void setIdAdministrador(int idAdministrador) { this.idAdministrador = idAdministrador; }
 
@@ -48,11 +52,16 @@ public class Administrador {
     public EstadoAdmin getEstado() { return estado; }
     public void setEstado(EstadoAdmin estado) { this.estado = estado; }
 
-
-    // Este getter accede a usuarioRef. Ahora que usuarioRef es EAGER, esto no debería ser null si la FK en DB es NOT NULL
     public String getNombre() {
-        // Añadir una verificación por ultra seguridad, aunque EAGER+NOT NULL en DB debería ser suficiente
         return this.usuarioRef != null ? this.usuarioRef.getNombre() : null;
     }
 
+    @Override
+    public String toString() {
+        return "Administrador{" +
+                "idAdministrador=" + idAdministrador +
+                ", usuario='" + usuario + '\'' +
+                ", estado=" + estado +
+                '}';
+    }
 }
