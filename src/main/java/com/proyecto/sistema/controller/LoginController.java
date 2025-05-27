@@ -56,7 +56,8 @@ public class LoginController {
 
             if (admin != null) {
                 // Lógica para administrador
-                if (admin.getEstado() == com.proyecto.sistema.model.EstadoAdmin.ACTIVO) { // Asegúrate que EstadoAdmin sea accesible
+                if (admin.getEstado() == com.proyecto.sistema.model.EstadoAdmin.ACTIVO) {// Asegúrate que EstadoAdmin sea accesible
+                    session.setAttribute("idAdministradorLogueado", admin.getIdAdministrador());
                     if (admin.getUsuarioRef() != null) { // Asumo que Administrador tiene una referencia a Usuario
                         session.setAttribute("idUsuario", admin.getUsuarioRef().getIdUsuario());
                     }
