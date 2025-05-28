@@ -236,11 +236,31 @@
         <p class="text-center">Utiliza el menú lateral para navegar por las diferentes secciones del sistema.</p>
     </div>
 
-    <div class="bottom-right">
+    <div class="bottom-right" style="left:0;right:0;bottom:20px;position:absolute;text-align:center;width:100%;">
         © 2025 Control de Laboratorio | <a href="/contacto.html">Contáctanos</a>
     </div>
 
-</div> <script>
+</div>
+<!-- Chatbot de Ayuda -->
+<link rel="stylesheet" href="/css/chatbot.css">
+<div id="chatbot-container">
+    <div id="chatbot-toggle" title="Abrir chat">
+        <i class="bi bi-robot" style="font-size:2rem;"></i>
+    </div>
+    <div id="chatbot-window">
+        <div id="chatbot-header">
+            <span>Asistente</span>
+            <button id="chatbot-minimize" title="Minimizar"><i class="bi bi-dash"></i></button>
+        </div>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input-area">
+            <input type="text" id="chatbot-input" class="form-control" placeholder="Escribe tu pregunta...">
+            <button id="chatbot-send" class="btn btn-pink">Enviar</button>
+        </div>
+    </div>
+</div>
+<script src="/js/chatbot.js"></script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('sidebar');

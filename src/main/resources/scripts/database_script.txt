@@ -51,14 +51,12 @@ CREATE TABLE Equipos (
 CREATE TABLE Administradores (
     id_administrador INT PRIMARY KEY AUTO_INCREMENT,
     usuario VARCHAR(100) NOT NULL UNIQUE,
-    contraseña VARCHAR(50) NOT NULL,
+    contraseña VARCHAR(255) NOT NULL,
     id_usuario INT NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') DEFAULT 'ACTIVO',
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 );
---admin wasa1
---wasa admin123
-ALTER TABLE Administradores MODIFY contraseña VARCHAR(255) NOT NULL;
+
 CREATE TABLE Prestamos (
     id_prestamo INT PRIMARY KEY AUTO_INCREMENT,
     id_usuario INT NOT NULL,
@@ -136,3 +134,279 @@ CREATE TABLE Horario_Laboratorio (
     FOREIGN KEY (id_laboratorio) REFERENCES LaboratoriosE(id_laboratorio) ON DELETE CASCADE, -- Se borra el horario si se borra el laboratorio
     UNIQUE KEY (id_laboratorio, dia_semana, hora_inicio) -- Para evitar duplicados
 );
+
+CREATE TABLE Auditoria_Actividades_Admin (
+    id_log INT PRIMARY KEY AUTO_INCREMENT,
+    id_administrador INT NOT NULL,
+    tabla_afectada VARCHAR(100) NOT NULL,
+    id_registro_afectado INT,
+    tipo_operacion ENUM('AGREGAR', 'MODIFICAR') NOT NULL,
+    fecha_hora_accion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_administrador) REFERENCES Administradores(id_administrador)
+);
+
+-- Trigers para auditoria de actividades del administrador
+-- TRIGUERS PARA USUARIOS
+DELIMITER //
+CREATE TRIGGER tr_aud_usuarios_insert
+AFTER INSERT ON Usuarios
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Usuarios',
+            NEW.id_usuario, -- ID del nuevo registro de usuario
+            'AGREGAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+CREATE TRIGGER tr_aud_usuarios_update
+AFTER UPDATE ON Usuarios
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Usuarios',
+            NEW.id_usuario,
+            'MODIFICAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+DELIMITER ;
+
+
+-- TRIGGUER PARA PRESTAMOS
+DELIMITER //
+CREATE TRIGGER tr_aud_prestamos_insert
+AFTER INSERT ON Prestamos
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Prestamos',
+            NEW.id_prestamo,
+            'AGREGAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+CREATE TRIGGER tr_aud_prestamos_update
+AFTER UPDATE ON Prestamos
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Prestamos',
+            NEW.id_prestamo,
+            'MODIFICAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+DELIMITER ;
+
+
+-- TRIGUER PARA DEVOLUCIONES
+
+DELIMITER //
+CREATE TRIGGER tr_aud_devolucion_insert
+AFTER INSERT ON Devolucion
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Devolucion',
+            NEW.id_devolucion,
+            'AGREGAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+CREATE TRIGGER tr_aud_devolucion_update
+AFTER UPDATE ON Devolucion
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Devolucion',
+            NEW.id_devolucion,
+            'MODIFICAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+DELIMITER ;
+
+
+-- TRIGUER PARA MANTENIMIENTO
+
+DELIMITER //
+CREATE TRIGGER tr_aud_mantenimiento_insert
+AFTER INSERT ON Mantenimiento
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Mantenimiento',
+            NEW.id_mantenimiento,
+            'AGREGAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+CREATE TRIGGER tr_aud_mantenimiento_update
+AFTER UPDATE ON Mantenimiento
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Mantenimiento',
+            NEW.id_mantenimiento,
+            'MODIFICAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+DELIMITER ;
+
+
+-- TRIGUER PARA SANCIONES
+
+DELIMITER //
+CREATE TRIGGER tr_aud_sanciones_insert
+AFTER INSERT ON Sanciones
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Sanciones',
+            NEW.id_sancion,
+            'AGREGAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+CREATE TRIGGER tr_aud_sanciones_update
+AFTER UPDATE ON Sanciones
+FOR EACH ROW
+BEGIN
+    DECLARE admin_id INT;
+    SET admin_id = @id_admin_activo;
+
+    IF admin_id IS NOT NULL THEN
+        INSERT INTO Auditoria_Actividades_Admin (
+            id_administrador,
+            tabla_afectada,
+            id_registro_afectado,
+            tipo_operacion,
+            fecha_hora_accion
+        )
+        VALUES (
+            admin_id,
+            'Sanciones',
+            NEW.id_sancion,
+            'MODIFICAR',
+            CURRENT_TIMESTAMP
+        );
+    END IF;
+END //
+DELIMITER ;
