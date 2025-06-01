@@ -286,5 +286,16 @@ tr:hover {
     text-decoration: underline;
 }
 
-/* Eliminamos estos estilos de Bootstrap que podrían entrar en conflicto con los personalizados */
-/* .table-dark { ... } */
+#chatbot-container {
+    position: fixed;
+    top: 20px; /* Ajusta según necesites */
+    right: 20px;
+    z-index: 1000;
+}
+
+#chatbot-window {
+    top: 60px; /* Ajusta para que aparezca debajo del botón */
+    bottom: auto; /* Anula la posición bottom si existe */
+    right: 20px;
+    position: fixed;
+}

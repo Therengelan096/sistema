@@ -16,11 +16,14 @@ import org.springframework.stereotype.Repository; // <-- Añadir esta importaci�
 import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime; // <-- ¡Importa java.time.LocalDateTime para los recordatorios!
+import java.util.Map;
 
 @Repository // <-- Añadir esta anotación si no estaba
 public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
 
     List<Prestamo> findByEstado(String estado);
+    List<Prestamo> findByFechaPrestamo(Date fecha);
+    long countByEstado(String estado);
 
     // Métodos adicionales para los reportes (los que ya tenías sin parámetros)
     @Query(value = "SELECT e.nombre, COUNT(dp.id_equipo) AS cantidad_prestada FROM detalle_prestamo dp JOIN equipos e ON dp.id_equipo = e.id_equipo GROUP BY e.id_equipo ORDER BY cantidad_prestada DESC", nativeQuery = true)
@@ -125,5 +128,14 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, Integer> {
     // a los que aún NO se les ha enviado un recordatorio dentro de un rango de fecha estimada de devolución.
     // REQUIERE QUE TENGAS EL CAMPO 'recordatorioEnviado' (boolean) EN TU MODELO Prestamo.
     // List<Prestamo> findByEstadoAndFechaDevolucionEstimadaBetweenAndRecordatorioEnviadoFalse(String estado, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    @Query(value = "SELECT u.nombre, u.apellido, COUNT(p.id_prestamo) as cantidad " +
+            "FROM usuarios u " +
+            "JOIN prestamos p ON u.id_usuario = p.id_usuario " +
+            "GROUP BY u.id_usuario, u.nombre, u.apellido " +
+            "ORDER BY cantidad DESC " +
+            "LIMIT 10", nativeQuery = true)
+    List<Object[]> findUsuariosMasFrecuentes();
+
+
 
 }

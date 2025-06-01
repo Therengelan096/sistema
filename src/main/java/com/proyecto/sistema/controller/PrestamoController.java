@@ -8,19 +8,21 @@ import com.proyecto.sistema.repository.DetallePrestamoRepository;
 import com.proyecto.sistema.repository.DevolucionRepository; // Importa el repositorio de Devolucion
 import com.proyecto.sistema.repository.EquipoRepository;
 import com.proyecto.sistema.repository.PrestamoRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/prestamos")
@@ -243,39 +245,55 @@ public class PrestamoController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // ... (Tu código existente para eliminar préstamo si lo tienes) ...
-    // Considera agregar un endpoint DELETE para préstamos
-    // Esto también debería manejar la recuperación de stock de los equipos antes de eliminar el préstamo y sus detalles.
-     /*
-     @DeleteMapping("/{id}")
-     @Transactional
-     public ResponseEntity<?> eliminarPrestamo(@PathVariable int id) {
-         Optional<Prestamo> prestamoOptional = prestamoRepository.findById(id);
-         if (!prestamoOptional.isPresent()) {
-             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-         }
-         Prestamo prestamoParaEliminar = prestamoOptional.get();
+    @GetMapping(params = "fecha")
+    public ResponseEntity<List<Prestamo>> obtenerPrestamosPorFecha(@RequestParam String fecha) {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date fechaBusqueda = formatter.parse(fecha);
+            List<Prestamo> prestamos = prestamoRepository.findByFechaPrestamo(fechaBusqueda);
+            return ResponseEntity.ok(prestamos);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-         // Recuperar stock de los detalles antes de que sean eliminados por cascade/orphanRemoval
-         List<DetallePrestamo> detallesAEliminar = new ArrayList<>(prestamoParaEliminar.getDetallesPrestamo()); // Copia
+    @GetMapping("/estadisticas/usuarios-frecuentes")
+    public ResponseEntity<?> obtenerUsuariosFrecuentes() {
+        try {
+            List<Object[]> resultados = prestamoRepository.findUsuariosMasFrecuentes();
+            List<Map<String, Object>> usuarios = resultados.stream().map(resultado -> {
+                Map<String, Object> usuario = new HashMap<>();
+                usuario.put("nombre", resultado[0]);
+                usuario.put("apellido", resultado[1]);
+                usuario.put("cantidad", resultado[2]);
+                return usuario;
+            }).collect(Collectors.toList());
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener estadísticas de usuarios: " + e.getMessage());
+        }
+    }
 
-         if (detallesAEliminar != null && !detallesAEliminar.isEmpty()) {
-             for (DetallePrestamo detalle : detallesAEliminar) {
-                 Optional<Equipo> equipoOptional = equipoRepository.findById(detalle.getEquipo().getIdEquipo());
-                 if (equipoOptional.isPresent()) {
-                     Equipo equipo = equipoOptional.get();
-                     equipo.setCantidad(equipo.getCantidad() + detalle.getCantidad());
-                     equipoRepository.save(equipo); // Guarda el stock actualizado
-                 } else {
-                     System.err.println("ADVERTENCIA: Equipo con ID: " + detalle.getEquipo().getIdEquipo() + " no encontrado al intentar recuperar stock durante la eliminación del préstamo " + id);
-                 }
-             }
-         }
+    // En PrestamoController.java
+    @GetMapping("/estadisticas/equipos-solicitados")
+    public ResponseEntity<?> obtenerEquiposMasSolicitados() {
+        try {
+            List<Object[]> resultados = detallePrestamoRepository.findEquiposMasSolicitados();
+            List<Map<String, Object>> equipos = resultados.stream().map(resultado -> {
+                Map<String, Object> equipo = new HashMap<>();
+                equipo.put("nombre", resultado[0]);
+                equipo.put("cantidad", resultado[1]);
+                return equipo;
+            }).collect(Collectors.toList());
+            return ResponseEntity.ok(equipos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener estadísticas de equipos: " + e.getMessage());
+        }
+    }
 
-         // Eliminar el préstamo principal. Debido a cascade=ALL y orphanRemoval=true, los detalles también se eliminarán.
-         prestamoRepository.delete(prestamoParaEliminar);
 
-         return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content para eliminación exitosa
-     }
-     */
 }
